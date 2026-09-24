@@ -25,6 +25,15 @@ go run ./cmd/zt plan fuzz --root /path/to/ledger
 go run ./cmd/zt inspect --root /path/to/memory
 ```
 
+For a development install from the public repository, use Go 1.24 or newer:
+
+```sh
+go install github.com/zeithrold/tools/cmd/zt@main
+zt version
+```
+
+`go install` places the binary in `GOBIN`, or `GOPATH/bin` when `GOBIN` is unset; put that directory on `PATH`. Once a release tag exists, pin it instead of using `@main`, for example `@v0.1.0`. A project should pin the same `zt` version in its CI/bootstrap recipe; `zt.lock.json` records the version and content hash of each synchronized Skill. `zt.json` does not download or update the CLI itself.
+
 To try Skill sync, copy an [example config](examples/zt-memory.json) to `zt.json` in a **temporary project copy**, then run:
 
 ```sh
@@ -77,4 +86,4 @@ examples/               proposed pilot configurations
 
 ## License and publication
 
-The repository is public. License, release signing, and binary distribution channels remain open decisions. No versioned release has been published.
+The repository is public. CI tests each push and pull request. A semantic version tag triggers a GitHub Release with macOS, Linux, and Windows archives for amd64 and arm64, plus SHA-256 checksums. The release workflow does not publish the ESLint package or create tags automatically. No versioned release has been published yet. License and release signing remain open decisions.

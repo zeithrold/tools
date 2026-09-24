@@ -141,7 +141,7 @@ func Apply(root string, config *project.Config) (PlanResult, error) {
 		}
 	}
 	for _, action := range plan.Actions {
-		lock.Skills[action.Skill] = LockedSkill{Version: tools.BundleVersion, SHA256: action.Desired}
+		lock.Skills[action.Skill] = LockedSkill{Version: tools.Version(), SHA256: action.Desired}
 		if action.Action == "unchanged" || action.Action == "adopt" {
 			continue
 		}

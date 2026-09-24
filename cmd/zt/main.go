@@ -31,7 +31,7 @@ func run(args []string, output io.Writer) error {
 		if len(args) != 1 {
 			return fmt.Errorf("version accepts no arguments")
 		}
-		_, err := fmt.Fprintln(output, tools.BundleVersion)
+		_, err := fmt.Fprintln(output, tools.Version())
 		return err
 	case "inspect":
 		flags := flag.NewFlagSet("inspect", flag.ContinueOnError)
