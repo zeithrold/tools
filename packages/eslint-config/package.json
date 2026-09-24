@@ -1,0 +1,14 @@
+{
+  "name": "@zeithrold/eslint-config",
+  "version": "0.1.0-dev",
+  "private": true,
+  "type": "module",
+  "description": "Composable JavaScript and TypeScript lint defaults for zeithrold projects",
+  "exports": {
+    ".": "./index.js"
+  },
+  "peerDependencies": {
+    "@antfu/eslint-config": "^9.0.0",
+    "eslint": ">=10.0.0"
+  }
+}

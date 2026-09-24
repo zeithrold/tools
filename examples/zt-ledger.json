@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    {
+      "id": "api",
+      "path": ".",
+      "stack": "go",
+      "expect": {
+        "unit": "required",
+        "integration": "warn",
+        "fuzz": "warn",
+        "mutation": "warn"
+      }
+    }
+  ],
+  "skills": ["go-testing"]
+}

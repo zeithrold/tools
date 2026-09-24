@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    {
+      "id": "web",
+      "path": ".",
+      "stack": "js-ts",
+      "expect": {
+        "lint": "required",
+        "typecheck": "required",
+        "unit": "required",
+        "e2e": "warn"
+      }
+    }
+  ],
+  "skills": ["js-ts-testing", "ui-foundation", "ui-web"],
+  "lint": {
+    "js-ts": "@zeithrold/eslint-config"
+  }
+}
