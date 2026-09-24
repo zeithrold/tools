@@ -10,7 +10,7 @@
 - `zt sync`: installs selected complete Skill directories and writes `zt.lock.json`. It refuses to overwrite unmanaged or locally edited Skill directories. Removal is intentionally manual in this slice.
 - `packages/eslint-config`: unpublished JS/TS flat-config package. It is a native ESLint package, not code executed by the Go CLI.
 
-`zt check`, `zt run`, `zt doctor`, native command planning for the other four stacks, lint distribution for other stacks, and remote releases are **not implemented yet**. This repository does not replace `ledger-tooling` or modify Ledger's current gates.
+`zt check`, `zt run`, `zt doctor`, native command planning for the other four stacks, and lint distribution for other stacks are **not implemented yet**. Release automation is configured, but no versioned release exists yet. This repository does not replace `ledger-tooling` or modify Ledger's current gates.
 
 See the [Ledger assessment queue](docs/ledger-assessment.md) before extracting any existing Ledger behavior.
 
