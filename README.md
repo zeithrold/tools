@@ -77,4 +77,4 @@ examples/               proposed pilot configurations
 
 ## License and publication
 
-License, remote visibility, release signing, and distribution channels remain open decisions. This local first slice has not been published.
+The repository is public. License, release signing, and binary distribution channels remain open decisions. No versioned release has been published.
