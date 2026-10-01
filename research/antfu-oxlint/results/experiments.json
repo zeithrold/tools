@@ -1,0 +1,6340 @@
+{
+  "versions": {
+    "node": "v24.19.0",
+    "antfu": "9.5.1",
+    "oxlint": "1.86.0",
+    "eslint": "10.11.0",
+    "tsgolint": "7.0.2003"
+  },
+  "specimens": [
+    {
+      "name": "console-options-shadowing",
+      "id": "no-console",
+      "target": "no-console",
+      "file": "case.js",
+      "source": "console.log('bad'); console.warn('ok'); console.error('ok');\nfunction local(console) { console.log('local') }\nconsole['log']('bad'); const x = 'log'; console[x]('dynamic');\n",
+      "entry": [
+        2,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "no-console",
+          "severity": 2,
+          "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+          "line": 1,
+          "column": 1,
+          "messageId": "limited",
+          "endLine": 1,
+          "endColumn": 12,
+          "suggestions": [
+            {
+              "fix": {
+                "range": [
+                  0,
+                  19
+                ],
+                "text": ""
+              },
+              "messageId": "removeConsole",
+              "data": {
+                "propertyName": "log"
+              },
+              "desc": "Remove the console.log()."
+            }
+          ]
+        },
+        {
+          "ruleId": "no-console",
+          "severity": 2,
+          "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+          "line": 3,
+          "column": 1,
+          "messageId": "limited",
+          "endLine": 3,
+          "endColumn": 15,
+          "suggestions": [
+            {
+              "fix": {
+                "range": [
+                  110,
+                  132
+                ],
+                "text": ""
+              },
+              "messageId": "removeMethodCall",
+              "desc": "Remove the console method call."
+            }
+          ]
+        },
+        {
+          "ruleId": "no-console",
+          "severity": 2,
+          "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+          "line": 3,
+          "column": 41,
+          "messageId": "limited",
+          "endLine": 3,
+          "endColumn": 51,
+          "suggestions": [
+            {
+              "fix": {
+                "range": [
+                  150,
+                  172
+                ],
+                "text": ""
+              },
+              "messageId": "removeMethodCall",
+              "desc": "Remove the console method call."
+            }
+          ]
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Unexpected console statement.",
+              "code": "eslint(no-console)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-console.html",
+              "help": "Supported methods are: warn, error.",
+              "filename": ".generated/experiments/case.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 0,
+                    "length": 11,
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Unexpected console statement.",
+              "code": "eslint(no-console)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-console.html",
+              "help": "Supported methods are: warn, error.",
+              "filename": ".generated/experiments/case.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 110,
+                    "length": 13,
+                    "line": 3,
+                    "column": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.017303164
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": false,
+      "edits": {
+        "eslint": "console.log('bad'); console.warn('ok'); console.error('ok');\nfunction local(console) { console.log('local') }\nconsole['log']('bad'); const x = 'log'; console[x]('dynamic');\n",
+        "oxlint": "console.log('bad'); console.warn('ok'); console.error('ok');\nfunction local(console) { console.log('local') }\nconsole['log']('bad'); const x = 'log'; console[x]('dynamic');\n",
+        "equal": true,
+        "run": {
+          "status": 1,
+          "stderr": "",
+          "output": {
+            "diagnostics": [
+              {
+                "message": "Unexpected console statement.",
+                "code": "eslint(no-console)",
+                "severity": "error",
+                "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-console.html",
+                "help": "Supported methods are: warn, error.",
+                "filename": ".generated/experiments/case.js",
+                "labels": [
+                  {
+                    "span": {
+                      "offset": 0,
+                      "length": 11,
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "message": "Unexpected console statement.",
+                "code": "eslint(no-console)",
+                "severity": "error",
+                "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-console.html",
+                "help": "Supported methods are: warn, error.",
+                "filename": ".generated/experiments/case.js",
+                "labels": [
+                  {
+                    "span": {
+                      "offset": 110,
+                      "length": 13,
+                      "line": 3,
+                      "column": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 0.016470103
+          }
+        }
+      }
+    },
+    {
+      "name": "console-original-core-js",
+      "id": "no-console",
+      "target": "core-js/no-console",
+      "file": "case.js",
+      "source": "console.log('bad'); console.warn('ok'); console.error('ok');\nfunction local(console) { console.log('local') }\nconsole['log']('bad'); const x = 'log'; console[x]('dynamic');\n",
+      "entry": [
+        2,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "no-console",
+          "severity": 2,
+          "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+          "line": 1,
+          "column": 1,
+          "messageId": "limited",
+          "endLine": 1,
+          "endColumn": 12,
+          "suggestions": [
+            {
+              "fix": {
+                "range": [
+                  0,
+                  19
+                ],
+                "text": ""
+              },
+              "messageId": "removeConsole",
+              "data": {
+                "propertyName": "log"
+              },
+              "desc": "Remove the console.log()."
+            }
+          ]
+        },
+        {
+          "ruleId": "no-console",
+          "severity": 2,
+          "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+          "line": 3,
+          "column": 1,
+          "messageId": "limited",
+          "endLine": 3,
+          "endColumn": 15,
+          "suggestions": [
+            {
+              "fix": {
+                "range": [
+                  110,
+                  132
+                ],
+                "text": ""
+              },
+              "messageId": "removeMethodCall",
+              "desc": "Remove the console method call."
+            }
+          ]
+        },
+        {
+          "ruleId": "no-console",
+          "severity": 2,
+          "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+          "line": 3,
+          "column": 41,
+          "messageId": "limited",
+          "endLine": 3,
+          "endColumn": 51,
+          "suggestions": [
+            {
+              "fix": {
+                "range": [
+                  150,
+                  172
+                ],
+                "text": ""
+              },
+              "messageId": "removeMethodCall",
+              "desc": "Remove the console method call."
+            }
+          ]
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+              "code": "core-js(no-console)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 0,
+                    "length": 11,
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+              "code": "core-js(no-console)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 110,
+                    "length": 14,
+                    "line": 3,
+                    "column": 1
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+              "code": "core-js(no-console)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 150,
+                    "length": 10,
+                    "line": 3,
+                    "column": 41
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.543233372
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "console.log('bad'); console.warn('ok'); console.error('ok');\nfunction local(console) { console.log('local') }\nconsole['log']('bad'); const x = 'log'; console[x]('dynamic');\n",
+        "oxlint": "console.log('bad'); console.warn('ok'); console.error('ok');\nfunction local(console) { console.log('local') }\nconsole['log']('bad'); const x = 'log'; console[x]('dynamic');\n",
+        "equal": true,
+        "run": {
+          "status": 1,
+          "stderr": "",
+          "output": {
+            "diagnostics": [
+              {
+                "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+                "code": "core-js(no-console)",
+                "severity": "error",
+                "filename": ".generated/experiments/case.js",
+                "labels": [
+                  {
+                    "span": {
+                      "offset": 0,
+                      "length": 11,
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+                "code": "core-js(no-console)",
+                "severity": "error",
+                "filename": ".generated/experiments/case.js",
+                "labels": [
+                  {
+                    "span": {
+                      "offset": 110,
+                      "length": 14,
+                      "line": 3,
+                      "column": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+                "code": "core-js(no-console)",
+                "severity": "error",
+                "filename": ".generated/experiments/case.js",
+                "labels": [
+                  {
+                    "span": {
+                      "offset": 150,
+                      "length": 10,
+                      "line": 3,
+                      "column": 41
+                    }
+                  }
+                ]
+              }
+            ],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.475098137
+          }
+        }
+      }
+    },
+    {
+      "name": "console-warn",
+      "id": "no-console",
+      "target": "no-console",
+      "file": "case.ts",
+      "source": "console.log('bad')\nconsole.warn('ok')\n",
+      "entry": [
+        1,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "eslintEntry": [
+        1,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "no-console",
+          "severity": 1,
+          "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+          "line": 1,
+          "column": 1,
+          "messageId": "limited",
+          "endLine": 1,
+          "endColumn": 12,
+          "suggestions": [
+            {
+              "fix": {
+                "range": [
+                  0,
+                  18
+                ],
+                "text": ""
+              },
+              "messageId": "removeConsole",
+              "data": {
+                "propertyName": "log"
+              },
+              "desc": "Remove the console.log()."
+            }
+          ]
+        }
+      ],
+      "oxlint": {
+        "status": 0,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Unexpected console statement.",
+              "code": "eslint(no-console)",
+              "severity": "warning",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-console.html",
+              "help": "Supported methods are: warn, error.",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 0,
+                    "length": 11,
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.016147594
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "console.log('bad')\nconsole.warn('ok')\n",
+        "oxlint": "console.log('bad')\nconsole.warn('ok')\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [
+              {
+                "message": "Unexpected console statement.",
+                "code": "eslint(no-console)",
+                "severity": "warning",
+                "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-console.html",
+                "help": "Supported methods are: warn, error.",
+                "filename": ".generated/experiments/case.ts",
+                "labels": [
+                  {
+                    "span": {
+                      "offset": 0,
+                      "length": 11,
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 0.011886765
+          }
+        }
+      }
+    },
+    {
+      "name": "eqeqeq-smart",
+      "id": "eqeqeq",
+      "target": "eqeqeq",
+      "file": "case.ts",
+      "source": "export function check(a) { return a == 1 || a == null || typeof a == 'string' || 1 == 2 }\n",
+      "entry": [
+        2,
+        "smart"
+      ],
+      "eslintEntry": [
+        2,
+        "smart"
+      ],
+      "eslint": [
+        {
+          "ruleId": "eqeqeq",
+          "severity": 2,
+          "message": "Expected '===' and instead saw '=='.",
+          "line": 1,
+          "column": 37,
+          "messageId": "unexpected",
+          "endLine": 1,
+          "endColumn": 39,
+          "suggestions": [
+            {
+              "messageId": "replaceOperator",
+              "data": {
+                "expectedOperator": "===",
+                "actualOperator": "=="
+              },
+              "fix": {
+                "range": [
+                  36,
+                  38
+                ],
+                "text": "==="
+              },
+              "desc": "Use '===' instead of '=='."
+            }
+          ]
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Expected === and instead saw ==",
+              "code": "eslint(eqeqeq)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/eqeqeq.html",
+              "help": "Prefer === operator",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 36,
+                    "length": 2,
+                    "line": 1,
+                    "column": 37
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.023498938
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "export function check(a) { return a == 1 || a == null || typeof a == 'string' || 1 == 2 }\n",
+        "oxlint": "export function check(a) { return a == 1 || a == null || typeof a == 'string' || 1 == 2 }\n",
+        "equal": true,
+        "run": {
+          "status": 1,
+          "stderr": "",
+          "output": {
+            "diagnostics": [
+              {
+                "message": "Expected === and instead saw ==",
+                "code": "eslint(eqeqeq)",
+                "severity": "error",
+                "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/eqeqeq.html",
+                "help": "Prefer === operator",
+                "filename": ".generated/experiments/case.ts",
+                "labels": [
+                  {
+                    "span": {
+                      "offset": 36,
+                      "length": 2,
+                      "line": 1,
+                      "column": 37
+                    }
+                  }
+                ]
+              }
+            ],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 0.014891772
+          }
+        }
+      }
+    },
+    {
+      "name": "prefer-const-options",
+      "id": "prefer-const",
+      "target": "prefer-const",
+      "file": "case.ts",
+      "source": "let value = 1; export { value };\nlet {a, b} = source; b = 2; use(a, b);\n",
+      "entry": [
+        2,
+        {
+          "destructuring": "all",
+          "ignoreReadBeforeAssign": true
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "destructuring": "all",
+          "ignoreReadBeforeAssign": true
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "prefer-const",
+          "severity": 2,
+          "message": "'value' is never reassigned. Use 'const' instead.",
+          "line": 1,
+          "column": 5,
+          "messageId": "useConst",
+          "endLine": 1,
+          "endColumn": 10,
+          "fix": {
+            "range": [
+              0,
+              14
+            ],
+            "text": "const value = 1;"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "`value` is never reassigned.",
+              "code": "eslint(prefer-const)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/prefer-const.html",
+              "help": "Use `const` instead.",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 4,
+                    "length": 5,
+                    "line": 1,
+                    "column": 5
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.011927617
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "const value = 1; export { value };\nlet {a, b} = source; b = 2; use(a, b);\n",
+        "oxlint": "const value = 1; export { value };\nlet {a, b} = source; b = 2; use(a, b);\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 0.014917441
+          }
+        }
+      }
+    },
+    {
+      "name": "ban-ts-comment",
+      "id": "ts/ban-ts-comment",
+      "target": "typescript/ban-ts-comment",
+      "file": "case.ts",
+      "source": "// @ts-expect-error\nexport const value: string = 1\n// @ts-expect-error: a documented reason\nexport const other: string = 2\n",
+      "entry": [
+        2,
+        {
+          "ts-expect-error": "allow-with-description"
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "ts-expect-error": "allow-with-description"
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "ts/ban-ts-comment",
+          "severity": 2,
+          "message": "Include a description after the \"@ts-expect-error\" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.",
+          "line": 1,
+          "column": 1,
+          "messageId": "tsDirectiveCommentRequiresDescription",
+          "endLine": 1,
+          "endColumn": 20
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Include a description after the @ts-expect-error directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.",
+              "code": "typescript(ban-ts-comment)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/typescript/ban-ts-comment.html",
+              "help": "Add a description after @ts-expect-error that is at least 3 characters long, explaining why the directive is necessary. For example: `// @ts-expect-error: TS2345 - This is a known limitation with third-party types`",
+              "note": "Requiring descriptions ensures that developers document why they're suppressing TypeScript errors, making it easier for future maintainers to understand the context and decide if the suppression is still necessary.",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 2,
+                    "length": 17,
+                    "line": 1,
+                    "column": 3
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.025840637
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "// @ts-expect-error\nexport const value: string = 1\n// @ts-expect-error: a documented reason\nexport const other: string = 2\n",
+        "oxlint": "// @ts-expect-error\nexport const value: string = 1\n// @ts-expect-error: a documented reason\nexport const other: string = 2\n",
+        "equal": true,
+        "run": {
+          "status": 1,
+          "stderr": "",
+          "output": {
+            "diagnostics": [
+              {
+                "message": "Include a description after the @ts-expect-error directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.",
+                "code": "typescript(ban-ts-comment)",
+                "severity": "error",
+                "url": "https://oxc.rs/docs/guide/usage/linter/rules/typescript/ban-ts-comment.html",
+                "help": "Add a description after @ts-expect-error that is at least 3 characters long, explaining why the directive is necessary. For example: `// @ts-expect-error: TS2345 - This is a known limitation with third-party types`",
+                "note": "Requiring descriptions ensures that developers document why they're suppressing TypeScript errors, making it easier for future maintainers to understand the context and decide if the suppression is still necessary.",
+                "filename": ".generated/experiments/case.ts",
+                "labels": [
+                  {
+                    "span": {
+                      "offset": 2,
+                      "length": 17,
+                      "line": 1,
+                      "column": 3
+                    }
+                  }
+                ]
+              }
+            ],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 0.016266477
+          }
+        }
+      }
+    },
+    {
+      "name": "type-definitions",
+      "id": "ts/consistent-type-definitions",
+      "target": "typescript/consistent-type-definitions",
+      "file": "case.ts",
+      "source": "export type Thing = { value: string };\n",
+      "entry": [
+        2,
+        "interface"
+      ],
+      "eslintEntry": [
+        2,
+        "interface"
+      ],
+      "eslint": [
+        {
+          "ruleId": "ts/consistent-type-definitions",
+          "severity": 2,
+          "message": "Use an `interface` instead of a `type`.",
+          "line": 1,
+          "column": 13,
+          "messageId": "interfaceOverType",
+          "endLine": 1,
+          "endColumn": 18,
+          "fix": {
+            "range": [
+              7,
+              38
+            ],
+            "text": "interface Thing { value: string }"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Use `interface` instead of `type`.",
+              "code": "typescript(consistent-type-definitions)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/typescript/consistent-type-definitions.html",
+              "help": "Replace `type Thing = { value: string };` with `interface Thing { value: string }`.",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 7,
+                    "length": 4,
+                    "line": 1,
+                    "column": 8
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.016980606
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "export interface Thing { value: string }\n",
+        "oxlint": "export interface Thing { value: string }\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 0.014132741
+          }
+        }
+      }
+    },
+    {
+      "name": "type-imports-native",
+      "id": "ts/consistent-type-imports",
+      "target": "typescript/consistent-type-imports",
+      "file": "case.ts",
+      "source": "import { Thing } from './types';\nexport const value: Thing = {};\nexport type Other = import('./types').Other;\n",
+      "entry": [
+        2,
+        {
+          "disallowTypeAnnotations": false,
+          "fixStyle": "separate-type-imports",
+          "prefer": "type-imports"
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "disallowTypeAnnotations": false,
+          "fixStyle": "separate-type-imports",
+          "prefer": "type-imports"
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "ts/consistent-type-imports",
+          "severity": 2,
+          "message": "All imports in the declaration are only used as types. Use `import type`.",
+          "line": 1,
+          "column": 1,
+          "messageId": "typeOverValue",
+          "endLine": 1,
+          "endColumn": 33,
+          "fix": {
+            "range": [
+              6,
+              6
+            ],
+            "text": " type"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "All imports in the declaration are only used as types. Use `import type`.",
+              "code": "typescript(consistent-type-imports)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/typescript/consistent-type-imports.html",
+              "help": "Replace the `import` declaration with `import type`. For example, change `import { Type } from 'module'` would become `import type { Type } from 'module'`.",
+              "note": "Using `import type` for type-only imports helps with tree-shaking, makes it clear that these imports don't affect runtime code, and can improve build performance by allowing bundlers to eliminate unused type imports.",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 0,
+                    "length": 32,
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.016558997
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "import type { Thing } from './types';\nexport const value: Thing = {};\nexport type Other = import('./types').Other;\n",
+        "oxlint": "import type { Thing } from './types';\nexport const value: Thing = {};\nexport type Other = import('./types').Other;\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 0.013146689
+          }
+        }
+      }
+    },
+    {
+      "name": "type-imports-js",
+      "id": "ts/consistent-type-imports",
+      "target": "ts/consistent-type-imports",
+      "file": "case.ts",
+      "source": "import { Thing } from './types';\nexport const value: Thing = {};\n",
+      "entry": [
+        2,
+        {
+          "disallowTypeAnnotations": false,
+          "fixStyle": "separate-type-imports",
+          "prefer": "type-imports"
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "disallowTypeAnnotations": false,
+          "fixStyle": "separate-type-imports",
+          "prefer": "type-imports"
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "ts/consistent-type-imports",
+          "severity": 2,
+          "message": "All imports in the declaration are only used as types. Use `import type`.",
+          "line": 1,
+          "column": 1,
+          "messageId": "typeOverValue",
+          "endLine": 1,
+          "endColumn": 33,
+          "fix": {
+            "range": [
+              6,
+              6
+            ],
+            "text": " type"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Error running JS plugin.\nFile path: /workspace/tools/research/antfu-oxlint/.generated/experiments/case.ts\nError: You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.\nParser: (unknown)\nNote: detected a parser other than @typescript-eslint/parser. Make sure the parser is configured to forward \"parserOptions.project\" to @typescript-eslint/parser.\n    at throwError (/workspace/tools/research/antfu-oxlint/node_modules/@typescript-eslint/utils/dist/eslint-utils/getParserServices.js:40:11)\n    at getParserServices (/workspace/tools/research/antfu-oxlint/node_modules/@typescript-eslint/utils/dist/eslint-utils/getParserServices.js:23:9)\n    at create (/workspace/tools/research/antfu-oxlint/node_modules/@typescript-eslint/eslint-plugin/dist/rules/consistent-type-imports.js:88:68)\n    at Object.create (/workspace/tools/research/antfu-oxlint/node_modules/@typescript-eslint/utils/dist/eslint-utils/RuleCreator.js:39:20)\n    at lintFileImpl (file:///workspace/tools/research/antfu-oxlint/node_modules/oxlint/dist/lint.js:23953:72)\n    at lintFile (file:///workspace/tools/research/antfu-oxlint/node_modules/oxlint/dist/lint.js:23890:3)\n    at lintFileWrapper (file:///workspace/tools/research/antfu-oxlint/node_modules/oxlint/dist/cli.js:46:9)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": []
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.668909759
+        }
+      },
+      "runtimeError": true,
+      "matchingSeverityCounts": false,
+      "edits": {
+        "eslint": "import type { Thing } from './types';\nexport const value: Thing = {};\n",
+        "oxlint": "import { Thing } from './types';\nexport const value: Thing = {};\n",
+        "equal": false,
+        "run": {
+          "status": 1,
+          "stderr": "",
+          "output": {
+            "diagnostics": [
+              {
+                "message": "Error running JS plugin.\nFile path: /workspace/tools/research/antfu-oxlint/.generated/experiments/case.ts\nError: You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.\nParser: (unknown)\nNote: detected a parser other than @typescript-eslint/parser. Make sure the parser is configured to forward \"parserOptions.project\" to @typescript-eslint/parser.\n    at throwError (/workspace/tools/research/antfu-oxlint/node_modules/@typescript-eslint/utils/dist/eslint-utils/getParserServices.js:40:11)\n    at getParserServices (/workspace/tools/research/antfu-oxlint/node_modules/@typescript-eslint/utils/dist/eslint-utils/getParserServices.js:23:9)\n    at create (/workspace/tools/research/antfu-oxlint/node_modules/@typescript-eslint/eslint-plugin/dist/rules/consistent-type-imports.js:88:68)\n    at Object.create (/workspace/tools/research/antfu-oxlint/node_modules/@typescript-eslint/utils/dist/eslint-utils/RuleCreator.js:39:20)\n    at lintFileImpl (file:///workspace/tools/research/antfu-oxlint/node_modules/oxlint/dist/lint.js:23953:72)\n    at lintFile (file:///workspace/tools/research/antfu-oxlint/node_modules/oxlint/dist/lint.js:23890:3)\n    at lintFileWrapper (file:///workspace/tools/research/antfu-oxlint/node_modules/oxlint/dist/cli.js:46:9)",
+                "severity": "error",
+                "filename": ".generated/experiments/case.ts",
+                "labels": []
+              }
+            ],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.537788395
+          }
+        }
+      }
+    },
+    {
+      "name": "type-imports-adapted",
+      "id": "ts/consistent-type-imports",
+      "target": "syntax-adapter/consistent-type-imports",
+      "file": "case.ts",
+      "source": "import { Thing, makeThing } from './types';\nexport const value: Thing = makeThing();\nexport type Other = import('./types').Other;\n",
+      "entry": [
+        2,
+        {
+          "disallowTypeAnnotations": false,
+          "fixStyle": "separate-type-imports",
+          "prefer": "type-imports"
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "disallowTypeAnnotations": false,
+          "fixStyle": "separate-type-imports",
+          "prefer": "type-imports"
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "ts/consistent-type-imports",
+          "severity": 2,
+          "message": "Imports \"Thing\" are only used as type.",
+          "line": 1,
+          "column": 1,
+          "messageId": "someImportsAreOnlyTypes",
+          "endLine": 1,
+          "endColumn": 44,
+          "fix": {
+            "range": [
+              0,
+              15
+            ],
+            "text": "import type { Thing} from './types';\nimport {"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Imports \"Thing\" are only used as type.",
+              "code": "syntax-adapter(consistent-type-imports)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 0,
+                    "length": 43,
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.601290958
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "import type { Thing} from './types';\nimport { makeThing } from './types';\nexport const value: Thing = makeThing();\nexport type Other = import('./types').Other;\n",
+        "oxlint": "import type { Thing} from './types';\nimport { makeThing } from './types';\nexport const value: Thing = makeThing();\nexport type Other = import('./types').Other;\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 0.629598951
+          }
+        }
+      }
+    },
+    {
+      "name": "type-imports-adapted-comments",
+      "id": "ts/consistent-type-imports",
+      "target": "syntax-adapter/consistent-type-imports",
+      "file": "case.ts",
+      "source": "import { /* keep */ Thing } from './types';\nexport const value: Thing = {};\n",
+      "entry": [
+        2,
+        {
+          "disallowTypeAnnotations": false,
+          "fixStyle": "separate-type-imports",
+          "prefer": "type-imports"
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "disallowTypeAnnotations": false,
+          "fixStyle": "separate-type-imports",
+          "prefer": "type-imports"
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "ts/consistent-type-imports",
+          "severity": 2,
+          "message": "All imports in the declaration are only used as types. Use `import type`.",
+          "line": 1,
+          "column": 1,
+          "messageId": "typeOverValue",
+          "endLine": 1,
+          "endColumn": 44,
+          "fix": {
+            "range": [
+              6,
+              6
+            ],
+            "text": " type"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "All imports in the declaration are only used as types. Use `import type`.",
+              "code": "syntax-adapter(consistent-type-imports)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 0,
+                    "length": 43,
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.625854172
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "import type { /* keep */ Thing } from './types';\nexport const value: Thing = {};\n",
+        "oxlint": "import type { /* keep */ Thing } from './types';\nexport const value: Thing = {};\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 0.647872785
+          }
+        }
+      }
+    },
+    {
+      "name": "import-lite-options-native-raw",
+      "id": "import/consistent-type-specifier-style",
+      "target": "import/consistent-type-specifier-style",
+      "file": "case.ts",
+      "source": "import { type Thing, value } from './types';\nexport { value };\nexport type Other = Thing;\n",
+      "entry": [
+        2,
+        "top-level"
+      ],
+      "eslintEntry": [
+        2,
+        "top-level"
+      ],
+      "eslint": [
+        {
+          "ruleId": "import/consistent-type-specifier-style",
+          "severity": 2,
+          "message": "Prefer using a top-level type-only import instead of inline type specifiers.",
+          "line": 1,
+          "column": 10,
+          "messageId": "topLevel",
+          "endLine": 1,
+          "endColumn": 20,
+          "fix": {
+            "range": [
+              9,
+              44
+            ],
+            "text": " value } from './types';\nimport type {Thing} from './types';"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "stdout": "Failed to parse oxlint configuration file.\n\n  x Invalid configuration for rule `import/consistent-type-specifier-style`:\n  |   unknown variant `top-level`, expected one of `prefer-top-level`, `prefer-inline`, `prefer-top-level-if-only-type-imports`\n  |   received config: `\"top-level\"`\n\n",
+        "output": null
+      },
+      "runtimeError": true,
+      "matchingSeverityCounts": false
+    },
+    {
+      "name": "import-lite-options-native-translated",
+      "id": "import/consistent-type-specifier-style",
+      "target": "import/consistent-type-specifier-style",
+      "file": "case.ts",
+      "source": "import { type Thing, value } from './types';\nexport { value };\nexport type Other = Thing;\n",
+      "entry": [
+        2,
+        "prefer-top-level"
+      ],
+      "eslintEntry": [
+        2,
+        "top-level"
+      ],
+      "eslint": [
+        {
+          "ruleId": "import/consistent-type-specifier-style",
+          "severity": 2,
+          "message": "Prefer using a top-level type-only import instead of inline type specifiers.",
+          "line": 1,
+          "column": 10,
+          "messageId": "topLevel",
+          "endLine": 1,
+          "endColumn": 20,
+          "fix": {
+            "range": [
+              9,
+              44
+            ],
+            "text": " value } from './types';\nimport type {Thing} from './types';"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Prefer using a top-level type-only import instead of inline type specifiers.",
+              "code": "import(consistent-type-specifier-style)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/import/consistent-type-specifier-style.html",
+              "help": "Replace inline type specifiers with a top‐level import type statement.",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 9,
+                    "length": 10,
+                    "line": 1,
+                    "column": 10
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.012829231
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "import {  value } from './types';\nimport type {Thing} from './types';\nexport { value };\nexport type Other = Thing;\n",
+        "oxlint": "import { value } from './types';\nimport type { Thing } from './types';\nexport { value };\nexport type Other = Thing;\n",
+        "equal": false,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 0.014828715
+          }
+        }
+      }
+    },
+    {
+      "name": "import-lite-original-js",
+      "id": "import/consistent-type-specifier-style",
+      "target": "bridge-import/consistent-type-specifier-style",
+      "file": "case.ts",
+      "source": "import { type Thing, value } from './types';\nexport { value };\nexport type Other = Thing;\n",
+      "entry": [
+        2,
+        "top-level"
+      ],
+      "eslintEntry": [
+        2,
+        "top-level"
+      ],
+      "eslint": [
+        {
+          "ruleId": "import/consistent-type-specifier-style",
+          "severity": 2,
+          "message": "Prefer using a top-level type-only import instead of inline type specifiers.",
+          "line": 1,
+          "column": 10,
+          "messageId": "topLevel",
+          "endLine": 1,
+          "endColumn": 20,
+          "fix": {
+            "range": [
+              9,
+              44
+            ],
+            "text": " value } from './types';\nimport type {Thing} from './types';"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Prefer using a top-level type-only import instead of inline type specifiers.",
+              "code": "bridge-import(consistent-type-specifier-style)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 9,
+                    "length": 10,
+                    "line": 1,
+                    "column": 10
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.564530234
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "import {  value } from './types';\nimport type {Thing} from './types';\nexport { value };\nexport type Other = Thing;\n",
+        "oxlint": "import {  value } from './types';\nimport type {Thing} from './types';\nexport { value };\nexport type Other = Thing;\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.5868178419999999
+          }
+        }
+      }
+    },
+    {
+      "name": "style-semi",
+      "id": "style/semi",
+      "target": "style/semi",
+      "file": "case.ts",
+      "source": "export const value = 1;\n",
+      "entry": [
+        2,
+        "never"
+      ],
+      "eslintEntry": [
+        2,
+        "never"
+      ],
+      "eslint": [
+        {
+          "ruleId": "style/semi",
+          "severity": 2,
+          "message": "Extra semicolon.",
+          "line": 1,
+          "column": 23,
+          "messageId": "extraSemi",
+          "endLine": 1,
+          "endColumn": 24,
+          "fix": {
+            "range": [
+              21,
+              23
+            ],
+            "text": "1"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Extra semicolon.",
+              "code": "style(semi)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 22,
+                    "length": 1,
+                    "line": 1,
+                    "column": 23
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.755214408
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "export const value = 1\n",
+        "oxlint": "export const value = 1\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.8053229100000001
+          }
+        }
+      }
+    },
+    {
+      "name": "style-quotes",
+      "id": "style/quotes",
+      "target": "style/quotes",
+      "file": "case.ts",
+      "source": "export const value = \"hello\";\nexport const other = \"can't\";\n",
+      "entry": [
+        2,
+        "single",
+        {
+          "allowTemplateLiterals": "always",
+          "avoidEscape": false,
+          "ignoreStringLiterals": false
+        }
+      ],
+      "eslintEntry": [
+        2,
+        "single",
+        {
+          "allowTemplateLiterals": "always",
+          "avoidEscape": false,
+          "ignoreStringLiterals": false
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "style/quotes",
+          "severity": 2,
+          "message": "Strings must use singlequote.",
+          "line": 1,
+          "column": 22,
+          "messageId": "wrongQuotes",
+          "endLine": 1,
+          "endColumn": 29,
+          "fix": {
+            "range": [
+              21,
+              28
+            ],
+            "text": "'hello'"
+          }
+        },
+        {
+          "ruleId": "style/quotes",
+          "severity": 2,
+          "message": "Strings must use singlequote.",
+          "line": 2,
+          "column": 22,
+          "messageId": "wrongQuotes",
+          "endLine": 2,
+          "endColumn": 29,
+          "fix": {
+            "range": [
+              51,
+              58
+            ],
+            "text": "'can\\'t'"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Strings must use singlequote.",
+              "code": "style(quotes)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 21,
+                    "length": 7,
+                    "line": 1,
+                    "column": 22
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Strings must use singlequote.",
+              "code": "style(quotes)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 51,
+                    "length": 7,
+                    "line": 2,
+                    "column": 22
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.805546774
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "export const value = 'hello';\nexport const other = 'can\\'t';\n",
+        "oxlint": "export const value = 'hello';\nexport const other = 'can\\'t';\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.793444662
+          }
+        }
+      }
+    },
+    {
+      "name": "style-indent",
+      "id": "style/indent",
+      "target": "style/indent",
+      "file": "case.ts",
+      "source": "export function f() {\n    return {\n        value: 1,\n    };\n}\n",
+      "entry": [
+        2,
+        2,
+        {
+          "SwitchCase": 1,
+          "flatTernaryExpressions": false,
+          "ignoredNodes": [
+            "TSUnionType",
+            "TSIntersectionType"
+          ],
+          "ArrayExpression": 1,
+          "CallExpression": {
+            "arguments": 1
+          },
+          "FunctionDeclaration": {
+            "body": 1,
+            "parameters": 1,
+            "returnType": 1
+          },
+          "FunctionExpression": {
+            "body": 1,
+            "parameters": 1,
+            "returnType": 1
+          },
+          "ignoreComments": false,
+          "ImportDeclaration": 1,
+          "MemberExpression": 1,
+          "ObjectExpression": 1,
+          "offsetTernaryExpressions": true,
+          "outerIIFEBody": 1,
+          "tabLength": 2,
+          "VariableDeclarator": 1
+        }
+      ],
+      "eslintEntry": [
+        2,
+        2,
+        {
+          "SwitchCase": 1,
+          "flatTernaryExpressions": false,
+          "ignoredNodes": [
+            "TSUnionType",
+            "TSIntersectionType"
+          ],
+          "ArrayExpression": 1,
+          "CallExpression": {
+            "arguments": 1
+          },
+          "FunctionDeclaration": {
+            "body": 1,
+            "parameters": 1,
+            "returnType": 1
+          },
+          "FunctionExpression": {
+            "body": 1,
+            "parameters": 1,
+            "returnType": 1
+          },
+          "ignoreComments": false,
+          "ImportDeclaration": 1,
+          "MemberExpression": 1,
+          "ObjectExpression": 1,
+          "offsetTernaryExpressions": true,
+          "outerIIFEBody": 1,
+          "tabLength": 2,
+          "VariableDeclarator": 1
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "style/indent",
+          "severity": 2,
+          "message": "Expected indentation of 2 spaces but found 4.",
+          "line": 2,
+          "column": 1,
+          "messageId": "wrongIndentation",
+          "endLine": 2,
+          "endColumn": 5,
+          "fix": {
+            "range": [
+              22,
+              26
+            ],
+            "text": "  "
+          }
+        },
+        {
+          "ruleId": "style/indent",
+          "severity": 2,
+          "message": "Expected indentation of 4 spaces but found 8.",
+          "line": 3,
+          "column": 1,
+          "messageId": "wrongIndentation",
+          "endLine": 3,
+          "endColumn": 9,
+          "fix": {
+            "range": [
+              35,
+              43
+            ],
+            "text": "    "
+          }
+        },
+        {
+          "ruleId": "style/indent",
+          "severity": 2,
+          "message": "Expected indentation of 2 spaces but found 4.",
+          "line": 4,
+          "column": 1,
+          "messageId": "wrongIndentation",
+          "endLine": 4,
+          "endColumn": 5,
+          "fix": {
+            "range": [
+              53,
+              57
+            ],
+            "text": "  "
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Expected indentation of 2 spaces but found 4.",
+              "code": "style(indent)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 22,
+                    "length": 4,
+                    "line": 2,
+                    "column": 1
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Expected indentation of 4 spaces but found 8.",
+              "code": "style(indent)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 35,
+                    "length": 8,
+                    "line": 3,
+                    "column": 1
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Expected indentation of 2 spaces but found 4.",
+              "code": "style(indent)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 53,
+                    "length": 4,
+                    "line": 4,
+                    "column": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.653844098
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "export function f() {\n  return {\n    value: 1,\n  };\n}\n",
+        "oxlint": "export function f() {\n  return {\n    value: 1,\n  };\n}\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.659602835
+          }
+        }
+      }
+    },
+    {
+      "name": "style-comma-dangle",
+      "id": "style/comma-dangle",
+      "target": "style/comma-dangle",
+      "file": "case.ts",
+      "source": "export const value = {\n  a: 1\n};\n",
+      "entry": [
+        2,
+        "always-multiline"
+      ],
+      "eslintEntry": [
+        2,
+        "always-multiline"
+      ],
+      "eslint": [
+        {
+          "ruleId": "style/comma-dangle",
+          "severity": 2,
+          "message": "Missing trailing comma.",
+          "line": 2,
+          "column": 7,
+          "messageId": "missing",
+          "endLine": 3,
+          "endColumn": 1,
+          "fix": {
+            "range": [
+              28,
+              31
+            ],
+            "text": "1,\n}"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Missing trailing comma.",
+              "code": "style(comma-dangle)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 29,
+                    "length": 1,
+                    "line": 2,
+                    "column": 7
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.7724625889999999
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "export const value = {\n  a: 1,\n};\n",
+        "oxlint": "export const value = {\n  a: 1,\n};\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.71496056
+          }
+        }
+      }
+    },
+    {
+      "name": "antfu-curly",
+      "id": "antfu/curly",
+      "target": "antfu/curly",
+      "file": "case.ts",
+      "source": "export function f(x) { if (x) { run(); } else run(); }\n",
+      "entry": [
+        2
+      ],
+      "eslintEntry": [
+        2
+      ],
+      "eslint": [
+        {
+          "ruleId": "antfu/curly",
+          "severity": 2,
+          "message": "Expect curly brackets",
+          "line": 1,
+          "column": 47,
+          "messageId": "missingCurlyBrackets",
+          "endLine": 1,
+          "endColumn": 53,
+          "fix": {
+            "range": [
+              45,
+              52
+            ],
+            "text": " { run();\n}"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Expect curly brackets",
+              "code": "antfu(curly)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 46,
+                    "length": 6,
+                    "line": 1,
+                    "column": 47
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.7842273180000001
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "export function f(x) { if (x) { run(); } else { run();\n} }\n",
+        "oxlint": "export function f(x) { if (x) { run(); } else { run();\n} }\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.685471255
+          }
+        }
+      }
+    },
+    {
+      "name": "antfu-top-level-await",
+      "id": "antfu/no-top-level-await",
+      "target": "antfu/no-top-level-await",
+      "file": "case.ts",
+      "source": "await work();\nexport async function f() { await work(); }\n",
+      "entry": [
+        2
+      ],
+      "eslintEntry": [
+        2
+      ],
+      "eslint": [
+        {
+          "ruleId": "antfu/no-top-level-await",
+          "severity": 2,
+          "message": "Do not use top-level await",
+          "line": 1,
+          "column": 1,
+          "messageId": "NoTopLevelAwait",
+          "endLine": 1,
+          "endColumn": 13
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Do not use top-level await",
+              "code": "antfu(no-top-level-await)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 0,
+                    "length": 12,
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.709703416
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "await work();\nexport async function f() { await work(); }\n",
+        "oxlint": "await work();\nexport async function f() { await work(); }\n",
+        "equal": true,
+        "run": {
+          "status": 1,
+          "stderr": "",
+          "output": {
+            "diagnostics": [
+              {
+                "message": "Do not use top-level await",
+                "code": "antfu(no-top-level-await)",
+                "severity": "error",
+                "filename": ".generated/experiments/case.ts",
+                "labels": [
+                  {
+                    "span": {
+                      "offset": 0,
+                      "length": 12,
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.679166325
+          }
+        }
+      }
+    },
+    {
+      "name": "core-selector-js",
+      "id": "no-restricted-syntax",
+      "target": "core-js/no-restricted-syntax",
+      "file": "case.ts",
+      "source": "const enum State { Ready }\nexport = State;\n",
+      "entry": [
+        2,
+        "TSEnumDeclaration[const=true]",
+        "TSExportAssignment"
+      ],
+      "eslintEntry": [
+        2,
+        "TSEnumDeclaration[const=true]",
+        "TSExportAssignment"
+      ],
+      "eslint": [
+        {
+          "ruleId": "no-restricted-syntax",
+          "severity": 2,
+          "message": "Using 'TSEnumDeclaration[const=true]' is not allowed.",
+          "line": 1,
+          "column": 1,
+          "messageId": "restrictedSyntax",
+          "endLine": 1,
+          "endColumn": 27
+        },
+        {
+          "ruleId": "no-restricted-syntax",
+          "severity": 2,
+          "message": "Using 'TSExportAssignment' is not allowed.",
+          "line": 2,
+          "column": 1,
+          "messageId": "restrictedSyntax",
+          "endLine": 2,
+          "endColumn": 16
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Using 'TSEnumDeclaration[const=true]' is not allowed.",
+              "code": "core-js(no-restricted-syntax)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 0,
+                    "length": 26,
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Using 'TSExportAssignment' is not allowed.",
+              "code": "core-js(no-restricted-syntax)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 27,
+                    "length": 15,
+                    "line": 2,
+                    "column": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.625347324
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "const enum State { Ready }\nexport = State;\n",
+        "oxlint": "const enum State { Ready }\nexport = State;\n",
+        "equal": true,
+        "run": {
+          "status": 1,
+          "stderr": "",
+          "output": {
+            "diagnostics": [
+              {
+                "message": "Using 'TSEnumDeclaration[const=true]' is not allowed.",
+                "code": "core-js(no-restricted-syntax)",
+                "severity": "error",
+                "filename": ".generated/experiments/case.ts",
+                "labels": [
+                  {
+                    "span": {
+                      "offset": 0,
+                      "length": 26,
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "message": "Using 'TSExportAssignment' is not allowed.",
+                "code": "core-js(no-restricted-syntax)",
+                "severity": "error",
+                "filename": ".generated/experiments/case.ts",
+                "labels": [
+                  {
+                    "span": {
+                      "offset": 27,
+                      "length": 15,
+                      "line": 2,
+                      "column": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.557713659
+          }
+        }
+      }
+    },
+    {
+      "name": "perfectionist-sort-imports",
+      "id": "perfectionist/sort-imports",
+      "target": "perfectionist/sort-imports",
+      "file": "case.ts",
+      "source": "import z from './z';\nimport a from 'a';\nexport { z, a };\n",
+      "entry": [
+        2,
+        {
+          "groups": [
+            "type-import",
+            [
+              "type-parent",
+              "type-sibling",
+              "type-index",
+              "type-internal"
+            ],
+            "value-builtin",
+            "value-external",
+            "value-internal",
+            [
+              "value-parent",
+              "value-sibling",
+              "value-index"
+            ],
+            "side-effect",
+            "ts-equals-import",
+            "unknown"
+          ],
+          "newlinesBetween": "ignore",
+          "newlinesInside": "ignore",
+          "order": "asc",
+          "type": "natural"
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "groups": [
+            "type-import",
+            [
+              "type-parent",
+              "type-sibling",
+              "type-index",
+              "type-internal"
+            ],
+            "value-builtin",
+            "value-external",
+            "value-internal",
+            [
+              "value-parent",
+              "value-sibling",
+              "value-index"
+            ],
+            "side-effect",
+            "ts-equals-import",
+            "unknown"
+          ],
+          "newlinesBetween": "ignore",
+          "newlinesInside": "ignore",
+          "order": "asc",
+          "type": "natural"
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "perfectionist/sort-imports",
+          "severity": 2,
+          "message": "Expected \"a\" (value-external) to come before \"./z\" (value-sibling).",
+          "line": 2,
+          "column": 1,
+          "messageId": "unexpectedImportsGroupOrder",
+          "endLine": 2,
+          "endColumn": 19,
+          "fix": {
+            "range": [
+              0,
+              39
+            ],
+            "text": "import a from 'a';\nimport z from './z';"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Expected \"a\" (value-external) to come before \"./z\" (value-sibling).",
+              "code": "perfectionist(sort-imports)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 21,
+                    "length": 18,
+                    "line": 2,
+                    "column": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.840286393
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "import a from 'a';\nimport z from './z';\nexport { z, a };\n",
+        "oxlint": "import a from 'a';\nimport z from './z';\nexport { z, a };\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.718214865
+          }
+        }
+      }
+    },
+    {
+      "name": "unused-imports-autofix",
+      "id": "unused-imports/no-unused-imports",
+      "target": "unused-imports/no-unused-imports",
+      "file": "case.ts",
+      "source": "import { unused, used } from './dependency';\nexport { used };\n",
+      "entry": [
+        2
+      ],
+      "eslintEntry": [
+        2
+      ],
+      "eslint": [
+        {
+          "ruleId": "unused-imports/no-unused-imports",
+          "severity": 2,
+          "message": "'unused' is defined but never used.",
+          "line": 1,
+          "column": 10,
+          "messageId": "unusedVar",
+          "endLine": 1,
+          "endColumn": 16,
+          "fix": {
+            "range": [
+              8,
+              16
+            ],
+            "text": ""
+          },
+          "suggestions": [
+            {
+              "messageId": "removeUnusedVar",
+              "data": {
+                "varName": "unused"
+              },
+              "fix": {
+                "range": [
+                  9,
+                  16
+                ],
+                "text": ""
+              },
+              "desc": "Remove unused variable \"unused\"."
+            }
+          ]
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "'unused' is defined but never used.",
+              "code": "unused-imports(no-unused-imports)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 9,
+                    "length": 6,
+                    "line": 1,
+                    "column": 10
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.8490531749999999
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "import { used } from './dependency';\nexport { used };\n",
+        "oxlint": "import { used } from './dependency';\nexport { used };\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.937616463
+          }
+        }
+      }
+    },
+    {
+      "name": "unused-imports-side-effect-risk",
+      "id": "unused-imports/no-unused-imports",
+      "target": "unused-imports/no-unused-imports",
+      "file": "case.ts",
+      "source": "import unused from './module-with-side-effects.mjs';\nexport const value = globalThis.bridgeEffect ?? 0;\n",
+      "entry": [
+        2
+      ],
+      "eslintEntry": [
+        2
+      ],
+      "eslint": [
+        {
+          "ruleId": "unused-imports/no-unused-imports",
+          "severity": 2,
+          "message": "'unused' is defined but never used.",
+          "line": 1,
+          "column": 8,
+          "messageId": "unusedVar",
+          "endLine": 1,
+          "endColumn": 14,
+          "fix": {
+            "range": [
+              0,
+              53
+            ],
+            "text": ""
+          },
+          "suggestions": [
+            {
+              "messageId": "removeUnusedImportDeclaration",
+              "data": {
+                "varName": "unused"
+              },
+              "fix": {
+                "range": [
+                  0,
+                  53
+                ],
+                "text": ""
+              },
+              "desc": "Remove unused import declaration."
+            }
+          ]
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "'unused' is defined but never used.",
+              "code": "unused-imports(no-unused-imports)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 7,
+                    "length": 6,
+                    "line": 1,
+                    "column": 8
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.819992426
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "export const value = globalThis.bridgeEffect ?? 0;\n",
+        "oxlint": "export const value = globalThis.bridgeEffect ?? 0;\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.657463397
+          }
+        }
+      }
+    },
+    {
+      "name": "regexp-token-scope",
+      "id": "regexp/no-dupe-characters-character-class",
+      "target": "regexp/no-dupe-characters-character-class",
+      "file": "case.ts",
+      "source": "export const regex = /[aab]/;\n",
+      "entry": [
+        2
+      ],
+      "eslintEntry": [
+        2
+      ],
+      "eslint": [
+        {
+          "ruleId": "regexp/no-dupe-characters-character-class",
+          "severity": 2,
+          "message": "Unexpected duplicate 'a' (U+0061).",
+          "line": 1,
+          "column": 25,
+          "messageId": "duplicate",
+          "endLine": 1,
+          "endColumn": 26,
+          "fix": {
+            "range": [
+              24,
+              25
+            ],
+            "text": ""
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Unexpected duplicate 'a' (U+0061).",
+              "code": "regexp(no-dupe-characters-character-class)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 24,
+                    "length": 1,
+                    "line": 1,
+                    "column": 25
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.646590599
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "export const regex = /[ab]/;\n",
+        "oxlint": "export const regex = /[ab]/;\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.6764199629999998
+          }
+        }
+      }
+    },
+    {
+      "name": "e18e-date-now",
+      "id": "e18e/prefer-date-now",
+      "target": "e18e/prefer-date-now",
+      "file": "case.ts",
+      "source": "export const time = new Date().getTime();\n",
+      "entry": [
+        2
+      ],
+      "eslintEntry": [
+        2
+      ],
+      "eslint": [
+        {
+          "ruleId": "e18e/prefer-date-now",
+          "severity": 2,
+          "message": "Use Date.now() to avoid allocating a new Date object.",
+          "line": 1,
+          "column": 21,
+          "messageId": "preferDateNow",
+          "endLine": 1,
+          "endColumn": 41,
+          "fix": {
+            "range": [
+              20,
+              40
+            ],
+            "text": "Date.now()"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Use Date.now() to avoid allocating a new Date object.",
+              "code": "e18e(prefer-date-now)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 20,
+                    "length": 20,
+                    "line": 1,
+                    "column": 21
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.609098709
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "export const time = Date.now();\n",
+        "oxlint": "export const time = Date.now();\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.61738609
+          }
+        }
+      }
+    },
+    {
+      "name": "test-synthetic-plugin",
+      "id": "test/no-only-tests",
+      "target": "test/no-only-tests",
+      "file": "case.test.ts",
+      "source": "describe.only('x', () => { it('works', () => {}) });\n",
+      "entry": [
+        2
+      ],
+      "eslintEntry": [
+        2
+      ],
+      "eslint": [
+        {
+          "ruleId": "test/no-only-tests",
+          "severity": 2,
+          "message": "describe.only not permitted",
+          "line": 1,
+          "column": 10,
+          "endLine": 1,
+          "endColumn": 14
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "describe.only not permitted",
+              "code": "test(no-only-tests)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.test.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 9,
+                    "length": 4,
+                    "line": 1,
+                    "column": 10
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.648433882
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "describe.only('x', () => { it('works', () => {}) });\n",
+        "oxlint": "describe.only('x', () => { it('works', () => {}) });\n",
+        "equal": true,
+        "run": {
+          "status": 1,
+          "stderr": "",
+          "output": {
+            "diagnostics": [
+              {
+                "message": "describe.only not permitted",
+                "code": "test(no-only-tests)",
+                "severity": "error",
+                "filename": ".generated/experiments/case.test.ts",
+                "labels": [
+                  {
+                    "span": {
+                      "offset": 9,
+                      "length": 4,
+                      "line": 1,
+                      "column": 10
+                    }
+                  }
+                ]
+              }
+            ],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.694911026
+          }
+        }
+      }
+    },
+    {
+      "name": "react-actual-plugin",
+      "id": "react/no-array-index-key",
+      "target": "bridge-react/no-array-index-key",
+      "file": "case.tsx",
+      "source": "export function List({items}) { return items.map((item, index) => <span key={index}>{item}</span>); }\n",
+      "entry": [
+        1
+      ],
+      "eslintEntry": [
+        1
+      ],
+      "eslint": [
+        {
+          "ruleId": "react/no-array-index-key",
+          "severity": 1,
+          "message": "Do not use item index in the array as its key.",
+          "line": 1,
+          "column": 78,
+          "messageId": "default",
+          "endLine": 1,
+          "endColumn": 83
+        }
+      ],
+      "oxlint": {
+        "status": 0,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Do not use item index in the array as its key.",
+              "code": "bridge-react(no-array-index-key)",
+              "severity": "warning",
+              "filename": ".generated/experiments/case.tsx",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 77,
+                    "length": 5,
+                    "line": 1,
+                    "column": 78
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.860689305
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true,
+      "edits": {
+        "eslint": "export function List({items}) { return items.map((item, index) => <span key={index}>{item}</span>); }\n",
+        "oxlint": "export function List({items}) { return items.map((item, index) => <span key={index}>{item}</span>); }\n",
+        "equal": true,
+        "run": {
+          "status": 0,
+          "stderr": "",
+          "output": {
+            "diagnostics": [
+              {
+                "message": "Do not use item index in the array as its key.",
+                "code": "bridge-react(no-array-index-key)",
+                "severity": "warning",
+                "filename": ".generated/experiments/case.tsx",
+                "labels": [
+                  {
+                    "span": {
+                      "offset": 77,
+                      "length": 5,
+                      "line": 1,
+                      "column": 78
+                    }
+                  }
+                ]
+              }
+            ],
+            "number_of_files": 1,
+            "number_of_rules": 1,
+            "threads_count": 1,
+            "start_time": 1.7762113579999999
+          }
+        }
+      }
+    },
+    {
+      "name": "disable-core",
+      "id": "no-console",
+      "target": "no-console",
+      "file": "case.ts",
+      "source": "// eslint-disable-next-line no-console -- reason\nconsole.log(1);\nconsole.log(2);\n",
+      "entry": [
+        2,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "no-console",
+          "severity": 2,
+          "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+          "line": 3,
+          "column": 1,
+          "messageId": "limited",
+          "endLine": 3,
+          "endColumn": 12,
+          "suggestions": [
+            {
+              "fix": {
+                "range": [
+                  65,
+                  80
+                ],
+                "text": ""
+              },
+              "messageId": "removeConsole",
+              "data": {
+                "propertyName": "log"
+              },
+              "desc": "Remove the console.log()."
+            }
+          ]
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Unexpected console statement.",
+              "code": "eslint(no-console)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-console.html",
+              "help": "Supported methods are: warn, error.",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 65,
+                    "length": 11,
+                    "line": 3,
+                    "column": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.021683808
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true
+    },
+    {
+      "name": "disable-style-original",
+      "id": "style/semi",
+      "target": "style/semi",
+      "file": "case.ts",
+      "source": "// eslint-disable-next-line style/semi -- reason\nexport const a = 1;\nexport const b = 2;\n",
+      "entry": [
+        2,
+        "never"
+      ],
+      "eslintEntry": [
+        2,
+        "never"
+      ],
+      "eslint": [
+        {
+          "ruleId": "style/semi",
+          "severity": 2,
+          "message": "Extra semicolon.",
+          "line": 3,
+          "column": 19,
+          "messageId": "extraSemi",
+          "endLine": 3,
+          "endColumn": 20,
+          "fix": {
+            "range": [
+              86,
+              88
+            ],
+            "text": "2"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Extra semicolon.",
+              "code": "style(semi)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 87,
+                    "length": 1,
+                    "line": 3,
+                    "column": 19
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.6535141549999999
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true
+    },
+    {
+      "name": "disable-style-renamed",
+      "id": "style/semi",
+      "target": "style-js/semi",
+      "file": "case.ts",
+      "source": "// eslint-disable-next-line style/semi -- reason\nexport const a = 1;\nexport const b = 2;\n",
+      "entry": [
+        2,
+        "never"
+      ],
+      "eslintEntry": [
+        2,
+        "never"
+      ],
+      "eslint": [
+        {
+          "ruleId": "style/semi",
+          "severity": 2,
+          "message": "Extra semicolon.",
+          "line": 3,
+          "column": 19,
+          "messageId": "extraSemi",
+          "endLine": 3,
+          "endColumn": 20,
+          "fix": {
+            "range": [
+              86,
+              88
+            ],
+            "text": "2"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Extra semicolon.",
+              "code": "style-js(semi)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 67,
+                    "length": 1,
+                    "line": 2,
+                    "column": 19
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Extra semicolon.",
+              "code": "style-js(semi)",
+              "severity": "error",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 87,
+                    "length": 1,
+                    "line": 3,
+                    "column": 19
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.784268692
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": false
+    },
+    {
+      "name": "disable-ts-original-native",
+      "id": "ts/ban-ts-comment",
+      "target": "typescript/ban-ts-comment",
+      "file": "case.ts",
+      "source": "// eslint-disable ts/ban-ts-comment\n// @ts-expect-error\nexport const a: string = 1;\n",
+      "entry": [
+        2,
+        {
+          "ts-expect-error": "allow-with-description"
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "ts-expect-error": "allow-with-description"
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "ts/ban-ts-comment",
+          "severity": 2,
+          "message": "Include a description after the \"@ts-expect-error\" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.",
+          "line": 2,
+          "column": 1,
+          "messageId": "tsDirectiveCommentRequiresDescription",
+          "endLine": 2,
+          "endColumn": 20
+        }
+      ],
+      "oxlint": {
+        "status": 0,
+        "stderr": "",
+        "output": {
+          "diagnostics": [],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.018330972
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": false
+    },
+    {
+      "name": "disable-ts-original-js",
+      "id": "ts/ban-ts-comment",
+      "target": "ts/ban-ts-comment",
+      "file": "case.ts",
+      "source": "// eslint-disable ts/ban-ts-comment\n// @ts-expect-error\nexport const a: string = 1;\n",
+      "entry": [
+        2,
+        {
+          "ts-expect-error": "allow-with-description"
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "ts-expect-error": "allow-with-description"
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "ts/ban-ts-comment",
+          "severity": 2,
+          "message": "Include a description after the \"@ts-expect-error\" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.",
+          "line": 2,
+          "column": 1,
+          "messageId": "tsDirectiveCommentRequiresDescription",
+          "endLine": 2,
+          "endColumn": 20
+        }
+      ],
+      "oxlint": {
+        "status": 0,
+        "stderr": "",
+        "output": {
+          "diagnostics": [],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.651416921
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": false
+    },
+    {
+      "name": "disable-ts-block-native",
+      "id": "ts/ban-ts-comment",
+      "target": "typescript/ban-ts-comment",
+      "file": "case.ts",
+      "source": "/* eslint-disable ts/ban-ts-comment */\n// @ts-expect-error\nexport const a: string = 1;\n",
+      "entry": [
+        2,
+        {
+          "ts-expect-error": "allow-with-description"
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "ts-expect-error": "allow-with-description"
+        }
+      ],
+      "eslint": [],
+      "oxlint": {
+        "status": 0,
+        "stderr": "",
+        "output": {
+          "diagnostics": [],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.016318669
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true
+    },
+    {
+      "name": "inline-rule-options",
+      "id": "no-console",
+      "target": "no-console",
+      "file": "case.ts",
+      "source": "/* eslint no-console: [\"error\", { \"allow\": [\"log\"] }] */\nconsole.log(1);\nconsole.warn(2);\n",
+      "entry": [
+        2,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "eslintEntry": [
+        2,
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "eslint": [
+        {
+          "ruleId": "no-console",
+          "severity": 2,
+          "message": "Unexpected console statement. Only these console methods are allowed: log.",
+          "line": 3,
+          "column": 1,
+          "messageId": "limited",
+          "endLine": 3,
+          "endColumn": 13,
+          "suggestions": [
+            {
+              "fix": {
+                "range": [
+                  73,
+                  89
+                ],
+                "text": ""
+              },
+              "messageId": "removeConsole",
+              "data": {
+                "propertyName": "warn"
+              },
+              "desc": "Remove the console.warn()."
+            }
+          ]
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Unexpected console statement.",
+              "code": "eslint(no-console)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-console.html",
+              "help": "Supported methods are: warn, error.",
+              "filename": ".generated/experiments/case.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 57,
+                    "length": 11,
+                    "line": 2,
+                    "column": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.014002548
+        }
+      },
+      "runtimeError": false,
+      "matchingSeverityCounts": true
+    },
+    {
+      "name": "invalid-native-options",
+      "baselineError": "Key \"rules\": Key \"no-console\":\n\tValue {\"allow\":[\"warn\"],\"invented\":true} should NOT have additional properties.\n\t\tUnexpected property \"invented\". Expected properties: \"allow\".\n"
+    }
+  ],
+  "migration": {
+    "raw": {
+      "status": 1,
+      "stderr": "",
+      "stdout": "Failed to parse oxlint configuration file.\n\n  x Failed to load JS plugin: @eslint/eslint-plugin-markdown\n  |   Cannot find module '@eslint/eslint-plugin-markdown'\n\n",
+      "output": null
+    },
+    "correctedPackageOnly": {
+      "status": 1,
+      "stderr": "",
+      "stdout": "Failed to parse oxlint configuration file.\n\n  x Invalid configuration for rule `import/consistent-type-specifier-style`:\n  |   unknown variant `top-level`, expected one of `prefer-top-level`, `prefer-inline`, `prefer-top-level-if-only-type-imports`\n  |   received config: `\"top-level\"`\n\n  x Plugin 'eslint-comments' not found\n\n",
+      "output": null
+    },
+    "patchedAliasesAndImportOption": {
+      "status": 1,
+      "stderr": "",
+      "output": {
+        "diagnostics": [
+          {
+            "message": "Extra semicolon.",
+            "code": "@stylistic(semi)",
+            "severity": "error",
+            "filename": ".generated/experiments/migration.ts",
+            "labels": [
+              {
+                "span": {
+                  "offset": 28,
+                  "length": 1,
+                  "line": 1,
+                  "column": 29
+                }
+              }
+            ]
+          },
+          {
+            "message": "Strings must use singlequote.",
+            "code": "@stylistic(quotes)",
+            "severity": "error",
+            "filename": ".generated/experiments/migration.ts",
+            "labels": [
+              {
+                "span": {
+                  "offset": 21,
+                  "length": 7,
+                  "line": 1,
+                  "column": 22
+                }
+              }
+            ]
+          }
+        ],
+        "number_of_files": 1,
+        "number_of_rules": 402,
+        "threads_count": 1,
+        "start_time": 1.27358804
+      }
+    },
+    "originalEslint": [
+      {
+        "ruleId": "style/quotes",
+        "severity": 2,
+        "message": "Strings must use singlequote.",
+        "line": 1,
+        "column": 22,
+        "messageId": "wrongQuotes",
+        "endLine": 1,
+        "endColumn": 29,
+        "fix": {
+          "range": [
+            21,
+            28
+          ],
+          "text": "'hello'"
+        }
+      },
+      {
+        "ruleId": "style/semi",
+        "severity": 2,
+        "message": "Extra semicolon.",
+        "line": 1,
+        "column": 29,
+        "messageId": "extraSemi",
+        "endLine": 1,
+        "endColumn": 30,
+        "fix": {
+          "range": [
+            21,
+            29
+          ],
+          "text": "\"hello\""
+        }
+      }
+    ],
+    "sortingAfterPatch": {
+      "eslint": [
+        {
+          "ruleId": "perfectionist/sort-imports",
+          "severity": 2,
+          "message": "Expected \"a\" (value-external) to come before \"./z\" (value-sibling).",
+          "line": 2,
+          "column": 1,
+          "messageId": "unexpectedImportsGroupOrder",
+          "endLine": 2,
+          "endColumn": 18,
+          "fix": {
+            "range": [
+              0,
+              37
+            ],
+            "text": "import a from 'a'\nimport z from './z'"
+          }
+        },
+        {
+          "ruleId": "perfectionist/sort-named-exports",
+          "severity": 2,
+          "message": "Expected \"a\" to come before \"z\".",
+          "line": 4,
+          "column": 13,
+          "messageId": "unexpectedNamedExportsOrder",
+          "endLine": 4,
+          "endColumn": 14,
+          "fix": {
+            "range": [
+              48,
+              52
+            ],
+            "text": "a, z"
+          }
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Expected \"a\" to come before \"z\".",
+              "code": "perfectionist(sort-named-exports)",
+              "severity": "error",
+              "filename": ".generated/experiments/migration-sorting.ts",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 51,
+                    "length": 1,
+                    "line": 4,
+                    "column": 13
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 402,
+          "threads_count": 1,
+          "start_time": 1.329349246
+        }
+      }
+    }
+  },
+  "matching": {
+    "config": [
+      {
+        "files": [
+          "**/*.js"
+        ],
+        "rules": {
+          "no-console": [
+            "error",
+            {
+              "allow": [
+                "warn"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          [
+            "src/**",
+            "**/*.test.js"
+          ]
+        ],
+        "rules": {
+          "no-console": "off"
+        }
+      },
+      {
+        "files": [
+          "src/**"
+        ],
+        "ignores": [
+          "src/skip.js"
+        ],
+        "rules": {
+          "no-console": "warn"
+        }
+      },
+      {
+        "basePath": "nested",
+        "files": [
+          "**/*.js"
+        ],
+        "rules": {
+          "no-console": "off"
+        }
+      }
+    ],
+    "eslint": [
+      {
+        "file": "src/keep.js",
+        "messages": [
+          {
+            "ruleId": "no-console",
+            "severity": 1,
+            "message": "Unexpected console statement. Only these console methods are allowed: warn.",
+            "line": 1,
+            "column": 18,
+            "messageId": "limited",
+            "endLine": 1,
+            "endColumn": 29,
+            "suggestions": [
+              {
+                "fix": {
+                  "range": [
+                    17,
+                    32
+                  ],
+                  "text": ""
+                },
+                "messageId": "removeConsole",
+                "data": {
+                  "propertyName": "log"
+                },
+                "desc": "Remove the console.log()."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "file": "src/skip.js",
+        "messages": [
+          {
+            "ruleId": "no-console",
+            "severity": 2,
+            "message": "Unexpected console statement. Only these console methods are allowed: warn.",
+            "line": 1,
+            "column": 18,
+            "messageId": "limited",
+            "endLine": 1,
+            "endColumn": 29,
+            "suggestions": [
+              {
+                "fix": {
+                  "range": [
+                    17,
+                    32
+                  ],
+                  "text": ""
+                },
+                "messageId": "removeConsole",
+                "data": {
+                  "propertyName": "log"
+                },
+                "desc": "Remove the console.log()."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "file": "src/keep.test.js",
+        "messages": [
+          {
+            "ruleId": "no-console",
+            "severity": 1,
+            "message": "Unexpected console statement. Only these console methods are allowed: warn.",
+            "line": 1,
+            "column": 18,
+            "messageId": "limited",
+            "endLine": 1,
+            "endColumn": 29,
+            "suggestions": [
+              {
+                "fix": {
+                  "range": [
+                    17,
+                    32
+                  ],
+                  "text": ""
+                },
+                "messageId": "removeConsole",
+                "data": {
+                  "propertyName": "log"
+                },
+                "desc": "Remove the console.log()."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "file": "nested/keep.js",
+        "messages": []
+      }
+    ],
+    "migrated": {
+      "$schema": "./node_modules/oxlint/configuration_schema.json",
+      "plugins": [],
+      "categories": {
+        "correctness": "off"
+      },
+      "env": {
+        "builtin": true
+      },
+      "overrides": [
+        {
+          "files": [
+            "**/*.js"
+          ],
+          "rules": {
+            "no-console": [
+              "error",
+              {
+                "allow": [
+                  "warn"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "files": [
+            "src/**"
+          ],
+          "rules": {
+            "no-console": "warn"
+          }
+        },
+        {
+          "files": [
+            "**/*.js"
+          ],
+          "rules": {
+            "no-console": "off"
+          }
+        }
+      ]
+    },
+    "warnings": [
+      "ESLint AND glob patterns (nested arrays in files) are not supported in oxlint: [\"src/**\",\"**/*.test.js\"]",
+      "ignore list inside overrides is not supported"
+    ],
+    "oxlint": {
+      "status": 0,
+      "stderr": "",
+      "output": {
+        "diagnostics": [],
+        "number_of_files": 4,
+        "number_of_rules": 1,
+        "threads_count": 1,
+        "start_time": 0.017001468
+      }
+    }
+  },
+  "hybrid": {
+    "plan": {
+      "groups": [
+        {
+          "file": "normal.js",
+          "configPath": "/workspace/tools/research/antfu-oxlint/.generated/experiments/hybrid/bridge/file-0.json",
+          "moved": 3
+        },
+        {
+          "file": "overridden.test.js",
+          "configPath": "/workspace/tools/research/antfu-oxlint/.generated/experiments/hybrid/bridge/file-1.json",
+          "moved": 3
+        }
+      ],
+      "fallback": [
+        {
+          "file": "normal.js",
+          "wholeFile": false,
+          "rules": [
+            "accessor-pairs",
+            "antfu/no-top-level-await",
+            "array-callback-return",
+            "block-scoped-var",
+            "constructor-super",
+            "default-case-last",
+            "dot-notation",
+            "eqeqeq",
+            "new-cap",
+            "no-alert",
+            "no-array-constructor",
+            "no-async-promise-executor",
+            "no-caller",
+            "no-case-declarations",
+            "no-class-assign",
+            "no-compare-neg-zero",
+            "no-cond-assign",
+            "no-console",
+            "no-const-assign",
+            "no-control-regex",
+            "no-delete-var",
+            "no-dupe-args",
+            "no-dupe-class-members",
+            "no-dupe-keys",
+            "no-duplicate-case",
+            "no-empty",
+            "no-empty-pattern",
+            "no-eval",
+            "no-ex-assign",
+            "no-extend-native",
+            "no-extra-bind",
+            "no-extra-boolean-cast",
+            "no-fallthrough",
+            "no-func-assign",
+            "no-global-assign",
+            "no-implied-eval",
+            "no-import-assign",
+            "no-irregular-whitespace",
+            "no-iterator",
+            "no-labels",
+            "no-lone-blocks",
+            "no-loss-of-precision",
+            "no-misleading-character-class",
+            "no-multi-str",
+            "no-new",
+            "no-new-func",
+            "no-new-native-nonconstructor",
+            "no-new-wrappers",
+            "no-obj-calls",
+            "no-octal",
+            "no-octal-escape",
+            "no-proto",
+            "no-prototype-builtins",
+            "no-redeclare",
+            "no-regex-spaces",
+            "no-restricted-globals",
+            "no-restricted-properties",
+            "no-restricted-syntax",
+            "no-self-assign",
+            "no-self-compare",
+            "no-sequences",
+            "no-shadow-restricted-names",
+            "no-sparse-arrays",
+            "no-template-curly-in-string",
+            "no-this-before-super",
+            "no-throw-literal",
+            "no-undef",
+            "no-undef-init",
+            "no-unexpected-multiline",
+            "no-unmodified-loop-condition",
+            "no-unneeded-ternary",
+            "no-unreachable",
+            "no-unreachable-loop",
+            "no-unsafe-finally",
+            "no-unsafe-negation",
+            "no-unused-expressions",
+            "no-unused-vars",
+            "no-use-before-define",
+            "no-useless-call",
+            "no-useless-catch",
+            "no-useless-computed-key",
+            "no-useless-constructor",
+            "no-useless-rename",
+            "no-useless-return",
+            "no-var",
+            "no-with",
+            "object-shorthand",
+            "one-var",
+            "prefer-arrow-callback",
+            "prefer-const",
+            "prefer-exponentiation-operator",
+            "prefer-promise-reject-errors",
+            "prefer-regex-literals",
+            "prefer-rest-params",
+            "prefer-spread",
+            "prefer-template",
+            "symbol-description",
+            "unicode-bom",
+            "unused-imports/no-unused-imports",
+            "unused-imports/no-unused-vars",
+            "use-isnan",
+            "valid-typeof",
+            "vars-on-top",
+            "yoda",
+            "eslint-comments/no-aggregating-enable",
+            "eslint-comments/no-duplicate-disable",
+            "eslint-comments/no-unlimited-disable",
+            "eslint-comments/no-unused-enable",
+            "command/command",
+            "perfectionist/sort-exports",
+            "perfectionist/sort-imports",
+            "perfectionist/sort-named-exports",
+            "perfectionist/sort-named-imports",
+            "node/handle-callback-err",
+            "node/no-deprecated-api",
+            "node/no-exports-assign",
+            "node/no-new-require",
+            "node/no-path-concat",
+            "node/prefer-global/buffer",
+            "node/prefer-global/process",
+            "node/process-exit-as-throw",
+            "jsdoc/check-access",
+            "jsdoc/check-param-names",
+            "jsdoc/check-property-names",
+            "jsdoc/check-types",
+            "jsdoc/empty-tags",
+            "jsdoc/implements-on-classes",
+            "jsdoc/no-defaults",
+            "jsdoc/no-multi-asterisks",
+            "jsdoc/require-param-name",
+            "jsdoc/require-property",
+            "jsdoc/require-property-description",
+            "jsdoc/require-property-name",
+            "jsdoc/require-returns-check",
+            "jsdoc/require-returns-description",
+            "jsdoc/require-yields-check",
+            "jsdoc/check-alignment",
+            "jsdoc/multiline-blocks",
+            "antfu/import-dedupe",
+            "antfu/no-import-dist",
+            "antfu/no-import-node-modules-by-path",
+            "import/consistent-type-specifier-style",
+            "import/first",
+            "import/no-duplicates",
+            "import/no-mutable-exports",
+            "import/no-named-default",
+            "import/newline-after-import",
+            "e18e/prefer-array-fill",
+            "e18e/prefer-includes",
+            "e18e/prefer-nullish-coalescing",
+            "e18e/prefer-object-has-own",
+            "e18e/prefer-url-canparse",
+            "e18e/prefer-timer-args",
+            "e18e/prefer-date-now",
+            "e18e/prefer-regex-test",
+            "e18e/prefer-array-some",
+            "e18e/prefer-string-fromcharcode",
+            "unicorn/consistent-empty-array-spread",
+            "unicorn/error-message",
+            "unicorn/escape-case",
+            "unicorn/new-for-builtins",
+            "unicorn/no-instanceof-builtins",
+            "unicorn/no-new-array",
+            "unicorn/no-new-buffer",
+            "unicorn/number-literal-case",
+            "unicorn/prefer-dom-node-text-content",
+            "unicorn/prefer-includes",
+            "unicorn/prefer-node-protocol",
+            "unicorn/prefer-number-properties",
+            "unicorn/prefer-string-starts-ends-with",
+            "unicorn/prefer-type-error",
+            "unicorn/throw-new-error",
+            "style/array-bracket-spacing",
+            "style/arrow-parens",
+            "style/arrow-spacing",
+            "style/block-spacing",
+            "style/brace-style",
+            "style/comma-dangle",
+            "style/comma-spacing",
+            "style/comma-style",
+            "style/computed-property-spacing",
+            "style/dot-location",
+            "style/eol-last",
+            "style/generator-star-spacing",
+            "style/indent",
+            "style/indent-binary-ops",
+            "style/key-spacing",
+            "style/keyword-spacing",
+            "style/lines-between-class-members",
+            "style/max-statements-per-line",
+            "style/member-delimiter-style",
+            "style/multiline-ternary",
+            "style/new-parens",
+            "style/no-extra-parens",
+            "style/no-floating-decimal",
+            "style/no-mixed-operators",
+            "style/no-mixed-spaces-and-tabs",
+            "style/no-multi-spaces",
+            "style/no-multiple-empty-lines",
+            "style/no-tabs",
+            "style/no-trailing-spaces",
+            "style/no-whitespace-before-property",
+            "style/object-curly-spacing",
+            "style/operator-linebreak",
+            "style/padded-blocks",
+            "style/quote-props",
+            "style/rest-spread-spacing",
+            "style/semi-spacing",
+            "style/space-before-blocks",
+            "style/space-before-function-paren",
+            "style/space-in-parens",
+            "style/space-infix-ops",
+            "style/space-unary-ops",
+            "style/spaced-comment",
+            "style/template-curly-spacing",
+            "style/template-tag-spacing",
+            "style/type-annotation-spacing",
+            "style/type-generic-spacing",
+            "style/type-named-tuple-spacing",
+            "style/wrap-iife",
+            "style/yield-star-spacing",
+            "style/jsx-closing-bracket-location",
+            "style/jsx-closing-tag-location",
+            "style/jsx-curly-brace-presence",
+            "style/jsx-curly-newline",
+            "style/jsx-curly-spacing",
+            "style/jsx-equals-spacing",
+            "style/jsx-first-prop-new-line",
+            "style/jsx-function-call-newline",
+            "style/jsx-indent-props",
+            "style/jsx-max-props-per-line",
+            "style/jsx-one-expression-per-line",
+            "style/jsx-quotes",
+            "style/jsx-tag-spacing",
+            "style/jsx-wrap-multilines",
+            "antfu/consistent-list-newline",
+            "antfu/consistent-chaining",
+            "antfu/curly",
+            "antfu/if-newline",
+            "antfu/top-level-function",
+            "regexp/confusing-quantifier",
+            "regexp/control-character-escape",
+            "regexp/match-any",
+            "regexp/negation",
+            "regexp/no-contradiction-with-assertion",
+            "regexp/no-dupe-characters-character-class",
+            "regexp/no-dupe-disjunctions",
+            "regexp/no-empty-alternative",
+            "regexp/no-empty-capturing-group",
+            "regexp/no-empty-character-class",
+            "regexp/no-empty-group",
+            "regexp/no-empty-lookarounds-assertion",
+            "regexp/no-empty-string-literal",
+            "regexp/no-escape-backspace",
+            "regexp/no-extra-lookaround-assertions",
+            "regexp/no-invalid-regexp",
+            "regexp/no-invisible-character",
+            "regexp/no-lazy-ends",
+            "regexp/no-legacy-features",
+            "regexp/no-misleading-capturing-group",
+            "regexp/no-misleading-unicode-character",
+            "regexp/no-missing-g-flag",
+            "regexp/no-non-standard-flag",
+            "regexp/no-obscure-range",
+            "regexp/no-optional-assertion",
+            "regexp/no-potentially-useless-backreference",
+            "regexp/no-super-linear-backtracking",
+            "regexp/no-trivially-nested-assertion",
+            "regexp/no-trivially-nested-quantifier",
+            "regexp/no-unused-capturing-group",
+            "regexp/no-useless-assertions",
+            "regexp/no-useless-backreference",
+            "regexp/no-useless-character-class",
+            "regexp/no-useless-dollar-replacements",
+            "regexp/no-useless-escape",
+            "regexp/no-useless-flag",
+            "regexp/no-useless-lazy",
+            "regexp/no-useless-non-capturing-group",
+            "regexp/no-useless-quantifier",
+            "regexp/no-useless-range",
+            "regexp/no-useless-set-operand",
+            "regexp/no-useless-string-literal",
+            "regexp/no-useless-two-nums-quantifier",
+            "regexp/no-zero-quantifier",
+            "regexp/optimal-lookaround-quantifier",
+            "regexp/optimal-quantifier-concatenation",
+            "regexp/prefer-character-class",
+            "regexp/prefer-d",
+            "regexp/prefer-plus-quantifier",
+            "regexp/prefer-predefined-assertion",
+            "regexp/prefer-question-quantifier",
+            "regexp/prefer-range",
+            "regexp/prefer-set-operation",
+            "regexp/prefer-star-quantifier",
+            "regexp/prefer-unicode-codepoint-escapes",
+            "regexp/prefer-w",
+            "regexp/simplify-set-operations",
+            "regexp/sort-flags",
+            "regexp/strict",
+            "regexp/use-ignore-case"
+          ]
+        },
+        {
+          "file": "overridden.test.js",
+          "wholeFile": false,
+          "rules": [
+            "accessor-pairs",
+            "array-callback-return",
+            "block-scoped-var",
+            "constructor-super",
+            "default-case-last",
+            "dot-notation",
+            "eqeqeq",
+            "new-cap",
+            "no-alert",
+            "no-array-constructor",
+            "no-async-promise-executor",
+            "no-caller",
+            "no-case-declarations",
+            "no-class-assign",
+            "no-compare-neg-zero",
+            "no-cond-assign",
+            "no-console",
+            "no-const-assign",
+            "no-control-regex",
+            "no-delete-var",
+            "no-dupe-args",
+            "no-dupe-class-members",
+            "no-dupe-keys",
+            "no-duplicate-case",
+            "no-empty",
+            "no-empty-pattern",
+            "no-eval",
+            "no-ex-assign",
+            "no-extend-native",
+            "no-extra-bind",
+            "no-extra-boolean-cast",
+            "no-fallthrough",
+            "no-func-assign",
+            "no-global-assign",
+            "no-implied-eval",
+            "no-import-assign",
+            "no-irregular-whitespace",
+            "no-iterator",
+            "no-labels",
+            "no-lone-blocks",
+            "no-loss-of-precision",
+            "no-misleading-character-class",
+            "no-multi-str",
+            "no-new",
+            "no-new-func",
+            "no-new-native-nonconstructor",
+            "no-new-wrappers",
+            "no-obj-calls",
+            "no-octal",
+            "no-octal-escape",
+            "no-proto",
+            "no-prototype-builtins",
+            "no-redeclare",
+            "no-regex-spaces",
+            "no-restricted-globals",
+            "no-restricted-properties",
+            "no-restricted-syntax",
+            "no-self-assign",
+            "no-self-compare",
+            "no-sequences",
+            "no-shadow-restricted-names",
+            "no-sparse-arrays",
+            "no-template-curly-in-string",
+            "no-this-before-super",
+            "no-throw-literal",
+            "no-undef",
+            "no-undef-init",
+            "no-unexpected-multiline",
+            "no-unmodified-loop-condition",
+            "no-unneeded-ternary",
+            "no-unreachable",
+            "no-unreachable-loop",
+            "no-unsafe-finally",
+            "no-unsafe-negation",
+            "no-unused-vars",
+            "no-use-before-define",
+            "no-useless-call",
+            "no-useless-catch",
+            "no-useless-computed-key",
+            "no-useless-constructor",
+            "no-useless-rename",
+            "no-useless-return",
+            "no-var",
+            "no-with",
+            "object-shorthand",
+            "one-var",
+            "prefer-arrow-callback",
+            "prefer-const",
+            "prefer-exponentiation-operator",
+            "prefer-promise-reject-errors",
+            "prefer-regex-literals",
+            "prefer-rest-params",
+            "prefer-spread",
+            "prefer-template",
+            "symbol-description",
+            "unicode-bom",
+            "unused-imports/no-unused-imports",
+            "unused-imports/no-unused-vars",
+            "use-isnan",
+            "valid-typeof",
+            "vars-on-top",
+            "yoda",
+            "eslint-comments/no-aggregating-enable",
+            "eslint-comments/no-duplicate-disable",
+            "eslint-comments/no-unlimited-disable",
+            "eslint-comments/no-unused-enable",
+            "command/command",
+            "perfectionist/sort-exports",
+            "perfectionist/sort-imports",
+            "perfectionist/sort-named-exports",
+            "perfectionist/sort-named-imports",
+            "node/handle-callback-err",
+            "node/no-deprecated-api",
+            "node/no-exports-assign",
+            "node/no-new-require",
+            "node/no-path-concat",
+            "node/prefer-global/buffer",
+            "node/process-exit-as-throw",
+            "jsdoc/check-access",
+            "jsdoc/check-param-names",
+            "jsdoc/check-property-names",
+            "jsdoc/check-types",
+            "jsdoc/empty-tags",
+            "jsdoc/implements-on-classes",
+            "jsdoc/no-defaults",
+            "jsdoc/no-multi-asterisks",
+            "jsdoc/require-param-name",
+            "jsdoc/require-property",
+            "jsdoc/require-property-description",
+            "jsdoc/require-property-name",
+            "jsdoc/require-returns-check",
+            "jsdoc/require-returns-description",
+            "jsdoc/require-yields-check",
+            "jsdoc/check-alignment",
+            "jsdoc/multiline-blocks",
+            "antfu/import-dedupe",
+            "antfu/no-import-dist",
+            "antfu/no-import-node-modules-by-path",
+            "import/consistent-type-specifier-style",
+            "import/first",
+            "import/no-duplicates",
+            "import/no-mutable-exports",
+            "import/no-named-default",
+            "import/newline-after-import",
+            "e18e/prefer-array-fill",
+            "e18e/prefer-includes",
+            "e18e/prefer-nullish-coalescing",
+            "e18e/prefer-object-has-own",
+            "e18e/prefer-url-canparse",
+            "e18e/prefer-timer-args",
+            "e18e/prefer-date-now",
+            "e18e/prefer-regex-test",
+            "e18e/prefer-array-some",
+            "e18e/prefer-string-fromcharcode",
+            "unicorn/consistent-empty-array-spread",
+            "unicorn/error-message",
+            "unicorn/escape-case",
+            "unicorn/new-for-builtins",
+            "unicorn/no-instanceof-builtins",
+            "unicorn/no-new-array",
+            "unicorn/no-new-buffer",
+            "unicorn/number-literal-case",
+            "unicorn/prefer-dom-node-text-content",
+            "unicorn/prefer-includes",
+            "unicorn/prefer-node-protocol",
+            "unicorn/prefer-number-properties",
+            "unicorn/prefer-string-starts-ends-with",
+            "unicorn/prefer-type-error",
+            "unicorn/throw-new-error",
+            "style/array-bracket-spacing",
+            "style/arrow-parens",
+            "style/arrow-spacing",
+            "style/block-spacing",
+            "style/brace-style",
+            "style/comma-dangle",
+            "style/comma-spacing",
+            "style/comma-style",
+            "style/computed-property-spacing",
+            "style/dot-location",
+            "style/eol-last",
+            "style/generator-star-spacing",
+            "style/indent",
+            "style/indent-binary-ops",
+            "style/key-spacing",
+            "style/keyword-spacing",
+            "style/lines-between-class-members",
+            "style/max-statements-per-line",
+            "style/member-delimiter-style",
+            "style/multiline-ternary",
+            "style/new-parens",
+            "style/no-extra-parens",
+            "style/no-floating-decimal",
+            "style/no-mixed-operators",
+            "style/no-mixed-spaces-and-tabs",
+            "style/no-multi-spaces",
+            "style/no-multiple-empty-lines",
+            "style/no-tabs",
+            "style/no-trailing-spaces",
+            "style/no-whitespace-before-property",
+            "style/object-curly-spacing",
+            "style/operator-linebreak",
+            "style/padded-blocks",
+            "style/quote-props",
+            "style/rest-spread-spacing",
+            "style/semi-spacing",
+            "style/space-before-blocks",
+            "style/space-before-function-paren",
+            "style/space-in-parens",
+            "style/space-infix-ops",
+            "style/space-unary-ops",
+            "style/spaced-comment",
+            "style/template-curly-spacing",
+            "style/template-tag-spacing",
+            "style/type-annotation-spacing",
+            "style/type-generic-spacing",
+            "style/type-named-tuple-spacing",
+            "style/wrap-iife",
+            "style/yield-star-spacing",
+            "style/jsx-closing-bracket-location",
+            "style/jsx-closing-tag-location",
+            "style/jsx-curly-brace-presence",
+            "style/jsx-curly-newline",
+            "style/jsx-curly-spacing",
+            "style/jsx-equals-spacing",
+            "style/jsx-first-prop-new-line",
+            "style/jsx-function-call-newline",
+            "style/jsx-indent-props",
+            "style/jsx-max-props-per-line",
+            "style/jsx-one-expression-per-line",
+            "style/jsx-quotes",
+            "style/jsx-tag-spacing",
+            "style/jsx-wrap-multilines",
+            "antfu/consistent-list-newline",
+            "antfu/consistent-chaining",
+            "antfu/curly",
+            "antfu/if-newline",
+            "antfu/top-level-function",
+            "regexp/confusing-quantifier",
+            "regexp/control-character-escape",
+            "regexp/match-any",
+            "regexp/negation",
+            "regexp/no-contradiction-with-assertion",
+            "regexp/no-dupe-characters-character-class",
+            "regexp/no-dupe-disjunctions",
+            "regexp/no-empty-alternative",
+            "regexp/no-empty-capturing-group",
+            "regexp/no-empty-character-class",
+            "regexp/no-empty-group",
+            "regexp/no-empty-lookarounds-assertion",
+            "regexp/no-empty-string-literal",
+            "regexp/no-escape-backspace",
+            "regexp/no-extra-lookaround-assertions",
+            "regexp/no-invalid-regexp",
+            "regexp/no-invisible-character",
+            "regexp/no-lazy-ends",
+            "regexp/no-legacy-features",
+            "regexp/no-misleading-capturing-group",
+            "regexp/no-misleading-unicode-character",
+            "regexp/no-missing-g-flag",
+            "regexp/no-non-standard-flag",
+            "regexp/no-obscure-range",
+            "regexp/no-optional-assertion",
+            "regexp/no-potentially-useless-backreference",
+            "regexp/no-super-linear-backtracking",
+            "regexp/no-trivially-nested-assertion",
+            "regexp/no-trivially-nested-quantifier",
+            "regexp/no-unused-capturing-group",
+            "regexp/no-useless-assertions",
+            "regexp/no-useless-backreference",
+            "regexp/no-useless-character-class",
+            "regexp/no-useless-dollar-replacements",
+            "regexp/no-useless-escape",
+            "regexp/no-useless-flag",
+            "regexp/no-useless-lazy",
+            "regexp/no-useless-non-capturing-group",
+            "regexp/no-useless-quantifier",
+            "regexp/no-useless-range",
+            "regexp/no-useless-set-operand",
+            "regexp/no-useless-string-literal",
+            "regexp/no-useless-two-nums-quantifier",
+            "regexp/no-zero-quantifier",
+            "regexp/optimal-lookaround-quantifier",
+            "regexp/optimal-quantifier-concatenation",
+            "regexp/prefer-character-class",
+            "regexp/prefer-d",
+            "regexp/prefer-plus-quantifier",
+            "regexp/prefer-predefined-assertion",
+            "regexp/prefer-question-quantifier",
+            "regexp/prefer-range",
+            "regexp/prefer-set-operation",
+            "regexp/prefer-star-quantifier",
+            "regexp/prefer-unicode-codepoint-escapes",
+            "regexp/prefer-w",
+            "regexp/simplify-set-operations",
+            "regexp/sort-flags",
+            "regexp/strict",
+            "regexp/use-ignore-case",
+            "test/consistent-test-it",
+            "test/no-identical-title",
+            "test/no-import-node-test",
+            "test/no-only-tests",
+            "test/prefer-hooks-in-order",
+            "test/prefer-lowercase-title"
+          ]
+        },
+        {
+          "file": "data.jsonc",
+          "wholeFile": true,
+          "reason": "Unsupported file, processor, parser, sourceType, ecmaVersion or inline directive semantics"
+        },
+        {
+          "file": "directive.js",
+          "wholeFile": true,
+          "reason": "Unsupported file, processor, parser, sourceType, ecmaVersion or inline directive semantics"
+        }
+      ],
+      "ignored": [],
+      "mappings": {
+        "no-debugger": "no-debugger",
+        "style/quotes": "style/quotes",
+        "style/semi": "style/semi"
+      }
+    },
+    "original": [
+      {
+        "file": "normal.js",
+        "messages": [
+          {
+            "ruleId": "no-console",
+            "severity": 1,
+            "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+            "line": 1,
+            "column": 1,
+            "messageId": "limited",
+            "endLine": 1,
+            "endColumn": 12,
+            "suggestions": [
+              {
+                "fix": {
+                  "range": [
+                    0,
+                    17
+                  ],
+                  "text": ""
+                },
+                "messageId": "removeConsole",
+                "data": {
+                  "propertyName": "log"
+                },
+                "desc": "Remove the console.log()."
+              }
+            ]
+          },
+          {
+            "ruleId": "style/quotes",
+            "severity": 2,
+            "message": "Strings must use singlequote.",
+            "line": 1,
+            "column": 13,
+            "messageId": "wrongQuotes",
+            "endLine": 1,
+            "endColumn": 16,
+            "fix": {
+              "range": [
+                12,
+                15
+              ],
+              "text": "'x'"
+            }
+          },
+          {
+            "ruleId": "style/semi",
+            "severity": 2,
+            "message": "Extra semicolon.",
+            "line": 1,
+            "column": 17,
+            "messageId": "extraSemi",
+            "endLine": 1,
+            "endColumn": 18,
+            "fix": {
+              "range": [
+                15,
+                26
+              ],
+              "text": ")\ndebugger"
+            }
+          },
+          {
+            "ruleId": "no-debugger",
+            "severity": 2,
+            "message": "Unexpected 'debugger' statement.",
+            "line": 2,
+            "column": 1,
+            "messageId": "unexpected",
+            "endLine": 2,
+            "endColumn": 10
+          },
+          {
+            "ruleId": "style/semi",
+            "severity": 2,
+            "message": "Extra semicolon.",
+            "line": 2,
+            "column": 9,
+            "messageId": "extraSemi",
+            "endLine": 2,
+            "endColumn": 10,
+            "fix": {
+              "range": [
+                18,
+                27
+              ],
+              "text": "debugger"
+            }
+          }
+        ]
+      },
+      {
+        "file": "overridden.test.js",
+        "messages": [
+          {
+            "ruleId": "no-console",
+            "severity": 1,
+            "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+            "line": 1,
+            "column": 1,
+            "messageId": "limited",
+            "endLine": 1,
+            "endColumn": 12,
+            "suggestions": [
+              {
+                "fix": {
+                  "range": [
+                    0,
+                    17
+                  ],
+                  "text": ""
+                },
+                "messageId": "removeConsole",
+                "data": {
+                  "propertyName": "log"
+                },
+                "desc": "Remove the console.log()."
+              }
+            ]
+          },
+          {
+            "ruleId": "style/quotes",
+            "severity": 2,
+            "message": "Strings must use singlequote.",
+            "line": 1,
+            "column": 13,
+            "messageId": "wrongQuotes",
+            "endLine": 1,
+            "endColumn": 16,
+            "fix": {
+              "range": [
+                12,
+                15
+              ],
+              "text": "'x'"
+            }
+          },
+          {
+            "ruleId": "style/semi",
+            "severity": 2,
+            "message": "Extra semicolon.",
+            "line": 1,
+            "column": 17,
+            "messageId": "extraSemi",
+            "endLine": 1,
+            "endColumn": 18,
+            "fix": {
+              "range": [
+                15,
+                26
+              ],
+              "text": ")\ndebugger"
+            }
+          },
+          {
+            "ruleId": "no-debugger",
+            "severity": 2,
+            "message": "Unexpected 'debugger' statement.",
+            "line": 2,
+            "column": 1,
+            "messageId": "unexpected",
+            "endLine": 2,
+            "endColumn": 10
+          },
+          {
+            "ruleId": "style/semi",
+            "severity": 2,
+            "message": "Extra semicolon.",
+            "line": 2,
+            "column": 9,
+            "messageId": "extraSemi",
+            "endLine": 2,
+            "endColumn": 10,
+            "fix": {
+              "range": [
+                18,
+                27
+              ],
+              "text": "debugger"
+            }
+          }
+        ]
+      },
+      {
+        "file": "data.jsonc",
+        "messages": [
+          {
+            "ruleId": "jsonc/object-curly-spacing",
+            "severity": 2,
+            "message": "A space is required after '{'.",
+            "line": 1,
+            "column": 1,
+            "messageId": "requireSpaceAfter",
+            "endLine": 1,
+            "endColumn": 2,
+            "fix": {
+              "range": [
+                1,
+                1
+              ],
+              "text": " "
+            }
+          },
+          {
+            "ruleId": "jsonc/key-spacing",
+            "severity": 2,
+            "message": "Missing space before value for key 'x'.",
+            "line": 1,
+            "column": 6,
+            "messageId": "missingValue",
+            "endLine": 1,
+            "endColumn": 7,
+            "fix": {
+              "range": [
+                5,
+                5
+              ],
+              "text": " "
+            }
+          },
+          {
+            "ruleId": "style/comma-spacing",
+            "severity": 2,
+            "message": "A space is required after ','.",
+            "line": 1,
+            "column": 7,
+            "messageId": "missing",
+            "endLine": 1,
+            "endColumn": 8,
+            "fix": {
+              "range": [
+                7,
+                7
+              ],
+              "text": " "
+            }
+          },
+          {
+            "ruleId": "jsonc/no-dupe-keys",
+            "severity": 2,
+            "message": "Duplicate key 'x'.",
+            "line": 1,
+            "column": 8,
+            "messageId": "unexpected",
+            "endLine": 1,
+            "endColumn": 11
+          },
+          {
+            "ruleId": "jsonc/key-spacing",
+            "severity": 2,
+            "message": "Missing space before value for key 'x'.",
+            "line": 1,
+            "column": 12,
+            "messageId": "missingValue",
+            "endLine": 1,
+            "endColumn": 13,
+            "fix": {
+              "range": [
+                11,
+                11
+              ],
+              "text": " "
+            }
+          },
+          {
+            "ruleId": "jsonc/object-curly-spacing",
+            "severity": 2,
+            "message": "A space is required before '}'.",
+            "line": 1,
+            "column": 13,
+            "messageId": "requireSpaceBefore",
+            "endLine": 1,
+            "endColumn": 14,
+            "fix": {
+              "range": [
+                12,
+                12
+              ],
+              "text": " "
+            }
+          }
+        ]
+      },
+      {
+        "file": "directive.js",
+        "messages": [
+          {
+            "ruleId": "style/quotes",
+            "severity": 2,
+            "message": "Strings must use singlequote.",
+            "line": 2,
+            "column": 13,
+            "messageId": "wrongQuotes",
+            "endLine": 2,
+            "endColumn": 16,
+            "fix": {
+              "range": [
+                51,
+                54
+              ],
+              "text": "'x'"
+            }
+          },
+          {
+            "ruleId": "style/semi",
+            "severity": 2,
+            "message": "Extra semicolon.",
+            "line": 2,
+            "column": 17,
+            "messageId": "extraSemi",
+            "endLine": 2,
+            "endColumn": 18,
+            "fix": {
+              "range": [
+                54,
+                65
+              ],
+              "text": ")\ndebugger"
+            }
+          },
+          {
+            "ruleId": "no-debugger",
+            "severity": 2,
+            "message": "Unexpected 'debugger' statement.",
+            "line": 3,
+            "column": 1,
+            "messageId": "unexpected",
+            "endLine": 3,
+            "endColumn": 10
+          },
+          {
+            "ruleId": "style/semi",
+            "severity": 2,
+            "message": "Extra semicolon.",
+            "line": 3,
+            "column": 9,
+            "messageId": "extraSemi",
+            "endLine": 3,
+            "endColumn": 10,
+            "fix": {
+              "range": [
+                57,
+                66
+              ],
+              "text": "debugger"
+            }
+          }
+        ]
+      }
+    ],
+    "residual": [
+      {
+        "file": "normal.js",
+        "messages": [
+          {
+            "ruleId": "no-console",
+            "severity": 1,
+            "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+            "line": 1,
+            "column": 1,
+            "messageId": "limited",
+            "endLine": 1,
+            "endColumn": 12,
+            "suggestions": [
+              {
+                "fix": {
+                  "range": [
+                    0,
+                    17
+                  ],
+                  "text": ""
+                },
+                "messageId": "removeConsole",
+                "data": {
+                  "propertyName": "log"
+                },
+                "desc": "Remove the console.log()."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "file": "overridden.test.js",
+        "messages": [
+          {
+            "ruleId": "no-console",
+            "severity": 1,
+            "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+            "line": 1,
+            "column": 1,
+            "messageId": "limited",
+            "endLine": 1,
+            "endColumn": 12,
+            "suggestions": [
+              {
+                "fix": {
+                  "range": [
+                    0,
+                    17
+                  ],
+                  "text": ""
+                },
+                "messageId": "removeConsole",
+                "data": {
+                  "propertyName": "log"
+                },
+                "desc": "Remove the console.log()."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "file": "data.jsonc",
+        "messages": [
+          {
+            "ruleId": "jsonc/object-curly-spacing",
+            "severity": 2,
+            "message": "A space is required after '{'.",
+            "line": 1,
+            "column": 1,
+            "messageId": "requireSpaceAfter",
+            "endLine": 1,
+            "endColumn": 2,
+            "fix": {
+              "range": [
+                1,
+                1
+              ],
+              "text": " "
+            }
+          },
+          {
+            "ruleId": "jsonc/key-spacing",
+            "severity": 2,
+            "message": "Missing space before value for key 'x'.",
+            "line": 1,
+            "column": 6,
+            "messageId": "missingValue",
+            "endLine": 1,
+            "endColumn": 7,
+            "fix": {
+              "range": [
+                5,
+                5
+              ],
+              "text": " "
+            }
+          },
+          {
+            "ruleId": "style/comma-spacing",
+            "severity": 2,
+            "message": "A space is required after ','.",
+            "line": 1,
+            "column": 7,
+            "messageId": "missing",
+            "endLine": 1,
+            "endColumn": 8,
+            "fix": {
+              "range": [
+                7,
+                7
+              ],
+              "text": " "
+            }
+          },
+          {
+            "ruleId": "jsonc/no-dupe-keys",
+            "severity": 2,
+            "message": "Duplicate key 'x'.",
+            "line": 1,
+            "column": 8,
+            "messageId": "unexpected",
+            "endLine": 1,
+            "endColumn": 11
+          },
+          {
+            "ruleId": "jsonc/key-spacing",
+            "severity": 2,
+            "message": "Missing space before value for key 'x'.",
+            "line": 1,
+            "column": 12,
+            "messageId": "missingValue",
+            "endLine": 1,
+            "endColumn": 13,
+            "fix": {
+              "range": [
+                11,
+                11
+              ],
+              "text": " "
+            }
+          },
+          {
+            "ruleId": "jsonc/object-curly-spacing",
+            "severity": 2,
+            "message": "A space is required before '}'.",
+            "line": 1,
+            "column": 13,
+            "messageId": "requireSpaceBefore",
+            "endLine": 1,
+            "endColumn": 14,
+            "fix": {
+              "range": [
+                12,
+                12
+              ],
+              "text": " "
+            }
+          }
+        ]
+      },
+      {
+        "file": "directive.js",
+        "messages": [
+          {
+            "ruleId": "style/quotes",
+            "severity": 2,
+            "message": "Strings must use singlequote.",
+            "line": 2,
+            "column": 13,
+            "messageId": "wrongQuotes",
+            "endLine": 2,
+            "endColumn": 16,
+            "fix": {
+              "range": [
+                51,
+                54
+              ],
+              "text": "'x'"
+            }
+          },
+          {
+            "ruleId": "style/semi",
+            "severity": 2,
+            "message": "Extra semicolon.",
+            "line": 2,
+            "column": 17,
+            "messageId": "extraSemi",
+            "endLine": 2,
+            "endColumn": 18,
+            "fix": {
+              "range": [
+                54,
+                65
+              ],
+              "text": ")\ndebugger"
+            }
+          },
+          {
+            "ruleId": "no-debugger",
+            "severity": 2,
+            "message": "Unexpected 'debugger' statement.",
+            "line": 3,
+            "column": 1,
+            "messageId": "unexpected",
+            "endLine": 3,
+            "endColumn": 10
+          },
+          {
+            "ruleId": "style/semi",
+            "severity": 2,
+            "message": "Extra semicolon.",
+            "line": 3,
+            "column": 9,
+            "messageId": "extraSemi",
+            "endLine": 3,
+            "endColumn": 10,
+            "fix": {
+              "range": [
+                57,
+                66
+              ],
+              "text": "debugger"
+            }
+          }
+        ]
+      }
+    ],
+    "oxlint": [
+      {
+        "file": "normal.js",
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "`debugger` statement is not allowed",
+              "code": "eslint(no-debugger)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-debugger.html",
+              "help": "Remove the debugger statement",
+              "filename": "normal.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 18,
+                    "length": 9,
+                    "line": 2,
+                    "column": 1
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Extra semicolon.",
+              "code": "style(semi)",
+              "severity": "error",
+              "filename": "normal.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 16,
+                    "length": 1,
+                    "line": 1,
+                    "column": 17
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Strings must use singlequote.",
+              "code": "style(quotes)",
+              "severity": "error",
+              "filename": "normal.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 12,
+                    "length": 3,
+                    "line": 1,
+                    "column": 13
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Extra semicolon.",
+              "code": "style(semi)",
+              "severity": "error",
+              "filename": "normal.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 26,
+                    "length": 1,
+                    "line": 2,
+                    "column": 9
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 3,
+          "threads_count": 1,
+          "start_time": 1.915847766
+        }
+      },
+      {
+        "file": "overridden.test.js",
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "`debugger` statement is not allowed",
+              "code": "eslint(no-debugger)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-debugger.html",
+              "help": "Remove the debugger statement",
+              "filename": "overridden.test.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 18,
+                    "length": 9,
+                    "line": 2,
+                    "column": 1
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Extra semicolon.",
+              "code": "style(semi)",
+              "severity": "error",
+              "filename": "overridden.test.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 16,
+                    "length": 1,
+                    "line": 1,
+                    "column": 17
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Strings must use singlequote.",
+              "code": "style(quotes)",
+              "severity": "error",
+              "filename": "overridden.test.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 12,
+                    "length": 3,
+                    "line": 1,
+                    "column": 13
+                  }
+                }
+              ]
+            },
+            {
+              "message": "Extra semicolon.",
+              "code": "style(semi)",
+              "severity": "error",
+              "filename": "overridden.test.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 26,
+                    "length": 1,
+                    "line": 2,
+                    "column": 9
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 3,
+          "threads_count": 1,
+          "start_time": 1.919603382
+        }
+      }
+    ],
+    "originalCount": 20,
+    "hybridCount": 20,
+    "sameFileRuleSeverity": true
+  },
+  "fixSafety": {
+    "original": 1,
+    "eslintFix": 0,
+    "oxlintFix": 0
+  },
+  "invalidOptionsOxlint": {
+    "status": 1,
+    "stderr": "",
+    "stdout": "Failed to parse oxlint configuration file.\n\n  x Invalid configuration for rule `no-console`:\n  |   unknown field `invented`, expected `allow`\n  |   received config: `{ \"allow\": [ \"warn\" ], \"invented\": true }`\n\n",
+    "output": null
+  },
+  "context": {
+    "eslint": [
+      {
+        "ruleId": "probe/context",
+        "severity": 2,
+        "message": "{\"sourceType\":\"module\",\"tokens\":14,\"comments\":1,\"variables\":[],\"codePaths\":2,\"parserServices\":[],\"setting\":\"per-file\",\"filename\":\"probe.js\"}",
+        "line": 1,
+        "column": 1,
+        "messageId": "probe",
+        "endLine": 4,
+        "endColumn": 1
+      }
+    ],
+    "oxlint": {
+      "status": 1,
+      "stderr": "",
+      "output": {
+        "diagnostics": [
+          {
+            "message": "{\"sourceType\":\"module\",\"tokens\":14,\"comments\":1,\"variables\":[],\"codePaths\":2,\"parserServices\":[],\"setting\":\"per-file\",\"filename\":\"probe.js\"}",
+            "code": "probe(context)",
+            "severity": "error",
+            "filename": ".generated/experiments/probe.js",
+            "labels": [
+              {
+                "span": {
+                  "offset": 11,
+                  "length": 54,
+                  "line": 2,
+                  "column": 1
+                }
+              }
+            ]
+          }
+        ],
+        "number_of_files": 1,
+        "number_of_rules": 1,
+        "threads_count": 1,
+        "start_time": 1.364296051
+      }
+    }
+  },
+  "fixModes": [
+    {
+      "name": "statement",
+      "engine": "native",
+      "source": "console.log('hi');\n",
+      "flags": [
+        "--fix"
+      ],
+      "eslintFix": "console.log('hi');\n",
+      "eslintSuggestions": [
+        {
+          "fix": {
+            "range": [
+              0,
+              18
+            ],
+            "text": ""
+          },
+          "messageId": "removeConsole",
+          "data": {
+            "propertyName": "log"
+          },
+          "desc": "Remove the console.log()."
+        }
+      ],
+      "output": "console.log('hi');\n",
+      "run": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Unexpected console statement.",
+              "code": "eslint(no-console)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-console.html",
+              "help": "Supported methods are: warn, error.",
+              "filename": ".generated/experiments/fix-mode-statement.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 0,
+                    "length": 11,
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.015738458
+        }
+      }
+    },
+    {
+      "name": "statement",
+      "engine": "native",
+      "source": "console.log('hi');\n",
+      "flags": [
+        "--fix-suggestions"
+      ],
+      "eslintFix": "console.log('hi');\n",
+      "eslintSuggestions": [
+        {
+          "fix": {
+            "range": [
+              0,
+              18
+            ],
+            "text": ""
+          },
+          "messageId": "removeConsole",
+          "data": {
+            "propertyName": "log"
+          },
+          "desc": "Remove the console.log()."
+        }
+      ],
+      "output": "\n",
+      "run": {
+        "status": 0,
+        "stderr": "",
+        "output": {
+          "diagnostics": [],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.013535016
+        }
+      }
+    },
+    {
+      "name": "statement",
+      "engine": "native",
+      "source": "console.log('hi');\n",
+      "flags": [
+        "--fix-suggestions",
+        "--fix-dangerously"
+      ],
+      "eslintFix": "console.log('hi');\n",
+      "eslintSuggestions": [
+        {
+          "fix": {
+            "range": [
+              0,
+              18
+            ],
+            "text": ""
+          },
+          "messageId": "removeConsole",
+          "data": {
+            "propertyName": "log"
+          },
+          "desc": "Remove the console.log()."
+        }
+      ],
+      "output": "\n",
+      "run": {
+        "status": 0,
+        "stderr": "",
+        "output": {
+          "diagnostics": [],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.022446493
+        }
+      }
+    },
+    {
+      "name": "statement",
+      "engine": "core-js",
+      "source": "console.log('hi');\n",
+      "flags": [
+        "--fix"
+      ],
+      "eslintFix": "console.log('hi');\n",
+      "eslintSuggestions": [
+        {
+          "fix": {
+            "range": [
+              0,
+              18
+            ],
+            "text": ""
+          },
+          "messageId": "removeConsole",
+          "data": {
+            "propertyName": "log"
+          },
+          "desc": "Remove the console.log()."
+        }
+      ],
+      "output": "console.log('hi');\n",
+      "run": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+              "code": "core-js(no-console)",
+              "severity": "error",
+              "filename": ".generated/experiments/fix-mode-statement.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 0,
+                    "length": 11,
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.470052009
+        }
+      }
+    },
+    {
+      "name": "statement",
+      "engine": "core-js",
+      "source": "console.log('hi');\n",
+      "flags": [
+        "--fix-suggestions"
+      ],
+      "eslintFix": "console.log('hi');\n",
+      "eslintSuggestions": [
+        {
+          "fix": {
+            "range": [
+              0,
+              18
+            ],
+            "text": ""
+          },
+          "messageId": "removeConsole",
+          "data": {
+            "propertyName": "log"
+          },
+          "desc": "Remove the console.log()."
+        }
+      ],
+      "output": "\n",
+      "run": {
+        "status": 0,
+        "stderr": "",
+        "output": {
+          "diagnostics": [],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.569131065
+        }
+      }
+    },
+    {
+      "name": "statement",
+      "engine": "core-js",
+      "source": "console.log('hi');\n",
+      "flags": [
+        "--fix-suggestions",
+        "--fix-dangerously"
+      ],
+      "eslintFix": "console.log('hi');\n",
+      "eslintSuggestions": [
+        {
+          "fix": {
+            "range": [
+              0,
+              18
+            ],
+            "text": ""
+          },
+          "messageId": "removeConsole",
+          "data": {
+            "propertyName": "log"
+          },
+          "desc": "Remove the console.log()."
+        }
+      ],
+      "output": "\n",
+      "run": {
+        "status": 0,
+        "stderr": "",
+        "output": {
+          "diagnostics": [],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.508787038
+        }
+      }
+    },
+    {
+      "name": "sequence",
+      "engine": "native",
+      "source": "export const value = (console.log('hi'), 1);\n",
+      "flags": [
+        "--fix"
+      ],
+      "eslintFix": "export const value = (console.log('hi'), 1);\n",
+      "eslintSuggestions": [],
+      "output": "export const value = (console.log('hi'), 1);\n",
+      "run": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Unexpected console statement.",
+              "code": "eslint(no-console)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-console.html",
+              "help": "Supported methods are: warn, error.",
+              "filename": ".generated/experiments/fix-mode-sequence.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 22,
+                    "length": 11,
+                    "line": 1,
+                    "column": 23
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.01805491
+        }
+      }
+    },
+    {
+      "name": "sequence",
+      "engine": "native",
+      "source": "export const value = (console.log('hi'), 1);\n",
+      "flags": [
+        "--fix-suggestions"
+      ],
+      "eslintFix": "export const value = (console.log('hi'), 1);\n",
+      "eslintSuggestions": [],
+      "output": "export const value = (console.log('hi'), 1);\n",
+      "run": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Unexpected console statement.",
+              "code": "eslint(no-console)",
+              "severity": "error",
+              "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-console.html",
+              "help": "Supported methods are: warn, error.",
+              "filename": ".generated/experiments/fix-mode-sequence.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 22,
+                    "length": 11,
+                    "line": 1,
+                    "column": 23
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.01160623
+        }
+      }
+    },
+    {
+      "name": "sequence",
+      "engine": "native",
+      "source": "export const value = (console.log('hi'), 1);\n",
+      "flags": [
+        "--fix-suggestions",
+        "--fix-dangerously"
+      ],
+      "eslintFix": "export const value = (console.log('hi'), 1);\n",
+      "eslintSuggestions": [],
+      "output": "export const value = (undefined, 1);\n",
+      "run": {
+        "status": 0,
+        "stderr": "",
+        "output": {
+          "diagnostics": [],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 0.022298026
+        }
+      }
+    },
+    {
+      "name": "sequence",
+      "engine": "core-js",
+      "source": "export const value = (console.log('hi'), 1);\n",
+      "flags": [
+        "--fix"
+      ],
+      "eslintFix": "export const value = (console.log('hi'), 1);\n",
+      "eslintSuggestions": [],
+      "output": "export const value = (console.log('hi'), 1);\n",
+      "run": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+              "code": "core-js(no-console)",
+              "severity": "error",
+              "filename": ".generated/experiments/fix-mode-sequence.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 22,
+                    "length": 11,
+                    "line": 1,
+                    "column": 23
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.491993398
+        }
+      }
+    },
+    {
+      "name": "sequence",
+      "engine": "core-js",
+      "source": "export const value = (console.log('hi'), 1);\n",
+      "flags": [
+        "--fix-suggestions"
+      ],
+      "eslintFix": "export const value = (console.log('hi'), 1);\n",
+      "eslintSuggestions": [],
+      "output": "export const value = (console.log('hi'), 1);\n",
+      "run": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+              "code": "core-js(no-console)",
+              "severity": "error",
+              "filename": ".generated/experiments/fix-mode-sequence.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 22,
+                    "length": 11,
+                    "line": 1,
+                    "column": 23
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.700563351
+        }
+      }
+    },
+    {
+      "name": "sequence",
+      "engine": "core-js",
+      "source": "export const value = (console.log('hi'), 1);\n",
+      "flags": [
+        "--fix-suggestions",
+        "--fix-dangerously"
+      ],
+      "eslintFix": "export const value = (console.log('hi'), 1);\n",
+      "eslintSuggestions": [],
+      "output": "export const value = (console.log('hi'), 1);\n",
+      "run": {
+        "status": 1,
+        "stderr": "",
+        "output": {
+          "diagnostics": [
+            {
+              "message": "Unexpected console statement. Only these console methods are allowed: warn, error.",
+              "code": "core-js(no-console)",
+              "severity": "error",
+              "filename": ".generated/experiments/fix-mode-sequence.js",
+              "labels": [
+                {
+                  "span": {
+                    "offset": 22,
+                    "length": 11,
+                    "line": 1,
+                    "column": 23
+                  }
+                }
+              ]
+            }
+          ],
+          "number_of_files": 1,
+          "number_of_rules": 1,
+          "threads_count": 1,
+          "start_time": 1.476679821
+        }
+      }
+    }
+  ],
+  "typed": {
+    "source": "export async function f(): Promise<void> {}\nf();\nvoid f();\ndeclare const unsafe: any;\nexport const value: string = unsafe;\n",
+    "eslint": [
+      {
+        "ruleId": "ts/no-floating-promises",
+        "severity": 2,
+        "message": "Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.",
+        "line": 2,
+        "column": 1,
+        "messageId": "floatingVoid",
+        "endLine": 2,
+        "endColumn": 5,
+        "suggestions": [
+          {
+            "messageId": "floatingFixVoid",
+            "fix": {
+              "range": [
+                44,
+                44
+              ],
+              "text": "void "
+            },
+            "desc": "Add void operator to ignore."
+          },
+          {
+            "messageId": "floatingFixAwait",
+            "fix": {
+              "range": [
+                44,
+                44
+              ],
+              "text": "await "
+            },
+            "desc": "Add await operator."
+          }
+        ]
+      },
+      {
+        "ruleId": "ts/no-unsafe-assignment",
+        "severity": 1,
+        "message": "Unsafe assignment of an `any` value.",
+        "line": 5,
+        "column": 14,
+        "messageId": "anyAssignment",
+        "endLine": 5,
+        "endColumn": 36
+      }
+    ],
+    "nativeWithoutFlag": {
+      "status": 0,
+      "stderr": "",
+      "output": {
+        "diagnostics": [],
+        "number_of_files": 1,
+        "number_of_rules": 0,
+        "threads_count": 1,
+        "start_time": 0.018440906
+      }
+    },
+    "native": {
+      "status": 1,
+      "stderr": "",
+      "output": {
+        "diagnostics": [
+          {
+            "message": "Promises must be awaited, add void operator to ignore.",
+            "code": "typescript(no-floating-promises)",
+            "severity": "error",
+            "url": "https://oxc.rs/docs/guide/usage/linter/rules/typescript/no-floating-promises.html",
+            "help": "The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the `void` operator.",
+            "filename": ".generated/experiments/typed/case.ts",
+            "labels": [
+              {
+                "label": "This unhandled promise-like value has type `Promise<void>`.",
+                "span": {
+                  "offset": 44,
+                  "length": 3,
+                  "line": 2,
+                  "column": 1
+                }
+              },
+              {
+                "span": {
+                  "offset": 44,
+                  "length": 3,
+                  "line": 2,
+                  "column": 1
+                }
+              }
+            ]
+          },
+          {
+            "message": "Unsafe assignment of an any value.",
+            "code": "typescript(no-unsafe-assignment)",
+            "severity": "warning",
+            "url": "https://oxc.rs/docs/guide/usage/linter/rules/typescript/no-unsafe-assignment.html",
+            "filename": ".generated/experiments/typed/case.ts",
+            "labels": [
+              {
+                "label": "Assigned value has type `any`.",
+                "span": {
+                  "offset": 115,
+                  "length": 6,
+                  "line": 5,
+                  "column": 30
+                }
+              },
+              {
+                "label": "Target expects type `string`.",
+                "span": {
+                  "offset": 106,
+                  "length": 6,
+                  "line": 5,
+                  "column": 21
+                }
+              },
+              {
+                "span": {
+                  "offset": 113,
+                  "length": 1,
+                  "line": 5,
+                  "column": 28
+                }
+              }
+            ]
+          }
+        ],
+        "number_of_files": 1,
+        "number_of_rules": 2,
+        "threads_count": 1,
+        "start_time": 0.099185816
+      }
+    },
+    "jsPlugin": {
+      "status": 1,
+      "stderr": "",
+      "output": {
+        "diagnostics": [
+          {
+            "message": "Error running JS plugin.\nFile path: /workspace/tools/research/antfu-oxlint/.generated/experiments/typed/case.ts\nError: You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://tseslint.com/typed-linting for enabling linting with type information.\nParser: (unknown)\nNote: detected a parser other than @typescript-eslint/parser. Make sure the parser is configured to forward \"parserOptions.project\" to @typescript-eslint/parser.\n    at throwError (/workspace/tools/research/antfu-oxlint/node_modules/@typescript-eslint/utils/dist/eslint-utils/getParserServices.js:40:11)\n    at getParserServices (/workspace/tools/research/antfu-oxlint/node_modules/@typescript-eslint/utils/dist/eslint-utils/getParserServices.js:23:9)\n    at create (/workspace/tools/research/antfu-oxlint/node_modules/@typescript-eslint/eslint-plugin/dist/rules/no-floating-promises.js:106:55)\n    at Object.create (/workspace/tools/research/antfu-oxlint/node_modules/@typescript-eslint/utils/dist/eslint-utils/RuleCreator.js:39:20)\n    at lintFileImpl (file:///workspace/tools/research/antfu-oxlint/node_modules/oxlint/dist/lint.js:23953:72)\n    at lintFile (file:///workspace/tools/research/antfu-oxlint/node_modules/oxlint/dist/lint.js:23890:3)\n    at lintFileWrapper (file:///workspace/tools/research/antfu-oxlint/node_modules/oxlint/dist/cli.js:46:9)",
+            "severity": "error",
+            "filename": ".generated/experiments/typed/case.ts",
+            "labels": []
+          }
+        ],
+        "number_of_files": 1,
+        "number_of_rules": 2,
+        "threads_count": 1,
+        "start_time": 1.601297365
+      }
+    }
+  },
+  "formats": {
+    "sources": {
+      "component.vue": "<script setup>debugger; const rows = [1];</script>\n<template><div v-for=\"row in rows\">{{ row }}</div></template>\n",
+      "component.svelte": "<script>debugger; let rows = [1];</script>\n{#each rows as row}<div>{row}</div>{/each}\n",
+      "component.astro": "---\ndebugger;\n---\n<img src=\"/x.png\" />\n",
+      "data.jsonc": "{ \"x\": 1, \"x\": 2 }\n",
+      "data.yaml": "x: 1\nx: 2\n",
+      "data.toml": "x=1\nx=2\n",
+      "guide.md": "# Repeated\n# Repeated\n\n```js\ndebugger;\n```\n"
+    },
+    "eslint": [
+      {
+        "file": "component.vue",
+        "messages": [
+          {
+            "ruleId": "vue/block-tag-newline",
+            "severity": 2,
+            "message": "A line break is required after '<script>'.",
+            "line": 1,
+            "column": 15,
+            "messageId": "missingOpeningLinebreak",
+            "endLine": 1,
+            "endColumn": 15,
+            "fix": {
+              "range": [
+                14,
+                14
+              ],
+              "text": "\n"
+            }
+          },
+          {
+            "ruleId": "no-debugger",
+            "severity": 2,
+            "message": "Unexpected 'debugger' statement.",
+            "line": 1,
+            "column": 15,
+            "messageId": "unexpected",
+            "endLine": 1,
+            "endColumn": 24
+          },
+          {
+            "ruleId": "style/max-statements-per-line",
+            "severity": 2,
+            "message": "This line has 2 statements. Maximum allowed is 1.",
+            "line": 1,
+            "column": 25,
+            "messageId": "exceed",
+            "endLine": 1,
+            "endColumn": 42
+          },
+          {
+            "ruleId": "style/semi-spacing",
+            "severity": 2,
+            "message": "Missing whitespace after semicolon.",
+            "line": 1,
+            "column": 41,
+            "messageId": "missingWhitespaceAfter",
+            "endLine": 1,
+            "endColumn": 42,
+            "fix": {
+              "range": [
+                41,
+                41
+              ],
+              "text": " "
+            }
+          },
+          {
+            "ruleId": "vue/block-tag-newline",
+            "severity": 2,
+            "message": "A line break is required before '</script>'.",
+            "line": 1,
+            "column": 42,
+            "messageId": "missingClosingLinebreak",
+            "endLine": 1,
+            "endColumn": 42,
+            "fix": {
+              "range": [
+                41,
+                41
+              ],
+              "text": "\n"
+            }
+          },
+          {
+            "ruleId": "vue/padding-line-between-blocks",
+            "severity": 2,
+            "message": "Expected blank line before this block.",
+            "line": 2,
+            "column": 1,
+            "messageId": "always",
+            "endLine": 2,
+            "endColumn": 62,
+            "fix": {
+              "range": [
+                50,
+                50
+              ],
+              "text": "\n"
+            }
+          },
+          {
+            "ruleId": "vue/block-tag-newline",
+            "severity": 2,
+            "message": "A line break is required after '<template>'.",
+            "line": 2,
+            "column": 11,
+            "messageId": "missingOpeningLinebreak",
+            "endLine": 2,
+            "endColumn": 11,
+            "fix": {
+              "range": [
+                61,
+                61
+              ],
+              "text": "\n"
+            }
+          },
+          {
+            "ruleId": "vue/require-v-for-key",
+            "severity": 2,
+            "message": "Elements in iteration expect to have 'v-bind:key' directives.",
+            "line": 2,
+            "column": 11,
+            "messageId": "requireKey",
+            "endLine": 2,
+            "endColumn": 36
+          },
+          {
+            "ruleId": "vue/singleline-html-element-content-newline",
+            "severity": 1,
+            "message": "Expected 1 line break after opening tag (`<div>`), but no line breaks found.",
+            "line": 2,
+            "column": 36,
+            "messageId": "unexpectedAfterClosingBracket",
+            "endLine": 2,
+            "endColumn": 36,
+            "fix": {
+              "range": [
+                86,
+                86
+              ],
+              "text": "\n"
+            }
+          },
+          {
+            "ruleId": "vue/singleline-html-element-content-newline",
+            "severity": 1,
+            "message": "Expected 1 line break before closing tag (`</div>`), but no line breaks found.",
+            "line": 2,
+            "column": 45,
+            "messageId": "unexpectedBeforeOpeningBracket",
+            "endLine": 2,
+            "endColumn": 45,
+            "fix": {
+              "range": [
+                95,
+                95
+              ],
+              "text": "\n"
+            }
+          },
+          {
+            "ruleId": "vue/block-tag-newline",
+            "severity": 2,
+            "message": "A line break is required before '</template>'.",
+            "line": 2,
+            "column": 51,
+            "messageId": "missingClosingLinebreak",
+            "endLine": 2,
+            "endColumn": 51,
+            "fix": {
+              "range": [
+                101,
+                101
+              ],
+              "text": "\n"
+            }
+          }
+        ]
+      },
+      {
+        "file": "component.svelte",
+        "messages": [
+          {
+            "ruleId": "no-debugger",
+            "severity": 2,
+            "message": "Unexpected 'debugger' statement.",
+            "line": 1,
+            "column": 9,
+            "messageId": "unexpected",
+            "endLine": 1,
+            "endColumn": 18
+          },
+          {
+            "ruleId": "style/keyword-spacing",
+            "severity": 2,
+            "message": "Expected space(s) before \"debugger\".",
+            "line": 1,
+            "column": 9,
+            "messageId": "expectedBefore",
+            "endLine": 1,
+            "endColumn": 17,
+            "fix": {
+              "range": [
+                8,
+                8
+              ],
+              "text": " "
+            }
+          },
+          {
+            "ruleId": "style/max-statements-per-line",
+            "severity": 2,
+            "message": "This line has 2 statements. Maximum allowed is 1.",
+            "line": 1,
+            "column": 19,
+            "messageId": "exceed",
+            "endLine": 1,
+            "endColumn": 34
+          },
+          {
+            "ruleId": "prefer-const",
+            "severity": 2,
+            "message": "'rows' is never reassigned. Use 'const' instead.",
+            "line": 1,
+            "column": 23,
+            "messageId": "useConst",
+            "endLine": 1,
+            "endColumn": 27,
+            "fix": {
+              "range": [
+                18,
+                33
+              ],
+              "text": "const rows = [1];"
+            }
+          },
+          {
+            "ruleId": "style/semi-spacing",
+            "severity": 2,
+            "message": "Missing whitespace after semicolon.",
+            "line": 1,
+            "column": 33,
+            "messageId": "missingWhitespaceAfter",
+            "endLine": 1,
+            "endColumn": 34,
+            "fix": {
+              "range": [
+                33,
+                33
+              ],
+              "text": " "
+            }
+          },
+          {
+            "ruleId": "svelte/require-each-key",
+            "severity": 2,
+            "message": "Each block should have a key",
+            "line": 2,
+            "column": 1,
+            "messageId": "expectedKey",
+            "endLine": 2,
+            "endColumn": 43
+          }
+        ]
+      },
+      {
+        "file": "component.astro",
+        "messages": [
+          {
+            "ruleId": "no-debugger",
+            "severity": 2,
+            "message": "Unexpected 'debugger' statement.",
+            "line": 2,
+            "column": 1,
+            "messageId": "unexpected",
+            "endLine": 2,
+            "endColumn": 10
+          }
+        ]
+      },
+      {
+        "file": "data.jsonc",
+        "messages": [
+          {
+            "ruleId": "jsonc/no-dupe-keys",
+            "severity": 2,
+            "message": "Duplicate key 'x'.",
+            "line": 1,
+            "column": 11,
+            "messageId": "unexpected",
+            "endLine": 1,
+            "endColumn": 14
+          }
+        ]
+      },
+      {
+        "file": "data.yaml",
+        "messages": [
+          {
+            "ruleId": null,
+            "fatal": true,
+            "severity": 2,
+            "message": "Parsing error: Map keys must be unique",
+            "line": 2,
+            "column": 0
+          }
+        ]
+      },
+      {
+        "file": "data.toml",
+        "messages": [
+          {
+            "ruleId": null,
+            "fatal": true,
+            "severity": 2,
+            "message": "Parsing error: Defining a key multiple times is invalid",
+            "line": 2,
+            "column": 0
+          }
+        ]
+      },
+      {
+        "file": "guide.md",
+        "messages": [
+          {
+            "ruleId": "no-debugger",
+            "severity": 2,
+            "message": "Unexpected 'debugger' statement.",
+            "line": 5,
+            "column": 1,
+            "messageId": "unexpected",
+            "endLine": 5,
+            "endColumn": 10
+          },
+          {
+            "ruleId": "style/semi",
+            "severity": 2,
+            "message": "Extra semicolon.",
+            "line": 5,
+            "column": 9,
+            "messageId": "extraSemi",
+            "endLine": 5,
+            "endColumn": 10,
+            "fix": {
+              "range": [
+                29,
+                38
+              ],
+              "text": "debugger"
+            }
+          },
+          {
+            "ruleId": "markdown/no-multiple-h1",
+            "severity": 2,
+            "message": "Unexpected additional H1 heading found.",
+            "line": 2,
+            "column": 1,
+            "messageId": "multipleH1",
+            "endLine": 2,
+            "endColumn": 11
+          }
+        ]
+      }
+    ],
+    "oxlint": {
+      "status": 1,
+      "stderr": "",
+      "output": {
+        "diagnostics": [
+          {
+            "message": "`debugger` statement is not allowed",
+            "code": "eslint(no-debugger)",
+            "severity": "error",
+            "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-debugger.html",
+            "help": "Remove the debugger statement",
+            "filename": ".generated/experiments/component.vue",
+            "labels": [
+              {
+                "span": {
+                  "offset": 14,
+                  "length": 9,
+                  "line": 1,
+                  "column": 15
+                }
+              }
+            ]
+          },
+          {
+            "message": "`debugger` statement is not allowed",
+            "code": "eslint(no-debugger)",
+            "severity": "error",
+            "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-debugger.html",
+            "help": "Remove the debugger statement",
+            "filename": ".generated/experiments/component.svelte",
+            "labels": [
+              {
+                "span": {
+                  "offset": 8,
+                  "length": 9,
+                  "line": 1,
+                  "column": 9
+                }
+              }
+            ]
+          },
+          {
+            "message": "`debugger` statement is not allowed",
+            "code": "eslint(no-debugger)",
+            "severity": "error",
+            "url": "https://oxc.rs/docs/guide/usage/linter/rules/eslint/no-debugger.html",
+            "help": "Remove the debugger statement",
+            "filename": ".generated/experiments/component.astro",
+            "labels": [
+              {
+                "span": {
+                  "offset": 4,
+                  "length": 9,
+                  "line": 2,
+                  "column": 1
+                }
+              }
+            ]
+          }
+        ],
+        "number_of_files": 3,
+        "number_of_rules": 1,
+        "threads_count": 1,
+        "start_time": 0.013664858
+      }
+    },
+    "vueTemplateJs": {
+      "status": 1,
+      "stderr": "",
+      "output": {
+        "diagnostics": [
+          {
+            "message": "Use the latest vue-eslint-parser. See also https://eslint.vuejs.org/user-guide/#what-is-the-use-the-latest-vue-eslint-parser-error.",
+            "code": "vue-js(require-v-for-key)",
+            "severity": "error",
+            "filename": ".generated/experiments/component.vue",
+            "labels": [
+              {
+                "span": {
+                  "offset": 14,
+                  "length": 0,
+                  "line": 1,
+                  "column": 15
+                }
+              }
+            ]
+          }
+        ],
+        "number_of_files": 1,
+        "number_of_rules": 1,
+        "threads_count": 1,
+        "start_time": 1.843208258
+      }
+    },
+    "formatters": {
+      "eslint": [
+        {
+          "file": "style.css",
+          "messages": [
+            {
+              "ruleId": "format/prettier",
+              "severity": 2,
+              "message": "Replace `color:red;` with `⏎··color:·red;⏎`",
+              "line": 1,
+              "column": 4,
+              "messageId": "replace",
+              "endLine": 1,
+              "endColumn": 14,
+              "fix": {
+                "range": [
+                  3,
+                  13
+                ],
+                "text": "\n  color: red;\n"
+              }
+            }
+          ]
+        },
+        {
+          "file": "page.html",
+          "messages": [
+            {
+              "ruleId": "format/prettier",
+              "severity": 2,
+              "message": "Replace `<body><div>x</div></body>` with `⏎··<body>⏎····<div>x</div>⏎··</body>⏎`",
+              "line": 1,
+              "column": 7,
+              "messageId": "replace",
+              "endLine": 1,
+              "endColumn": 32,
+              "fix": {
+                "range": [
+                  6,
+                  31
+                ],
+                "text": "\n  <body>\n    <div>x</div>\n  </body>\n"
+              }
+            }
+          ]
+        }
+      ],
+      "oxlint": {
+        "status": 1,
+        "stderr": "",
+        "stdout": "No files found to lint. Please check your paths and ignore patterns.\n{ \"diagnostics\": [],\n              \"number_of_files\": 0,\n              \"number_of_rules\": 1,\n              \"threads_count\": 1,\n              \"start_time\": 0.002220727\n            }\n            ",
+        "output": null
+      }
+    }
+  }
+}

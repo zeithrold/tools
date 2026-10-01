@@ -1,0 +1,267 @@
+{
+  "environment": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v24.19.0",
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "logicalCpus": 5,
+    "memoryBytes": 18882699264
+  },
+  "corpus": {
+    "fileCount": 200,
+    "source": "import { Imported } from './types';\nexport type Shape = { value: Imported };\nexport function check(value: number) {\n  debugger;\n  let total = 1;\n  console.log(\"hello\");\n  if (value == 1)\n    return total;\n  return value;\n}\n// @ts-expect-error\nexport const wrong: string = 1;\nexport const filler0 = 0\nexport const filler1 = 1\nexport const filler2 = 2\nexport const filler3 = 3\nexport const filler4 = 4\nexport const filler5 = 5\nexport const filler6 = 6\nexport const filler7 = 7\nexport const filler8 = 8\nexport const filler9 = 9\nexport const filler10 = 10\nexport const filler11 = 11\nexport const filler12 = 12\nexport const filler13 = 13\nexport const filler14 = 14\nexport const filler15 = 15\nexport const filler16 = 16\nexport const filler17 = 17\nexport const filler18 = 18\nexport const filler19 = 19\nexport const filler20 = 20\nexport const filler21 = 21\nexport const filler22 = 22\nexport const filler23 = 23\nexport const filler24 = 24\nexport const filler25 = 25\nexport const filler26 = 26\nexport const filler27 = 27\nexport const filler28 = 28\nexport const filler29 = 29\nexport const filler30 = 30\nexport const filler31 = 31\nexport const filler32 = 32\nexport const filler33 = 33\nexport const filler34 = 34\nexport const filler35 = 35\nexport const filler36 = 36\nexport const filler37 = 37\nexport const filler38 = 38\nexport const filler39 = 39\nexport const filler40 = 40\nexport const filler41 = 41\nexport const filler42 = 42\nexport const filler43 = 43\nexport const filler44 = 44\nexport const filler45 = 45\nexport const filler46 = 46\nexport const filler47 = 47\nexport const filler48 = 48\nexport const filler49 = 49\nexport const filler50 = 50\nexport const filler51 = 51\nexport const filler52 = 52\nexport const filler53 = 53\nexport const filler54 = 54\nexport const filler55 = 55\nexport const filler56 = 56\nexport const filler57 = 57\nexport const filler58 = 58\nexport const filler59 = 59\n",
+    "linesPerFile": 72,
+    "repetitions": 5,
+    "oxlintThreads": 1,
+    "eslintConcurrency": "off"
+  },
+  "protocol": "First new process after generating corpus (not OS-cache cold); warm = repeated new processes with warm filesystem/module byte cache, alternating order. No lint-result caches. Full hybrid is sequential sum of both complete passes. No persistent Oxlint process API or privileged cache eviction used. Type-aware workload not benchmarked.",
+  "rows": [
+    {
+      "mode": "native",
+      "configuredRuleCount": 6,
+      "baselineDiagnostics": {
+        "signature": "830e43febca860bd570268eacfada9e0796aa4568e9172a5d3e9d55dde712aa0",
+        "diagnostics": 1200,
+        "rules": {
+          "eqeqeq": 200,
+          "no-console": 200,
+          "no-debugger": 200,
+          "prefer-const": 200,
+          "ts/ban-ts-comment": 200,
+          "ts/consistent-type-definitions": 200
+        },
+        "files": 200,
+        "lintMs": 884.7500469999998
+      },
+      "targetDiagnostics": {
+        "signature": "830e43febca860bd570268eacfada9e0796aa4568e9172a5d3e9d55dde712aa0",
+        "diagnostics": 1200,
+        "files": 200,
+        "rules": {
+          "ts/ban-ts-comment": 200,
+          "ts/consistent-type-definitions": 200,
+          "no-debugger": 200,
+          "prefer-const": 200,
+          "no-console": 200,
+          "eqeqeq": 200
+        }
+      },
+      "firstProcessMs": {
+        "eslint": 2585.5634120000004,
+        "target": 59.805710999999974
+      },
+      "warmProcessMs": {
+        "eslint": [
+          2707.3250659999994,
+          2755.3469219999997,
+          2732.653687,
+          2684.288050000001,
+          2672.347919
+        ],
+        "target": [
+          69.00504699999965,
+          71.6747379999997,
+          68.27232200000071,
+          59.67988899999909,
+          63.80568100000164
+        ]
+      },
+      "medianMs": {
+        "eslint": 2707.3250659999994,
+        "target": 68.27232200000071
+      },
+      "speedup": 39.65479694685016
+    },
+    {
+      "mode": "native-lean",
+      "configuredRuleCount": 6,
+      "baselineDiagnostics": {
+        "signature": "830e43febca860bd570268eacfada9e0796aa4568e9172a5d3e9d55dde712aa0",
+        "diagnostics": 1200,
+        "rules": {
+          "eqeqeq": 200,
+          "no-console": 200,
+          "no-debugger": 200,
+          "prefer-const": 200,
+          "ts/ban-ts-comment": 200,
+          "ts/consistent-type-definitions": 200
+        },
+        "files": 200,
+        "lintMs": 991.4647550000001
+      },
+      "targetDiagnostics": {
+        "signature": "830e43febca860bd570268eacfada9e0796aa4568e9172a5d3e9d55dde712aa0",
+        "diagnostics": 1200,
+        "files": 200,
+        "rules": {
+          "ts/ban-ts-comment": 200,
+          "ts/consistent-type-definitions": 200,
+          "no-debugger": 200,
+          "prefer-const": 200,
+          "no-console": 200,
+          "eqeqeq": 200
+        }
+      },
+      "firstProcessMs": {
+        "eslint": 1618.3853909999998,
+        "target": 67.81199600000036
+      },
+      "warmProcessMs": {
+        "eslint": [
+          1611.611329000003,
+          1551.8394679999983,
+          1580.1858550000034,
+          1571.929,
+          1548.650912000001
+        ],
+        "target": [
+          60.39163700000063,
+          65.03043599999728,
+          64.41084300000148,
+          71.21954900000128,
+          64.34257100000104
+        ]
+      },
+      "medianMs": {
+        "eslint": 1571.929,
+        "target": 64.41084300000148
+      },
+      "speedup": 24.404726390554522
+    },
+    {
+      "mode": "mixed-lean",
+      "configuredRuleCount": 9,
+      "baselineDiagnostics": {
+        "signature": "9a76f22eb52091c18f7582029d621d54eac9a4068aadf0d68b476b251feb5023",
+        "diagnostics": 3200,
+        "rules": {
+          "eqeqeq": 200,
+          "no-console": 200,
+          "no-debugger": 200,
+          "prefer-const": 200,
+          "style/quotes": 200,
+          "style/semi": 1600,
+          "ts/ban-ts-comment": 200,
+          "ts/consistent-type-definitions": 200,
+          "ts/consistent-type-imports": 200
+        },
+        "files": 200,
+        "lintMs": 1101.430519
+      },
+      "targetDiagnostics": {
+        "signature": "9a76f22eb52091c18f7582029d621d54eac9a4068aadf0d68b476b251feb5023",
+        "diagnostics": 3200,
+        "files": 200,
+        "rules": {
+          "ts/ban-ts-comment": 200,
+          "ts/consistent-type-definitions": 200,
+          "no-debugger": 200,
+          "prefer-const": 200,
+          "no-console": 200,
+          "eqeqeq": 200,
+          "style/semi": 1600,
+          "style/quotes": 200,
+          "ts/consistent-type-imports": 200
+        }
+      },
+      "firstProcessMs": {
+        "eslint": 1724.723503000001,
+        "target": 1122.380054000001
+      },
+      "warmProcessMs": {
+        "eslint": [
+          1606.2296600000009,
+          1682.1428540000052,
+          1704.3089159999945,
+          1641.5341069999995,
+          1760.1649469999975
+        ],
+        "target": [
+          1107.1365849999966,
+          1076.435458,
+          1187.940429000002,
+          1061.7282630000045,
+          1112.8259909999979
+        ]
+      },
+      "medianMs": {
+        "eslint": 1682.1428540000052,
+        "target": 1107.1365849999966
+      },
+      "speedup": 1.519363443309942
+    },
+    {
+      "mode": "full-hybrid",
+      "configuredRuleCount": 308,
+      "baselineDiagnostics": {
+        "signature": "c6d3113ae4b3760e9cfcba24874d44d338e1b5045ec809723d845de8218226dd",
+        "diagnostics": 3400,
+        "rules": {
+          "eqeqeq": 200,
+          "import/newline-after-import": 200,
+          "no-console": 200,
+          "no-debugger": 200,
+          "prefer-const": 200,
+          "style/quotes": 200,
+          "style/semi": 1600,
+          "ts/ban-ts-comment": 200,
+          "ts/consistent-type-definitions": 200,
+          "ts/consistent-type-imports": 200
+        },
+        "files": 200,
+        "lintMs": 2570.2991630000006
+      },
+      "targetDiagnostics": {
+        "signature": "192b02e39b57f061459bee01a31752f7b30499ed63d1208647da78f24796453c",
+        "diagnostics": 2000,
+        "files": 200,
+        "rules": {
+          "no-debugger": 200,
+          "style/semi": 1600,
+          "style/quotes": 200
+        }
+      },
+      "residualDiagnostics": {
+        "signature": "73f95dac07547e53b0e1c908ac60d2141c392fd06c149305cfec3b777c7cf53c",
+        "diagnostics": 1400,
+        "rules": {
+          "eqeqeq": 200,
+          "import/newline-after-import": 200,
+          "no-console": 200,
+          "prefer-const": 200,
+          "ts/ban-ts-comment": 200,
+          "ts/consistent-type-definitions": 200,
+          "ts/consistent-type-imports": 200
+        },
+        "files": 200,
+        "lintMs": 2472.0319170000002
+      },
+      "firstProcessMs": {
+        "eslint": 4286.467395,
+        "target": 4557.405322999999
+      },
+      "warmProcessMs": {
+        "eslint": [
+          4327.841506000004,
+          4293.305269999997,
+          4308.281491000002,
+          4469.788447999992,
+          4605.627924
+        ],
+        "target": [
+          4671.479050000002,
+          4659.081639000004,
+          4693.1170750000165,
+          4554.058351999993,
+          5000.410982999994
+        ]
+      },
+      "medianMs": {
+        "eslint": 4327.841506000004,
+        "target": 4671.479050000002
+      },
+      "speedup": 0.9264392411221458
+    }
+  ]
+}
