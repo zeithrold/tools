@@ -1,0 +1,91 @@
+name: Stage frontend checks package
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/frontend-checks/**'
+      - 'scripts/npm-staging.mjs'
+      - '.github/workflows/publish-frontend.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-stage
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    strategy:
+      matrix:
+        node: [22, 24]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/frontend-checks
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.22.0
+          run_install: false
+      - run: pnpm install --frozen-lockfile
+      - name: Lint shared stage guard
+        working-directory: .
+        run: packages/frontend-checks/node_modules/.bin/eslint scripts/npm-staging.mjs --config packages/frontend-checks/eslint.config.js --max-warnings 0
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run check
+      - name: Pack verified artifact
+        if: matrix.node == 24
+        run: |
+          mkdir -p "$RUNNER_TEMP/frontend-artifact"
+          pnpm pack --out "$RUNNER_TEMP/frontend-artifact/package.tgz"
+          git rev-parse HEAD > "$RUNNER_TEMP/frontend-artifact/source-commit.txt"
+          cd "$RUNNER_TEMP/frontend-artifact"
+          sha256sum package.tgz source-commit.txt > SHA256SUMS
+      - uses: actions/upload-artifact@v7
+        if: matrix.node == 24
+        with:
+          name: frontend-package-${{ github.sha }}
+          path: ${{ runner.temp }}/frontend-artifact/
+
+  stage:
+    needs: verify
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/frontend-checks
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.22.0
+          run_install: false
+      - uses: actions/download-artifact@v8
+        with:
+          name: frontend-package-${{ github.sha }}
+          path: ${{ runner.temp }}/frontend-artifact/
+      - name: Verify artifact and immutable source
+        run: |
+          cd "$RUNNER_TEMP/frontend-artifact"
+          sha256sum --check SHA256SUMS
+          test "$(cat source-commit.txt)" = "$GITHUB_SHA"
+      - name: Stage with authorized stage-only token
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: node scripts/stage.mjs "$RUNNER_TEMP/frontend-artifact/package.tgz"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: frontend-stage-result-${{ github.sha }}
+          path: packages/frontend-checks/stage-result.json

@@ -1,0 +1,10 @@
+packages:
+  - .
+minimumReleaseAge: 1440
+minimumReleaseAgeExcludePrune: true
+shellEmulator: true
+trustPolicy: no-downgrade
+minimumReleaseAgeExclude:
+  - "@ztd-me/eslint@0.1.1"
+trustPolicyExclude:
+  - semver@6.3.1

@@ -13,3 +13,5 @@ Read the project's `AGENTS.md`, package manifest, lockfile, and `zt.json` before
 4. Verify affected UI states and failure recovery with appropriate tests and captures. Do not claim visual approval from a screenshot diff or passing DOM assertion alone.
 
 Report exact commands, results, and unrun checks. Keep project-specific framework and deployment steps in the project.
+
+For frontend aggregate gates, use frontend-verification and an explicit zt check profile. Include CSS and build checks, retain browser reports/attachments, and preserve required failures. A successful aggregate exit does not establish untested routes or states.

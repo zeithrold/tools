@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/zeithrold/tools/internal/inspect"
+	"github.com/zeithrold/tools/internal/project"
 )
 
 type Step struct {
@@ -59,6 +60,20 @@ func Build(root, moduleID, capability string) (Result, error) {
 		return result, nil
 	}
 	moduleRoot := filepath.Join(report.Root, filepath.FromSlash(module.Path))
+	config, err := project.Load(report.Root)
+	if err != nil {
+		return Result{}, err
+	}
+	if config != nil {
+		for _, declared := range config.Modules {
+			if declared.ID == moduleID {
+				if argv, ok := declared.Commands[capability]; ok {
+					result.Steps = append(result.Steps, Step{Argv: executionArgv(argv), Dir: moduleRoot, Reason: "explicit native argv from zt.json; review command semantics"})
+					return result, nil
+				}
+			}
+		}
+	}
 	switch module.Stack {
 	case "go":
 		result.planGo(moduleRoot, capability, *found)
@@ -143,9 +158,10 @@ func (r *Result) planJSTS(root, capability string) {
 		r.Warnings = append(r.Warnings, "cannot parse package.json: "+err.Error())
 		return
 	}
-	manager := "npm"
-	if name, _, ok := strings.Cut(pkg.PackageManager, "@"); ok && (name == "pnpm" || name == "yarn" || name == "npm") {
-		manager = name
+	manager, err := packageManager(root, pkg.PackageManager)
+	if err != nil {
+		r.Warnings = append(r.Warnings, err.Error())
+		return
 	}
 	var candidates []string
 	switch capability {
@@ -155,6 +171,12 @@ func (r *Result) planJSTS(root, capability string) {
 		candidates = []string{"lint", "lint:check"}
 	case "typecheck":
 		candidates = []string{"typecheck", "check:types", "check-types"}
+	case "build":
+		candidates = []string{"build"}
+	case "css":
+		candidates = []string{"lint:css", "check:css"}
+	case "a11y":
+		candidates = []string{"test:a11y", "check:a11y"}
 	case "e2e":
 		candidates = []string{"test:e2e", "e2e:test", "e2e"}
 	default:
@@ -169,9 +191,20 @@ func (r *Result) planJSTS(root, capability string) {
 		if manager == "npm" {
 			argv = []string{"npm", "run", name}
 		}
-		r.Steps = append(r.Steps, Step{Argv: argv, Dir: root, Reason: "declared package script: " + pkg.Scripts[name] + "; inspect service and browser preconditions"})
+		r.Steps = append(r.Steps, Step{Argv: executionArgv(argv), Dir: root, Reason: "declared package script: " + pkg.Scripts[name] + "; inspect service and browser preconditions"})
 		return
 	}
+}
+
+// pnpm 11 defaults to auto-installing before scripts. An explicit CLI setting
+// also works without pnpm-workspace.yaml, where its environment override is ignored.
+func executionArgv(argv []string) []string {
+	name := strings.TrimSuffix(strings.TrimSuffix(filepath.Base(argv[0]), ".cmd"), ".exe")
+	if name != "pnpm" {
+		return argv
+	}
+	result := []string{argv[0], "--config.verify-deps-before-run=error"}
+	return append(result, argv[1:]...)
 }
 
 func hasRecipe(filename, recipe string) bool {
@@ -189,4 +222,27 @@ func hasRecipe(filename, recipe string) bool {
 		}
 	}
 	return false
+}
+
+func packageManager(root, declared string) (string, error) {
+	name, _, _ := strings.Cut(declared, "@")
+	if declared != "" {
+		if name == "pnpm" || name == "npm" || name == "yarn" {
+			return name, nil
+		}
+		return "", fmt.Errorf("unsupported packageManager %q; declare explicit commands", declared)
+	}
+	found := map[string]bool{}
+	for file, manager := range map[string]string{"pnpm-lock.yaml": "pnpm", "package-lock.json": "npm", "npm-shrinkwrap.json": "npm", "yarn.lock": "yarn"} {
+		if info, err := os.Stat(filepath.Join(root, file)); err == nil && info.Mode().IsRegular() {
+			found[manager] = true
+		}
+	}
+	if len(found) != 1 {
+		return "", fmt.Errorf("package manager is missing or ambiguous; set packageManager or explicit commands")
+	}
+	for manager := range found {
+		return manager, nil
+	}
+	panic("unreachable")
 }

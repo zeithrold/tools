@@ -1,12 +1,17 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/zeithrold/tools/internal/check"
 	"io"
 	"os"
+	"os/signal"
+	"path/filepath"
 	"strings"
+	"time"
 
 	tools "github.com/zeithrold/tools"
 	"github.com/zeithrold/tools/internal/inspect"
@@ -24,7 +29,7 @@ func main() {
 
 func run(args []string, output io.Writer) error {
 	if len(args) == 0 {
-		return fmt.Errorf("usage: zt inspect [--root DIR] [--json] | zt plan CAPABILITY [--module ID] [--root DIR] [--json] | zt sync [--root DIR] [--plan] [--json] | zt version")
+		return fmt.Errorf("usage: zt inspect [--root DIR] [--json] | zt plan CAPABILITY [--module ID] [--root DIR] [--json] | zt sync [--root DIR] [--plan] [--json] | zt check [--module ID] [--profile NAME] [--root DIR] [--json] | zt version")
 	}
 	switch args[0] {
 	case "version":
@@ -127,6 +132,50 @@ func run(args []string, output io.Writer) error {
 			}
 		}
 		return nil
+	case "check":
+		flags := flag.NewFlagSet("check", flag.ContinueOnError)
+		flags.SetOutput(io.Discard)
+		root := flags.String("root", ".", "project directory")
+		module := flags.String("module", "root", "module id")
+		profile := flags.String("profile", "frontend", "explicit zt.json profile")
+		artifacts := flags.String("artifacts", "", "artifact parent directory; defaults to .zt/artifacts")
+		timeout := flags.Duration("timeout", 10*time.Minute, "per-command timeout")
+		asJSON := flags.Bool("json", false, "machine-readable execution report")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		if flags.NArg() != 0 {
+			return fmt.Errorf("check: unexpected arguments %v", flags.Args())
+		}
+		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+		defer cancel()
+		report, err := check.Run(ctx, check.Options{Root: *root, Module: *module, Profile: *profile, Output: *artifacts, Timeout: *timeout})
+		if err != nil {
+			return err
+		}
+		if *asJSON {
+			if err := json.NewEncoder(output).Encode(report); err != nil {
+				return err
+			}
+		} else {
+			for _, execution := range report.Checks {
+				if _, err := fmt.Fprintf(output, "%s: %s (%s)\n", execution.Capability, execution.Status, execution.Expectation); err != nil {
+					return err
+				}
+			}
+			if _, err := fmt.Fprintf(output, "artifacts: %s\n", report.ArtifactDir); err != nil {
+				return err
+			}
+			for _, warning := range report.Warnings {
+				if _, err := fmt.Fprintln(output, "warning:", warning); err != nil {
+					return err
+				}
+			}
+		}
+		if report.Status != "passed" {
+			return fmt.Errorf("check failed; see %s", filepath.Join(report.ArtifactDir, "report.json"))
+		}
+		return nil
 	case "sync":
 		flags := flag.NewFlagSet("sync", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -175,6 +224,6 @@ func run(args []string, output io.Writer) error {
 		}
 		return nil
 	default:
-		return fmt.Errorf("unknown command %q; use inspect, plan, sync, or version", strings.TrimSpace(args[0]))
+		return fmt.Errorf("unknown command %q; use inspect, plan, check, sync, or version", strings.TrimSpace(args[0]))
 	}
 }

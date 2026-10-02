@@ -9,6 +9,51 @@ permissions:
   contents: read
 
 jobs:
+  frontend:
+    strategy:
+      matrix:
+        node: [22, 24]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.22.0
+          run_install: false
+      - run: pnpm install --frozen-lockfile
+        working-directory: packages/frontend-checks
+      - name: Lint shared stage guard
+        run: packages/frontend-checks/node_modules/.bin/eslint scripts/npm-staging.mjs --config packages/frontend-checks/eslint.config.js --max-warnings 0
+      - run: pnpm exec playwright install --with-deps chromium
+        working-directory: packages/frontend-checks
+      - run: |
+          mkdir -p artifacts/frontend
+          go build -ldflags "-X github.com/zeithrold/tools.releaseVersion=source-${GITHUB_SHA}" -o artifacts/frontend/zt ./cmd/zt
+          artifacts/frontend/zt check --module frontend-checks --profile frontend --timeout 5m
+      - run: pnpm run test:pack
+        working-directory: packages/frontend-checks
+      - run: |
+          pnpm --dir packages/frontend-checks pack --pack-destination "${GITHUB_WORKSPACE}/artifacts/frontend"
+          git rev-parse HEAD > artifacts/frontend/SOURCE_SHA
+          cd artifacts/frontend
+          sha256sum zt *.tgz SOURCE_SHA > SHA256SUMS
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: frontend-${{ github.sha }}-node${{ matrix.node }}
+          path: |
+            artifacts/frontend/
+            .zt/artifacts/
+          include-hidden-files: true
+          if-no-files-found: error
   eslint:
     runs-on: ubuntu-latest
     defaults:
@@ -34,6 +79,14 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.22.0
+          run_install: false
       - run: go test ./...
       - run: go vet ./...
       - run: go build ./cmd/zt

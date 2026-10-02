@@ -31,3 +31,26 @@ func TestLoadRejectsUnknownFieldsAndEscapingPaths(t *testing.T) {
 		}
 	}
 }
+
+func TestProfilesCommandsAndArtifactsRejectInvalidConfiguration(t *testing.T) {
+	root := t.TempDir()
+	for _, fields := range []string{
+		`"profiles":{"frontend":[]}`,
+		`"profiles":{"frontend":["css","css"]}`,
+		`"profiles":{"frontend":["csss"]}`,
+		`"commands":{"css":[]}`,
+		`"commands":{"css":["pnpm","--config.verify-deps-before-run=install","lint"]}`,
+		`"commands":{"css":["runner","\u0000"]}`,
+		`"artifacts":["../outside"]`,
+		`"artifacts":["."]`,
+		`"expect":{"a11yy":"required"}`,
+	} {
+		data := `{"schemaVersion":1,"modules":[{"id":"web","path":".","stack":"js-ts",` + fields + `}]}`
+		if err := os.WriteFile(filepath.Join(root, ConfigName), []byte(data), 0644); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := Load(root); err == nil {
+			t.Fatalf("accepted %s", fields)
+		}
+	}
+}
