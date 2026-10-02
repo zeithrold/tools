@@ -6,7 +6,7 @@ This phase adds shared guidance and native check execution to tools, including t
 
 - `@ztd-me/eslint@0.1.1` is already published. Its standards are unchanged.
 - `zt` and complete Skill directories are shipped together. Pin an exact reviewed tools commit with `go install github.com/zeithrold/tools/cmd/zt@<SHA>` after it is reachable, or use the CI-built Linux binary from that revision. There is no official CLI release tag yet.
-- `@ztd-me/frontend-checks@0.1.0` is prepared for public npm publication. The automatic `publish-frontend.yml` workflow verifies relevant `main` pushes on Node 22 and 24, then stages the exact tested tarball using the existing authorized `NPM_TOKEN` route if its permissions include this package. An owner must review and promote that stage with 2FA. The first-package `0.0.0-stage` placeholder is not the helper release. See [publication and verification](../packages/frontend-checks/docs/publishing.md).
+- `@ztd-me/frontend-checks@0.1.0` is published. Its release source is `3f9a3a7d33befc5a954ba1e86d3aa6d72e2c762f`; the public tarball matches the tested staging artifact. Future releases use automatic Node 22/24 verification, staging and owner 2FA promotion. See [publication and verification](../packages/frontend-checks/docs/publishing.md).
 
 After owner promotion and successful registry smoke checks, consumers install the exact release:
 
@@ -16,7 +16,21 @@ pnpm install --frozen-lockfile
 pnpm exec playwright install chromium
 ```
 
-CI tarballs, source SHAs and checksums are release review evidence. Consumers use the pinned registry package rather than vendoring those artifacts. Preserve release-age, trust and build-script restrictions; if a fresh version is rejected, wait until it is eligible. Do not lower policy or add an exception to force the rollout. Publication is complete only after the exact public version has been installed and both exported modules and declarations verified from a fresh consumer.
+CI tarballs, source SHAs and checksums are release review evidence. Consumers use the pinned registry package rather than vendoring those artifacts. The user authorizes tools verification and the three consumer projects to exempt `@ztd-me/*` from release age because these packages are being updated frequently. Merge this entry into the existing workspace policy:
+
+```yaml
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+minimumReleaseAgeExclude:
+  - '@ztd-me/*'
+minimumReleaseAgeExcludePrune: true
+shellEmulator: true
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - semver@6.3.1
+```
+
+Retain other approved entries, package integrity checks and dependency-build permissions. The scope exception affects age only: all other packages keep their age gate, and `@ztd-me/*` remains subject to no-downgrade. `semver@6.3.1` is the existing exact trust exception needed by the ESLint graph; it is not a scope trust exemption. pnpm 11.22 retains wildcard age entries during pruning. Publication verification requires fresh exact registry installation, both exported modules, declarations, native CSS and real browser pass/failure evidence before consumer rollout.
 
 Set the consumer `packageManager` to its approved pnpm version (currently 11.22.0), retain its dependency policies and test the resulting frozen lockfile. The helper's peer is Playwright Test ^1.62.0; package validation pins 1.62.0. CI validates on Node 22 and 24. Browser binaries are installed explicitly by the consuming environment.
 
