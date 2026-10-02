@@ -2,21 +2,16 @@ name: Stage ESLint package
 
 on:
   push:
-    branches: ['release/eslint-stage-*']
-  workflow_dispatch:
-    inputs:
-      authentication:
-        description: Authorized staging route (OIDC requires an existing npm trust grant)
-        type: choice
-        options: [token, oidc]
-        default: token
-        required: true
+    branches: [main]
+    paths:
+      - 'packages/eslint-config/**'
+      - '.github/workflows/publish-eslint.yml'
 
 permissions:
   contents: read
 
 concurrency:
-  group: eslint-stage-${{ github.ref }}
+  group: eslint-stage
   cancel-in-progress: false
 
 jobs:
@@ -53,9 +48,8 @@ jobs:
           name: eslint-package-${{ github.sha }}
           path: ${{ runner.temp }}/eslint-artifact/
 
-  stage-token:
+  stage:
     needs: verify
-    if: github.event_name == 'push' || inputs.authentication == 'token'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -81,42 +75,6 @@ jobs:
       - name: Stage with authorized stage-only token
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          STAGE_AUTH: token
-        run: node scripts/stage.mjs "$RUNNER_TEMP/eslint-artifact/package.tgz"
-      - uses: actions/upload-artifact@v7
-        with:
-          name: eslint-stage-result-${{ github.sha }}
-          path: packages/eslint-config/stage-result.json
-
-  stage-oidc:
-    needs: verify
-    if: github.event_name == 'workflow_dispatch' && inputs.authentication == 'oidc'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    defaults:
-      run:
-        working-directory: packages/eslint-config
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.ref }}
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          package-manager-cache: false
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.19.0
-          run_install: false
-      - uses: actions/download-artifact@v8
-        with:
-          name: eslint-package-${{ github.sha }}
-          path: ${{ runner.temp }}/eslint-artifact/
-      - name: Stage with user-configured npm Trusted Publisher
-        env:
-          STAGE_AUTH: oidc
         run: node scripts/stage.mjs "$RUNNER_TEMP/eslint-artifact/package.tgz"
       - uses: actions/upload-artifact@v7
         with:

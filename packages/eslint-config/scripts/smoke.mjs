@@ -25,18 +25,17 @@ console.log('ESM and framework smoke passed')
 
 export async function consumerSmoke(spec, label) {
   const directory = await mkdtemp(join(tmpdir(), 'ztd-eslint-consumer-'))
+  const env = {
+    ...process.env,
+    pnpm_config_store_dir: join(tmpdir(), 'ztd-eslint-smoke-store'),
+    pnpm_config_cache_dir: join(tmpdir(), 'ztd-eslint-smoke-cache'),
+  }
   await writeFile(join(directory, 'package.json'), JSON.stringify({
     private: true,
     type: 'module',
     dependencies: { '@ztd-me/eslint': spec, 'eslint': '10.11.0', 'typescript': '6.0.3' },
   }))
-  execFileSync('pnpm', [
-    'install',
-    '--store-dir',
-    join(tmpdir(), 'ztd-eslint-smoke-store'),
-    '--cache-dir',
-    join(tmpdir(), 'ztd-eslint-smoke-cache'),
-  ], { cwd: directory, stdio: 'inherit' })
+  execFileSync('pnpm', ['install'], { cwd: directory, stdio: 'inherit', env })
   await writeConsumerFiles(directory)
   execFileSync('node', ['smoke.mjs'], { cwd: directory, stdio: 'inherit' })
   execFileSync('pnpm', [
@@ -44,7 +43,7 @@ export async function consumerSmoke(spec, label) {
     'tsc',
     '-p',
     'tsconfig.json',
-  ], { cwd: directory, stdio: 'inherit' })
+  ], { cwd: directory, stdio: 'inherit', env })
   console.log(`${label}: installation, ESM exports, types, JS/TS/React/Vue configs and lint all passed: ${directory}`)
   return directory
 }
