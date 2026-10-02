@@ -64,6 +64,8 @@ jobs:
         working-directory: packages/frontend
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
@@ -72,14 +74,20 @@ jobs:
         with:
           version: 11.22.0
           run_install: false
+      - name: Record immutable package source
+        run: |
+          mkdir -p .artifacts
+          git rev-parse HEAD > .artifacts/SOURCE_SHA
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm run check
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: frontend-shell-${{ github.sha }}-node${{ matrix.node }}
-          path: packages/frontend/.artifacts/
+          name: frontend-shell-${{ github.event.pull_request.head.sha || github.sha }}-node${{ matrix.node }}
+          path: |
+            packages/frontend/.artifacts/
+            !packages/frontend/.artifacts/consumer-*/node_modules/**
           include-hidden-files: true
           if-no-files-found: error
   eslint:
