@@ -8,7 +8,7 @@
 - `zt plan CAPABILITY --module ID`: read-only command plan for Go and JS/TS. It prefers existing project recipes and package scripts. Generated Go fuzz commands have a 30-second budget per target.
 - `zt sync --plan`: read-only preview of bundled Skill directory changes.
 - `zt sync`: installs selected complete Skill directories and writes `zt.lock.json`. It refuses to overwrite unmanaged or locally edited Skill directories. Removal is intentionally manual in this slice.
-- `packages/eslint-config`: unpublished JS/TS flat-config package. It is a native ESLint package, not code executed by the Go CLI.
+- `packages/eslint-config`: strict JS/TS/React/Vue flat-config package (`@ztd-me/eslint`), with a pnpm stage-only publication workflow. It is a native ESLint package, not code executed by the Go CLI.
 
 `zt check`, `zt run`, `zt doctor`, native command planning for the other four stacks, and lint distribution for other stacks are **not implemented yet**. Release automation is configured, but no versioned release exists yet. This repository does not replace `ledger-tooling` or modify Ledger's current gates.
 
@@ -80,10 +80,10 @@ internal/project/       zt.json validation
 internal/inspect/       read-only stack inventory
 internal/skills/        Skill planning, collision detection, and sync
 skills/                 complete bundled Skill directories
-packages/eslint-config/ native ESLint package (unpublished)
+packages/eslint-config/ native strict ESLint package
 examples/               proposed pilot configurations
 ```
 
 ## License and publication
 
-The repository is public. CI tests each push and pull request. A semantic version tag triggers a GitHub Release with macOS, Linux, and Windows archives for amd64 and arm64, plus SHA-256 checksums. The release workflow does not publish the ESLint package or create tags automatically. No versioned release has been published yet. License and release signing remain open decisions.
+The repository is public. CI tests each push and pull request. A semantic version tag triggers a GitHub Release with macOS, Linux, and Windows archives for amd64 and arm64, plus SHA-256 checksums. The Go release workflow does not publish the ESLint package or create tags automatically. The separate `publish-eslint.yml` workflow verifies and stages `@ztd-me/eslint`; a maintainer must promote the stage with 2FA before it becomes installable. No versioned release has been published yet. License and release signing remain open decisions.

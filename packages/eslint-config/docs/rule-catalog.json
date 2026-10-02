@@ -1,0 +1,1903 @@
+[
+  {
+    "group": "shared",
+    "rule": "complexity",
+    "value": [
+      "error",
+      {
+        "max": 10,
+        "variant": "classic"
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/complexity"
+  },
+  {
+    "group": "shared",
+    "rule": "sonarjs/cognitive-complexity",
+    "value": [
+      "error",
+      15
+    ],
+    "status": "enabled",
+    "source": "https://sonarsource.github.io/rspec/#/rspec/S3776/javascript"
+  },
+  {
+    "group": "shared",
+    "rule": "max-depth",
+    "value": [
+      "error",
+      {
+        "max": 4
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/max-depth"
+  },
+  {
+    "group": "shared",
+    "rule": "max-lines-per-function",
+    "value": [
+      "error",
+      {
+        "max": 60,
+        "skipBlankLines": true,
+        "skipComments": true,
+        "IIFEs": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/max-lines-per-function"
+  },
+  {
+    "group": "shared",
+    "rule": "max-lines",
+    "value": [
+      "error",
+      {
+        "max": 300,
+        "skipBlankLines": true,
+        "skipComments": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/max-lines"
+  },
+  {
+    "group": "shared",
+    "rule": "max-params",
+    "value": [
+      "error",
+      {
+        "max": 4
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/max-params"
+  },
+  {
+    "group": "shared",
+    "rule": "style/max-len",
+    "value": [
+      "error",
+      {
+        "code": 120,
+        "comments": 120,
+        "tabWidth": 2,
+        "ignoreUrls": true,
+        "ignoreStrings": false,
+        "ignoreTemplateLiterals": false,
+        "ignoreRegExpLiterals": false,
+        "ignoreComments": false,
+        "ignoreTrailingComments": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.style/rules/max-len"
+  },
+  {
+    "group": "shared",
+    "rule": "eqeqeq",
+    "value": [
+      "error",
+      "always"
+    ],
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/eqeqeq"
+  },
+  {
+    "group": "shared",
+    "rule": "curly",
+    "value": [
+      "error",
+      "all"
+    ],
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/curly"
+  },
+  {
+    "group": "shared",
+    "rule": "array-callback-return",
+    "value": [
+      "error",
+      {
+        "allowImplicit": false,
+        "checkForEach": true,
+        "allowVoid": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/array-callback-return"
+  },
+  {
+    "group": "shared",
+    "rule": "no-empty",
+    "value": [
+      "error",
+      {
+        "allowEmptyCatch": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/no-empty"
+  },
+  {
+    "group": "shared",
+    "rule": "no-shadow",
+    "value": [
+      "error",
+      {
+        "builtinGlobals": false,
+        "hoist": "all",
+        "ignoreOnInitialization": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/no-shadow"
+  },
+  {
+    "group": "shared",
+    "rule": "no-nested-ternary",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/no-nested-ternary"
+  },
+  {
+    "group": "shared",
+    "rule": "no-unused-expressions",
+    "value": [
+      "error",
+      {
+        "allowShortCircuit": false,
+        "allowTernary": false,
+        "allowTaggedTemplates": true,
+        "enforceForJSX": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/no-unused-expressions"
+  },
+  {
+    "group": "shared",
+    "rule": "eslint-comments/require-description",
+    "value": [
+      "error",
+      {
+        "ignore": [
+          "eslint-enable"
+        ]
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint-community.github.io/eslint-plugin-eslint-comments/rules/require-description.html"
+  },
+  {
+    "group": "shared",
+    "rule": "unused-imports/no-unused-vars",
+    "value": [
+      "error",
+      {
+        "args": "all",
+        "argsIgnorePattern": "^_",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "reportUsedIgnorePattern": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://github.com/sweepline/eslint-plugin-unused-imports/blob/master/docs/rules/no-unused-vars.md"
+  },
+  {
+    "group": "shared",
+    "rule": "style/array-bracket-newline",
+    "value": [
+      "error",
+      {
+        "multiline": true
+      }
+    ],
+    "status": "replaced: ztd/array-layout (full researched policy)",
+    "source": "https://eslint.style/rules/array-bracket-newline"
+  },
+  {
+    "group": "shared",
+    "rule": "style/array-element-newline",
+    "value": [
+      "error",
+      {
+        "ArrayExpression": {
+          "minItems": 3,
+          "multiline": true,
+          "consistent": true
+        },
+        "ArrayPattern": "consistent"
+      }
+    ],
+    "status": "replaced: ztd/array-layout (full researched policy)",
+    "source": "https://eslint.style/rules/array-element-newline"
+  },
+  {
+    "group": "shared",
+    "rule": "no-constant-binary-expression",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/no-constant-binary-expression"
+  },
+  {
+    "group": "shared",
+    "rule": "no-unsafe-optional-chaining",
+    "value": [
+      "error",
+      {
+        "disallowArithmeticOperators": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/no-unsafe-optional-chaining"
+  },
+  {
+    "group": "shared",
+    "rule": "no-promise-executor-return",
+    "value": [
+      "error",
+      {
+        "allowVoid": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/no-promise-executor-return"
+  },
+  {
+    "group": "shared",
+    "rule": "no-setter-return",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.org/docs/latest/rules/no-setter-return"
+  },
+  {
+    "group": "ts-syntax",
+    "rule": "ts/no-explicit-any",
+    "value": [
+      "error",
+      {
+        "fixToUnknown": false,
+        "ignoreRestArgs": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-explicit-any"
+  },
+  {
+    "group": "ts-syntax",
+    "rule": "ts/no-non-null-assertion",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-non-null-assertion"
+  },
+  {
+    "group": "ts-syntax",
+    "rule": "ts/no-empty-object-type",
+    "value": [
+      "error",
+      {
+        "allowInterfaces": "never",
+        "allowObjectTypes": "never"
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-empty-object-type"
+  },
+  {
+    "group": "ts-syntax",
+    "rule": "ts/ban-ts-comment",
+    "value": [
+      "error",
+      {
+        "ts-ignore": true,
+        "ts-nocheck": true,
+        "ts-check": false,
+        "ts-expect-error": "allow-with-description",
+        "minimumDescriptionLength": 10
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/ban-ts-comment"
+  },
+  {
+    "group": "ts-syntax",
+    "rule": "ts/consistent-type-assertions",
+    "value": [
+      "error",
+      {
+        "assertionStyle": "as",
+        "objectLiteralTypeAssertions": "never",
+        "arrayLiteralTypeAssertions": "never"
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/consistent-type-assertions"
+  },
+  {
+    "group": "ts-syntax",
+    "rule": "ts/explicit-module-boundary-types",
+    "value": [
+      "error",
+      {
+        "allowArgumentsExplicitlyTypedAsAny": false,
+        "allowDirectConstAssertionInArrowFunctions": false,
+        "allowHigherOrderFunctions": false,
+        "allowOverloadFunctions": false,
+        "allowTypedFunctionExpressions": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/explicit-module-boundary-types"
+  },
+  {
+    "group": "ts-syntax",
+    "rule": "ts/no-useless-constructor",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-useless-constructor"
+  },
+  {
+    "group": "ts-syntax",
+    "rule": "ts/no-invalid-void-type",
+    "value": [
+      "error",
+      {
+        "allowAsThisParameter": true,
+        "allowInGenericTypeArguments": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-invalid-void-type"
+  },
+  {
+    "group": "ts-syntax",
+    "rule": "ts/no-extraneous-class",
+    "value": [
+      "error",
+      {
+        "allowConstructorOnly": false,
+        "allowEmpty": false,
+        "allowStaticOnly": false,
+        "allowWithDecorator": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-extraneous-class"
+  },
+  {
+    "group": "ts-syntax",
+    "rule": "ts/max-params",
+    "value": [
+      "error",
+      {
+        "max": 4,
+        "countVoidThis": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/max-params"
+  },
+  {
+    "group": "ts-syntax",
+    "rule": "ts/no-shadow",
+    "value": [
+      "error",
+      {
+        "builtinGlobals": false,
+        "hoist": "functions-and-types",
+        "ignoreOnInitialization": false,
+        "ignoreTypeValueShadow": true,
+        "ignoreFunctionTypeParameterNameValueShadow": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-shadow"
+  },
+  {
+    "group": "ts-syntax",
+    "rule": "ts/no-unused-expressions",
+    "value": [
+      "error",
+      {
+        "allowShortCircuit": false,
+        "allowTernary": false,
+        "allowTaggedTemplates": true,
+        "enforceForJSX": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-unused-expressions"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/strict-boolean-expressions",
+    "value": [
+      "error",
+      {
+        "allowAny": false,
+        "allowNumber": false,
+        "allowString": false,
+        "allowNullableBoolean": false,
+        "allowNullableEnum": false,
+        "allowNullableNumber": false,
+        "allowNullableObject": false,
+        "allowNullableString": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/strict-boolean-expressions"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-floating-promises",
+    "value": [
+      "error",
+      {
+        "checkThenables": true,
+        "ignoreVoid": false,
+        "ignoreIIFE": false,
+        "allowForKnownSafeCalls": [],
+        "allowForKnownSafePromises": []
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-floating-promises"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-misused-promises",
+    "value": [
+      "error",
+      {
+        "checksConditionals": {
+          "flagUnions": "all"
+        },
+        "checksSpreads": true,
+        "checksVoidReturn": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-misused-promises"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/restrict-plus-operands",
+    "value": [
+      "error",
+      {
+        "allowAny": false,
+        "allowBoolean": false,
+        "allowNullish": false,
+        "allowNumberAndString": false,
+        "allowRegExp": false,
+        "skipCompoundAssignments": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/restrict-plus-operands"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/restrict-template-expressions",
+    "value": [
+      "error",
+      {
+        "allow": [],
+        "allowAny": false,
+        "allowArray": false,
+        "allowBoolean": false,
+        "allowNullish": false,
+        "allowNumber": true,
+        "allowRegExp": false,
+        "allowNever": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/restrict-template-expressions"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/return-await",
+    "value": [
+      "error",
+      "always"
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/return-await"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/switch-exhaustiveness-check",
+    "value": [
+      "error",
+      {
+        "allowDefaultCaseForExhaustiveSwitch": true,
+        "considerDefaultExhaustiveForUnions": false,
+        "requireDefaultForNonUnion": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/switch-exhaustiveness-check"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/only-throw-error",
+    "value": [
+      "error",
+      {
+        "allow": [],
+        "allowRethrowing": true,
+        "allowThrowingAny": false,
+        "allowThrowingUnknown": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/only-throw-error"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-unsafe-type-assertion",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-unsafe-type-assertion"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/use-unknown-in-catch-callback-variable",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/use-unknown-in-catch-callback-variable"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-unnecessary-condition",
+    "value": [
+      "error",
+      {
+        "allowConstantLoopConditions": "only-allowed-literals",
+        "checkTypePredicates": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-unnecessary-condition"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-base-to-string",
+    "value": [
+      "error",
+      {
+        "checkUnknown": true,
+        "ignoredTypeNames": [
+          "Error",
+          "RegExp",
+          "URL",
+          "URLSearchParams"
+        ]
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-base-to-string"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-misused-spread",
+    "value": [
+      "error",
+      {
+        "allow": []
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-misused-spread"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-unsafe-enum-comparison",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-unsafe-enum-comparison"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-deprecated",
+    "value": [
+      "error",
+      {
+        "allow": []
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-deprecated"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/consistent-type-exports",
+    "value": [
+      "error",
+      {
+        "fixMixedExportsWithInlineTypeSpecifier": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/consistent-type-exports"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/prefer-readonly",
+    "value": [
+      "error",
+      {
+        "onlyInlineLambdas": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/prefer-readonly"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/require-array-sort-compare",
+    "value": [
+      "error",
+      {
+        "ignoreStringArrays": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/require-array-sort-compare"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/require-await",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/require-await"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/prefer-nullish-coalescing",
+    "value": [
+      "error",
+      {
+        "ignoreConditionalTests": true,
+        "ignoreMixedLogicalExpressions": false,
+        "ignorePrimitives": {
+          "bigint": false,
+          "boolean": false,
+          "number": false,
+          "string": false
+        }
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/prefer-nullish-coalescing"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/prefer-optional-chain",
+    "value": [
+      "error",
+      {
+        "requireNullish": true,
+        "allowPotentiallyUnsafeFixesThatModifyTheReturnTypeIKnowWhatImDoing": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/prefer-optional-chain"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-array-delete",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-array-delete"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-unsafe-unary-minus",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-unsafe-unary-minus"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/prefer-promise-reject-errors",
+    "value": [
+      "error",
+      {
+        "allowEmptyReject": false,
+        "allowThrowingAny": false,
+        "allowThrowingUnknown": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/prefer-promise-reject-errors"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/await-thenable",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/await-thenable"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-for-in-array",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-for-in-array"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-implied-eval",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-implied-eval"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-unnecessary-type-assertion",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-unnecessary-type-assertion"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-unsafe-argument",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-unsafe-argument"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-unsafe-assignment",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-unsafe-assignment"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-unsafe-call",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-unsafe-call"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-unsafe-member-access",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-unsafe-member-access"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/no-unsafe-return",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/no-unsafe-return"
+  },
+  {
+    "group": "typed",
+    "rule": "ts/unbound-method",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://typescript-eslint.io/rules/unbound-method"
+  },
+  {
+    "group": "react",
+    "rule": "react/exhaustive-deps",
+    "value": [
+      "error",
+      {
+        "enableDangerousAutofixThisMayCauseInfiniteLoops": false,
+        "requireExplicitEffectDeps": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/exhaustive-deps"
+  },
+  {
+    "group": "react",
+    "rule": "react/no-array-index-key",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/no-array-index-key"
+  },
+  {
+    "group": "react",
+    "rule": "react/purity",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/purity"
+  },
+  {
+    "group": "react",
+    "rule": "react/set-state-in-effect",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/set-state-in-effect"
+  },
+  {
+    "group": "react",
+    "rule": "react/web-api-no-leaked-event-listener",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/web-api-no-leaked-event-listener"
+  },
+  {
+    "group": "react",
+    "rule": "react/web-api-no-leaked-intersection-observer",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/web-api-no-leaked-intersection-observer"
+  },
+  {
+    "group": "react",
+    "rule": "react/web-api-no-leaked-interval",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/web-api-no-leaked-interval"
+  },
+  {
+    "group": "react",
+    "rule": "react/web-api-no-leaked-resize-observer",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/web-api-no-leaked-resize-observer"
+  },
+  {
+    "group": "react",
+    "rule": "react/web-api-no-leaked-timeout",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/web-api-no-leaked-timeout"
+  },
+  {
+    "group": "react",
+    "rule": "react/jsx-no-comment-textnodes",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/jsx-no-comment-textnodes"
+  },
+  {
+    "group": "react",
+    "rule": "react/jsx-no-leaked-dollar",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/jsx-no-leaked-dollar"
+  },
+  {
+    "group": "react",
+    "rule": "react/jsx-no-leaked-semicolon",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/jsx-no-leaked-semicolon"
+  },
+  {
+    "group": "react",
+    "rule": "react/dom-no-dangerously-set-innerhtml",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/dom-no-dangerously-set-innerhtml"
+  },
+  {
+    "group": "react",
+    "rule": "react/dom-no-script-url",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/dom-no-script-url"
+  },
+  {
+    "group": "react",
+    "rule": "react/dom-no-unsafe-iframe-sandbox",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/dom-no-unsafe-iframe-sandbox"
+  },
+  {
+    "group": "react",
+    "rule": "react/web-api-no-leaked-fetch",
+    "value": "error",
+    "status": "opt-in: react.experimental",
+    "source": "https://eslint-react.xyz/docs/rules/web-api-no-leaked-fetch"
+  },
+  {
+    "group": "react",
+    "rule": "react/use-state",
+    "value": [
+      "error",
+      {
+        "enforceAssignment": true,
+        "enforceLazyInitialization": true,
+        "enforceSetterName": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/use-state"
+  },
+  {
+    "group": "react",
+    "rule": "react/no-unstable-context-value",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/no-unstable-context-value"
+  },
+  {
+    "group": "react",
+    "rule": "react/no-unstable-default-props",
+    "value": [
+      "error",
+      {
+        "safeDefaultProps": []
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/no-unstable-default-props"
+  },
+  {
+    "group": "react",
+    "rule": "react/dom-no-missing-button-type",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/dom-no-missing-button-type"
+  },
+  {
+    "group": "react",
+    "rule": "react/dom-no-missing-iframe-sandbox",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/dom-no-missing-iframe-sandbox"
+  },
+  {
+    "group": "react",
+    "rule": "react/dom-no-unsafe-target-blank",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/dom-no-unsafe-target-blank"
+  },
+  {
+    "group": "react",
+    "rule": "react/rules-of-hooks",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/rules-of-hooks"
+  },
+  {
+    "group": "react",
+    "rule": "react/error-boundaries",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/error-boundaries"
+  },
+  {
+    "group": "react",
+    "rule": "react/no-missing-key",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/no-missing-key"
+  },
+  {
+    "group": "react",
+    "rule": "react/no-nested-component-definitions",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/no-nested-component-definitions"
+  },
+  {
+    "group": "react",
+    "rule": "react/no-nested-lazy-component-declarations",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/no-nested-lazy-component-declarations"
+  },
+  {
+    "group": "react",
+    "rule": "react/set-state-in-render",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/set-state-in-render"
+  },
+  {
+    "group": "react",
+    "rule": "react/static-components",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/static-components"
+  },
+  {
+    "group": "react",
+    "rule": "react/use-memo",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/use-memo"
+  },
+  {
+    "group": "react",
+    "rule": "react/dom-no-dangerously-set-innerhtml-with-children",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/dom-no-dangerously-set-innerhtml-with-children"
+  },
+  {
+    "group": "react",
+    "rule": "react/dom-no-void-elements-with-children",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint-react.xyz/docs/rules/dom-no-void-elements-with-children"
+  },
+  {
+    "group": "react",
+    "rule": "react/no-leaked-conditional-rendering",
+    "value": "error",
+    "status": "enabled: typed React files only",
+    "source": "https://eslint-react.xyz/docs/rules/no-leaked-conditional-rendering"
+  },
+  {
+    "group": "react",
+    "rule": "react-hooks/globals",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://react.dev/reference/eslint-plugin-react-hooks/lints/globals"
+  },
+  {
+    "group": "react",
+    "rule": "react-hooks/immutability",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability"
+  },
+  {
+    "group": "react",
+    "rule": "react-hooks/refs",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://react.dev/reference/eslint-plugin-react-hooks/lints/refs"
+  },
+  {
+    "group": "react",
+    "rule": "react-hooks/config",
+    "value": "error",
+    "status": "opt-in: react.compiler",
+    "source": "https://react.dev/reference/eslint-plugin-react-hooks/lints/config"
+  },
+  {
+    "group": "react",
+    "rule": "react-hooks/gating",
+    "value": "error",
+    "status": "opt-in: react.compiler",
+    "source": "https://react.dev/reference/eslint-plugin-react-hooks/lints/gating"
+  },
+  {
+    "group": "react",
+    "rule": "react-hooks/incompatible-library",
+    "value": "error",
+    "status": "opt-in: react.compiler",
+    "source": "https://react.dev/reference/eslint-plugin-react-hooks/lints/incompatible-library"
+  },
+  {
+    "group": "react",
+    "rule": "react-hooks/preserve-manual-memoization",
+    "value": "error",
+    "status": "opt-in: react.compiler",
+    "source": "https://react.dev/reference/eslint-plugin-react-hooks/lints/preserve-manual-memoization"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/alt-text",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/alt-text.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/anchor-has-content",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/anchor-has-content.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/anchor-is-valid",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/anchor-is-valid.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/aria-activedescendant-has-tabindex",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/aria-activedescendant-has-tabindex.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/aria-props",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/aria-props.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/aria-proptypes",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/aria-proptypes.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/aria-role",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/aria-role.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/aria-unsupported-elements",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/aria-unsupported-elements.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/autocomplete-valid",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/autocomplete-valid.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/click-events-have-key-events",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/click-events-have-key-events.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/heading-has-content",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/heading-has-content.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/html-has-lang",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/html-has-lang.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/iframe-has-title",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/iframe-has-title.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/img-redundant-alt",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/img-redundant-alt.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/interactive-supports-focus",
+    "value": [
+      "error",
+      {
+        "tabbable": [
+          "button",
+          "checkbox",
+          "link",
+          "progressbar",
+          "searchbox",
+          "slider",
+          "spinbutton",
+          "switch",
+          "textbox"
+        ]
+      }
+    ],
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/interactive-supports-focus.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/label-has-associated-control",
+    "value": [
+      "error",
+      {
+        "assert": "either",
+        "depth": 3
+      }
+    ],
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/main/docs/rules/label-has-associated-control.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/media-has-caption",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/media-has-caption.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/mouse-events-have-key-events",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/mouse-events-have-key-events.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/no-access-key",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/no-access-key.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/no-autofocus",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/no-autofocus.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/no-distracting-elements",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/no-distracting-elements.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/no-interactive-element-to-noninteractive-role",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/no-interactive-element-to-noninteractive-role.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/no-noninteractive-element-interactions",
+    "value": [
+      "error",
+      {
+        "body": [
+          "onError",
+          "onLoad"
+        ],
+        "iframe": [
+          "onError",
+          "onLoad"
+        ],
+        "img": [
+          "onError",
+          "onLoad"
+        ]
+      }
+    ],
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/no-noninteractive-element-interactions.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/no-noninteractive-element-to-interactive-role",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/no-noninteractive-element-to-interactive-role.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/no-noninteractive-tabindex",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/no-noninteractive-tabindex.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/no-redundant-roles",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/no-redundant-roles.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/no-static-element-interactions",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/no-static-element-interactions.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/role-has-required-aria-props",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/role-has-required-aria-props.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/role-supports-aria-props",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/role-supports-aria-props.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/scope",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/scope.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/tabindex-no-positive",
+    "value": "error",
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/tree/HEAD/docs/rules/tabindex-no-positive.md"
+  },
+  {
+    "group": "react-a11y",
+    "rule": "jsx-a11y/control-has-associated-label",
+    "value": [
+      "error",
+      {
+        "depth": 3,
+        "ignoreElements": [
+          "input",
+          "select",
+          "textarea"
+        ]
+      }
+    ],
+    "status": "disabled: JSX a11y ESLint 10 peer incompatibility (user instruction)",
+    "source": "https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/main/docs/rules/control-has-associated-label.md"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-dupe-keys",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-dupe-keys.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-v-html",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-v-html.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-setup-props-reactivity-loss",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-setup-props-reactivity-loss.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-ref-object-reactivity-loss",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-ref-object-reactivity-loss.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-mutating-props",
+    "value": [
+      "error",
+      {
+        "shallowOnly": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-mutating-props.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/require-explicit-emits",
+    "value": [
+      "error",
+      {
+        "allowProps": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/require-explicit-emits.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/require-explicit-slots",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/require-explicit-slots.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/require-prop-types",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/require-prop-types.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-undef-components",
+    "value": [
+      "error",
+      {
+        "ignorePatterns": []
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-undef-components.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-undef-directives",
+    "value": [
+      "error",
+      {
+        "ignore": []
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-undef-directives.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-unused-emit-declarations",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-unused-emit-declarations.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/html-button-has-type",
+    "value": [
+      "error",
+      {
+        "button": true,
+        "submit": true,
+        "reset": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/html-button-has-type.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-template-target-blank",
+    "value": [
+      "error",
+      {
+        "allowReferrer": false,
+        "enforceDynamicLinks": "always"
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-template-target-blank.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/eqeqeq",
+    "value": [
+      "error",
+      "always"
+    ],
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/eqeqeq.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/max-lines-per-block",
+    "value": [
+      "error",
+      {
+        "script": 200,
+        "template": 200,
+        "style": 150,
+        "skipBlankLines": true
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/max-lines-per-block.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/max-template-depth",
+    "value": [
+      "error",
+      {
+        "maxDepth": 5
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/max-template-depth.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/max-len",
+    "value": [
+      "error",
+      {
+        "code": 120,
+        "template": 120,
+        "comments": 120,
+        "tabWidth": 2,
+        "ignoreUrls": true,
+        "ignoreStrings": false,
+        "ignoreTemplateLiterals": false,
+        "ignoreRegExpLiterals": false,
+        "ignoreHTMLAttributeValues": false,
+        "ignoreHTMLTextContents": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/max-len.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/array-bracket-newline",
+    "value": [
+      "error",
+      {
+        "multiline": true
+      }
+    ],
+    "status": "replaced: ztd/array-layout (full researched policy)",
+    "source": "https://eslint.vuejs.org/rules/array-bracket-newline.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/array-element-newline",
+    "value": [
+      "error",
+      {
+        "ArrayExpression": {
+          "minItems": 3,
+          "multiline": true,
+          "consistent": true
+        },
+        "ArrayPattern": "consistent"
+      }
+    ],
+    "status": "replaced: ztd/array-layout (full researched policy)",
+    "source": "https://eslint.vuejs.org/rules/array-element-newline.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-template-shadow",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-template-shadow.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/one-component-per-file",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/one-component-per-file.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-required-prop-with-default",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-required-prop-with-default.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/html-end-tags",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/html-end-tags.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-async-in-computed-properties",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-async-in-computed-properties.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-side-effects-in-computed-properties",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-side-effects-in-computed-properties.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-use-v-if-with-v-for",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-use-v-if-with-v-for.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/require-v-for-key",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/require-v-for-key.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-watch-after-await",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-watch-after-await.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-lifecycle-after-await",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-lifecycle-after-await.html"
+  },
+  {
+    "group": "vue",
+    "rule": "vue/no-expose-after-await",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://eslint.vuejs.org/rules/no-expose-after-await.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/alt-text",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/alt-text.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/anchor-has-content",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/anchor-has-content.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/aria-props",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/aria-props.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/aria-role",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/aria-role.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/aria-unsupported-elements",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/aria-unsupported-elements.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/click-events-have-key-events",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/click-events-have-key-events.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/form-control-has-label",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/form-control-has-label.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/heading-has-content",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/heading-has-content.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/iframe-has-title",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/iframe-has-title.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/interactive-supports-focus",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/interactive-supports-focus.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/label-has-for",
+    "value": [
+      "error",
+      {
+        "required": {
+          "some": [
+            "nesting",
+            "id"
+          ]
+        },
+        "allowChildren": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/label-has-for.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/media-has-caption",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/media-has-caption.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/mouse-events-have-key-events",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/mouse-events-have-key-events.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/no-access-key",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/no-access-key.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/no-aria-hidden-on-focusable",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/no-aria-hidden-on-focusable.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/no-autofocus",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/no-autofocus.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/no-distracting-elements",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/no-distracting-elements.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/no-redundant-roles",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/no-redundant-roles.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/no-role-presentation-on-focusable",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/no-role-presentation-on-focusable.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/no-static-element-interactions",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/no-static-element-interactions.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/role-has-required-aria-props",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/role-has-required-aria-props.html"
+  },
+  {
+    "group": "vue-a11y",
+    "rule": "vue-a11y/tabindex-no-positive",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://vue-a11y.github.io/eslint-plugin-vuejs-accessibility/rules/tabindex-no-positive.html"
+  },
+  {
+    "group": "tests",
+    "rule": "test/valid-expect",
+    "value": [
+      "error",
+      {
+        "alwaysAwait": true,
+        "minArgs": 1,
+        "maxArgs": 1
+      }
+    ],
+    "status": "enabled",
+    "source": "https://github.com/vitest-dev/eslint-plugin-vitest/blob/main/docs/rules/valid-expect.md"
+  },
+  {
+    "group": "tests",
+    "rule": "test/no-conditional-expect",
+    "value": [
+      "error",
+      {
+        "expectAssertions": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://github.com/vitest-dev/eslint-plugin-vitest/blob/main/docs/rules/no-conditional-expect.md"
+  },
+  {
+    "group": "tests",
+    "rule": "test/no-conditional-tests",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://github.com/vitest-dev/eslint-plugin-vitest/blob/main/docs/rules/no-conditional-tests.md"
+  },
+  {
+    "group": "tests",
+    "rule": "test/no-disabled-tests",
+    "value": "error",
+    "status": "enabled",
+    "source": "https://github.com/vitest-dev/eslint-plugin-vitest/blob/main/docs/rules/no-disabled-tests.md"
+  },
+  {
+    "group": "tests",
+    "rule": "test/expect-expect",
+    "value": [
+      "error",
+      {
+        "assertFunctionNames": [
+          "expect",
+          "assert"
+        ],
+        "additionalTestBlockFunctions": []
+      }
+    ],
+    "status": "enabled",
+    "source": "https://github.com/vitest-dev/eslint-plugin-vitest/blob/main/docs/rules/expect-expect.md"
+  },
+  {
+    "group": "tests",
+    "rule": "test/unbound-method",
+    "value": [
+      "error",
+      {
+        "ignoreStatic": false
+      }
+    ],
+    "status": "enabled",
+    "source": "https://github.com/vitest-dev/eslint-plugin-vitest/blob/main/docs/rules/unbound-method.md"
+  }
+]
