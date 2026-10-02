@@ -30,6 +30,33 @@
           "test:browser"
         ]
       }
+    },
+    {
+      "id": "frontend",
+      "path": "packages/frontend",
+      "stack": "js-ts",
+      "profiles": {
+        "frontend": [
+          "lint",
+          "css",
+          "typecheck",
+          "build",
+          "unit",
+          "e2e"
+        ]
+      },
+      "commands": {
+        "css": [
+          "pnpm",
+          "run",
+          "css"
+        ],
+        "e2e": [
+          "pnpm",
+          "run",
+          "test:pack"
+        ]
+      }
     }
   ],
   "skills": [

@@ -54,6 +54,34 @@ jobs:
             .zt/artifacts/
           include-hidden-files: true
           if-no-files-found: error
+  frontend-shell:
+    strategy:
+      matrix:
+        node: [22, 24]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/frontend
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.22.0
+          run_install: false
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run check
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: frontend-shell-${{ github.sha }}-node${{ matrix.node }}
+          path: packages/frontend/.artifacts/
+          include-hidden-files: true
+          if-no-files-found: error
   eslint:
     runs-on: ubuntu-latest
     defaults:
