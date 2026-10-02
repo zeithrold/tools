@@ -13,3 +13,7 @@ Read AGENTS.md, the project design contract, scripts, compiler config and framew
 4. Normalize supported preferences and render deterministic SSR defaults. Apply [preferences and localization](references/preferences-i18n.md) to hydration, persistence, errors and dialogs.
 5. Preserve framework exports and native browser fallback. Run the compiler/build alongside strict ESLint; lint alone cannot validate routing or Worker deployment.
 6. Report changed decisions, affected states, exact checks and uncertainty. Visual baselines and performance budgets are deferred.
+
+## Approved shared shell
+
+For ztd.me shell consumers, use `@ztd-me/frontend` for common chrome and validated non-sensitive appearance/UI locale. Default Neutral + System, six palettes, and the fixed © Zeithrold/project GitHub/hello@ztd.me footer are approved. Public-site appbars do not require navigation; Memory owns business navigation. Keep business content, auth, account and clock/workspace state local. Shared domain cookies are untrusted UI input; preview/local policies stay isolated. This shell contract supersedes project-local chrome defaults without granting sync ownership over components or production files. Preserve native strict gates and upstream license obligations. Install a promoted exact registry version only after fresh-consumer verification; a stage placeholder or local copy is not final integration.

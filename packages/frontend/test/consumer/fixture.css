@@ -1,0 +1,8 @@
+body { margin: 0; background: var(--ztd-background); color: var(--ztd-foreground); }
+main { padding: 24px; }
+output, textarea { display: block; max-width: 100%; overflow-wrap: anywhere; }
+textarea { background: var(--ztd-surface); color: var(--ztd-foreground); }
+
+main a, nav a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ztd-foreground); }
+main button { min-height: 44px; padding: 8px 12px; margin-inline: 16px; background: var(--ztd-surface); color: var(--ztd-foreground); border: 1px solid var(--ztd-border); }
+textarea { min-height: 80px; margin-block: 16px; }

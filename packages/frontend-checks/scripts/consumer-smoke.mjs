@@ -42,7 +42,17 @@ minimumReleaseAgeExclude:
 shellEmulator: true
 trustPolicy: no-downgrade
 `)
-  await writeFile(path.join(consumer, 'app.css'), ':root { --paint: #234567; }\na { color: var(--paint); }\n')
+  await writeFile(path.join(consumer, 'app.css'), `:root { --paint: #234567; }
+a { color: var(--paint); }
+
+@custom-variant dark {
+  :root[data-frontend-mode="dark"] & { @slot; }
+
+  @media (prefers-color-scheme: dark) {
+    :root[data-frontend-mode="system"] & { @slot; }
+  }
+}
+`)
   await writeFile(path.join(consumer, 'css-check.config.mjs'), 'export default { files: ["app.css"] }\n')
   await writeFile(path.join(consumer, 'smoke.mjs'), `
 import assert from 'node:assert/strict'

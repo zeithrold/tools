@@ -1,0 +1,12 @@
+packages:
+  - .
+minimumReleaseAge: 1440
+minimumReleaseAgeExcludePrune: true
+shellEmulator: true
+trustPolicy: no-downgrade
+minimumReleaseAgeExclude:
+  - "@ztd-me/*"
+trustPolicyExclude:
+  - semver@6.3.1
+patchedDependencies:
+  '@radix-ui/react-select@2.3.7': patches/@radix-ui__react-select@2.3.7.patch

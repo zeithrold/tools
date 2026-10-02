@@ -12,3 +12,8 @@ packages/eslint-config/stage-result.json
 artifacts/
 packages/frontend-checks/*.tgz
 packages/frontend-checks/stage-result.json
+
+packages/frontend/dist/
+packages/frontend/.artifacts/
+packages/frontend/*.tgz
+packages/frontend/stage-result.json

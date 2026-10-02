@@ -1,11 +1,11 @@
 # @ztd-me/frontend-checks
 
-Native CSS and Playwright accessibility checks. Requires Node >=22.14 and Playwright Test ^1.62.0. Version `0.1.0` is published after automatic staging and owner 2FA promotion. See [publishing](docs/publishing.md) and [CLI integration](https://github.com/zeithrold/tools/blob/main/docs/frontend-tooling.md). Consumers retain `@ztd-me/eslint@0.1.1` and its strict standards.
+Native CSS and Playwright accessibility checks. Requires Node >=22.14 and Playwright Test ^1.62.0. Version `0.1.1` is the patch candidate for Tailwind block custom variants; it requires automatic staging, owner 2FA promotion and fresh registry verification before consumers install it. See [publishing](docs/publishing.md) and [CLI integration](https://github.com/zeithrold/tools/blob/main/docs/frontend-tooling.md). Consumers retain `@ztd-me/eslint@0.1.1` and its strict standards.
 
 After promotion and verified public installation:
 
 ```sh
-pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.0 @playwright/test@1.62.0
+pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.1 @playwright/test@1.62.0
 pnpm exec playwright install chromium
 ```
 
@@ -28,7 +28,7 @@ pnpm exec ztd-css ./css-check.config.mjs
 
 The config module is reviewed project code and executes during import. `checkCss(options)` is also exported from `@ztd-me/frontend-checks/css`. Every supplied glob must match; missing files and syntax/configuration errors fail. JSON findings print to stdout; a nonzero exit fails the gate. Under `zt check`, the CLI also writes `css.json` to `ZT_ARTIFACTS_DIR`.
 
-Stylelint 17.15 / standard 40 provide native CSS validation; only documented Tailwind directives and `--alpha`/`--spacing` functions receive syntax allowances. Undefined `var()` references fail across the supplied files/declaration sources, even with fallbacks. Exact runtime-generated variables can be declared in `externalCustomProperties`; document their owner in the project contract. Imports are not resolved automatically. Neither Sass/Less nor embedded Vue styles are parsed by this CSS-only entrypoint.
+Stylelint 17.15 / standard 40 provide native CSS validation; only documented Tailwind directives and `--alpha`/`--spacing` functions receive syntax allowances. The nesting-scoping rule remains enabled, with an exact `custom-variant` at-rule allowance for Tailwind-provided utility roots. Root/media nesting outside that directive still fails. See [variant compatibility](docs/tailwind-variants.md). Undefined `var()` references fail across the supplied files/declaration sources, even with fallbacks. Exact runtime-generated variables can be declared in `externalCustomProperties`; document their owner in the project contract. Imports are not resolved automatically. Neither Sass/Less nor embedded Vue styles are parsed by this CSS-only entrypoint.
 
 Hex, named and CSS color-function paint literals outside custom-property definitions fail. Token definitions retain each project's values. `transparent`, `currentColor`, inheritance and URLs are allowed. This check covers declarations, not Tailwind arbitrary-value classes, inline JS styles or every possible CSS color expression. An inventory definition is not proof of cascade/theme availability; render the relevant states. No autofix rewrites token values.
 

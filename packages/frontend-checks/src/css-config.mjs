@@ -24,6 +24,10 @@ export const cssConfig = {
         ],
       },
     ],
+    'nesting-selector-no-missing-scoping-root': [
+      true,
+      { ignoreAtRules: ['custom-variant'] },
+    ],
     'function-no-unknown': [
       true,
       { ignoreFunctions: ['--alpha', '--spacing'] },
