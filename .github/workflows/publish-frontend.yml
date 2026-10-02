@@ -6,6 +6,7 @@ on:
     paths:
       - 'packages/frontend-checks/**'
       - 'scripts/npm-staging.mjs'
+      - 'scripts/attach-publish-main.sh'
       - '.github/workflows/publish-frontend.yml'
 
 permissions:
@@ -81,6 +82,8 @@ jobs:
           cd "$RUNNER_TEMP/frontend-artifact"
           sha256sum --check SHA256SUMS
           test "$(cat source-commit.txt)" = "$GITHUB_SHA"
+      - name: Attach main at immutable source
+        run: bash ../../scripts/attach-publish-main.sh
       - name: Stage with authorized stage-only token
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
