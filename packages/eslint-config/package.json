@@ -1,6 +1,6 @@
 {
   "name": "@ztd-me/eslint",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Strict typed ESLint flat configs for TypeScript, React and Vue, built on antfu",
   "license": "UNLICENSED",

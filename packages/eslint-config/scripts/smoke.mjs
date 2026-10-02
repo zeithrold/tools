@@ -20,6 +20,17 @@ assert.equal(react.rules['react/rules-of-hooks'][0],2)
 assert.equal(vue.rules['ts/no-floating-promises'][0],2)
 assert.equal(vue.rules['vue-a11y/alt-text'][0],2)
 assert.equal(Object.keys(react.rules).some(rule=>rule.startsWith('jsx-a11y/')),false)
+const routes = new ESLint({overrideConfigFile:true,overrideConfig:await config({
+  typescript:false,react:{framework:'vinext'},gitignore:false,
+})})
+const source = 'export const metadata = { title: \\'Example\\' }\\n'
+  + 'export default function Page() {\\n  return <main>Example</main>\\n}\\n'
+const [route] = await routes.lintText(source,{filePath:'app/layout.jsx'})
+assert.equal(route.errorCount,0,JSON.stringify(route.messages))
+const [ordinary] = await routes.lintText(source,{filePath:'components/Card.jsx'})
+assert.ok(ordinary.messages.some(message=>message.ruleId==='react-refresh/only-export-components'))
+const [client] = await routes.lintText('\\'use client\\'\\n'+source,{filePath:'app/page.jsx'})
+assert.ok(client.messages.some(message=>message.ruleId==='ztd/app-router-exports'))
 console.log('ESM and framework smoke passed')
 `
 
@@ -65,7 +76,9 @@ async function writeConsumerFiles(directory) {
   await writeFile(join(directory, 'consumer.ts'), [
     'import config, { createConfig, type ConfigOptions } from \'@ztd-me/eslint\'',
     'import type { Linter } from \'eslint\'',
-    'const options: ConfigOptions = { typescript: false, react: { compiler: true }, vue: true }',
+    'const options: ConfigOptions = {',
+    '  typescript: false, react: { compiler: true, framework: \'vinext\' }, vue: true,',
+    '}',
     'export const defaults: Promise<Linter.Config[]> = config(options)',
     'export const named: Promise<Linter.Config[]> = createConfig(options)',
   ].join('\n'))

@@ -51,9 +51,11 @@ For a JavaScript-only scope, use `typescript: false`. This turns off TypeScript 
 
 | Option | Default | Behavior |
 | --- | --- | --- |
-| `react` | `false` | `true`, or `{ files, compiler, experimental }`; includes hooks in `.ts` as well as JSX |
+| `react` | `false` | `true`, or `{ files, compiler, experimental, framework, appDir }`; includes hooks in `.ts` as well as JSX |
 | `react.compiler` | `false` | Adds four official React Compiler checks |
 | `react.experimental` | `false` | Adds experimental fetch cleanup checking |
+| `react.framework` | unset | Explicit `'next'` or `'vinext'` App Router server export integration |
+| `react.appDir` | `app`, `src/app` | One literal relative app directory, replacing the defaults; requires `framework` |
 | `vue` | `false` | `true`, or `{ files }`; Vue 3 correctness and accessibility are strict |
 | `test` | `false` | Explicitly enable the researched Vitest profile; do not enable for Node test or Jest |
 | `rules` | `{}` | Deliberate final overrides; subsequent flat configs run last |
@@ -61,6 +63,26 @@ For a JavaScript-only scope, use `typescript: false`. This turns off TypeScript 
 JSX accessibility is disabled and `eslint-plugin-jsx-a11y` is not installed: its 6.10.2 peer range excludes ESLint 10. This is the user-authorized compatibility exception, not an accessibility certification. Vue accessibility remains enabled. JSX syntax and React correctness remain enabled when React is selected.
 
 The selected React Hooks checks use one owner per behavior: `react/*` for hooks and effects, `react-hooks/*` only for globals, immutability, refs, and optional Compiler checks. The experimental fetch rule is off until explicitly selected. React version migration opinions are inherited from antfu rather than strengthened as correctness rules.
+
+### Next.js and vinext App Router
+
+Since 0.1.1, explicitly select the framework to allow its server route exports:
+
+```js
+import ztd from '@ztd-me/eslint'
+
+export default ztd({
+  react: { framework: 'vinext' },
+  // For Next.js use framework: 'next'.
+  // For a monorepo add appDir: 'apps/web/app'.
+})
+```
+
+`ztd/app-router-exports` adapts the pinned upstream Fast Refresh export rule only for `page` and `layout` files with `.js`, `.jsx`, `.ts`, or `.tsx` extensions under the selected app directory. Nested route groups, dynamic segments and parallel slots are included; private `_` directories are excluded. `react.files` further restricts that scope. Framework selection is explicit and independent of installed packages.
+
+Server route files may export `metadata`, `generateMetadata`, `viewport`, `generateViewport`, `generateStaticParams`, `dynamic`, `dynamicParams`, `revalidate`, `fetchCache`, `runtime`, `preferredRegion`, and `maxDuration`. Next.js also recognizes `instant` and `prefetch`; vinext does not inherit these Next-specific exports. A file with a `'use client'` directive receives no such exemptions. Other named helpers, arbitrary constants, wildcard exports, ordinary components and non-route files retain Fast Refresh errors. Primitive constants are also checked, independent of installed Vite/Next.js packages.
+
+This rule validates the component export boundary, not framework export values or every framework restriction. The framework build must still validate metadata types, mutually exclusive `metadata`/`generateMetadata`, route configuration and cache-mode restrictions. Pages Router and metadata image/sitemap files do not receive this App Router page/layout profile. [Compatibility evidence and upstream sources](docs/framework-compatibility.md) document the scope and tested versions.
 
 ## Limits and arrays
 
@@ -112,6 +134,6 @@ pnpm run check
 
 The checks build JS/declarations, type-check the public API, self-lint source/tests/scripts, exercise real TS/React/Vue fixtures, check all numeric boundaries and all selected catalog options, and install/import/type-check an independently packed artifact with pnpm. Negative fixtures are checked by the test harness, not included in ordinary self-lint. The test modules have reasoned local exceptions for Node's asynchronous ESM setup and imports of the distribution being tested; safety and size limits remain active.
 
-[Publishing instructions](docs/publishing.md) describe the stage-only GitHub workflow and the user-controlled promotion. Staging is not a public release. After promotion, run `node scripts/registry-smoke.mjs 0.1.0` to install the exact public version in a fresh pnpm project and verify imports, declarations and lint behavior. Registry installation follows pnpm's supply-chain policies; a policy rejection is a blocker, not permission to disable the policy.
+[Publishing instructions](docs/publishing.md) describe the stage-only GitHub workflow and the user-controlled promotion. Staging is not a public release. After promotion, run `node scripts/registry-smoke.mjs 0.1.1` to install the exact public version in a fresh pnpm project and verify imports, declarations and lint behavior. Registry installation follows pnpm's supply-chain policies; a policy rejection is a blocker, not permission to disable the policy.
 
 The repository has not granted an open-source license; package metadata is `UNLICENSED` pending that separate decision.

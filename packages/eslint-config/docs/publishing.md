@@ -26,6 +26,8 @@ The package owner configures the trust grant in npm's package settings after npm
 
 These are the exact settings for a future OIDC migration, not evidence that the grant exists. After the owner confirms a stage-only grant, update the existing staging job to job-scoped `id-token: write`, remove `NPM_TOKEN` and its in-memory token binding, and use pnpm's native OIDC authentication on the same GitHub-hosted runner. Keep the single automatic trigger and the workflow filename. Do not add a parallel authentication job or a manual selector. The assistant does not create the trust grant or change package security settings.
 
+The migration must also replace the authenticated pending-stage lookup: npm's OIDC identity supports `stage publish`, but not `stage list`, `stage view`, or approval. Removing the token without redesigning this guard would fail before upload. Preserve duplicate prevention using durable stage receipts and explicit reconciliation of ambiguous outcomes, and test the resulting stage-only path before retiring the token route. Maintainer review and proof of presence still control promotion.
+
 References: [pnpm stage](https://pnpm.io/cli/stage), [pnpm token authentication](https://pnpm.io/blog/releases/11.10), [npm staged publishing](https://docs.npmjs.com/staged-publishing/), [npm Trusted Publishers](https://docs.npmjs.com/trusted-publishers/).
 
 ## Public-release verification
@@ -33,7 +35,7 @@ References: [pnpm stage](https://pnpm.io/cli/stage), [pnpm token authentication]
 After promotion, inspect the exact public registry version, then run:
 
 ```sh
-node scripts/registry-smoke.mjs 0.1.0
+node scripts/registry-smoke.mjs <promoted-version>
 ```
 
 This creates a fresh consumer, installs the exact registry version using pnpm, checks default/named ESM exports and declarations, and runs JS/TS/framework smoke checks. The temporary store/cache settings are inherited by pnpm's pre-run install checks, including in cloud sandboxes without a writable home directory. Supply-chain settings are left unchanged. pnpm 11's default non-strict release-age policy can automatically record a version-specific exception for a fresh explicit dependency; projects with strict release-age policies must wait until their cutoff. If an active policy rejects installation, wait for eligibility and retry; do not manually set exceptions or lower the policy. A stage response, registry metadata alone, or a local tarball install is insufficient proof of public installation.
