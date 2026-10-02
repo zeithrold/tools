@@ -18,7 +18,8 @@ const server = createServer(async (request, response) => {
     response.end(await readFile(path.join(client, 'assets', filename)))
     return
   }
-  const project = url.searchParams.get('project') === 'showcase' ? 'showcase' : 'website'
+  const requestedProject = url.searchParams.get('project')
+  const project = requestedProject === 'memory' || requestedProject === 'showcase' ? requestedProject : 'website'
   const environment = url.searchParams.get('environment')
   const production = environment === 'production'
   const preview = environment === 'preview'

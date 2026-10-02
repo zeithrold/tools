@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
@@ -36,7 +38,7 @@ jobs:
         working-directory: packages/frontend-checks
       - run: |
           mkdir -p artifacts/frontend
-          go build -ldflags "-X github.com/zeithrold/tools.releaseVersion=source-${GITHUB_SHA}" -o artifacts/frontend/zt ./cmd/zt
+          go build -ldflags "-X github.com/zeithrold/tools.releaseVersion=source-${{ github.event.pull_request.head.sha || github.sha }}" -o artifacts/frontend/zt ./cmd/zt
           artifacts/frontend/zt check --module frontend-checks --profile frontend --timeout 5m
       - run: pnpm run test:pack
         working-directory: packages/frontend-checks
@@ -48,7 +50,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: frontend-${{ github.sha }}-node${{ matrix.node }}
+          name: frontend-${{ github.event.pull_request.head.sha || github.sha }}-node${{ matrix.node }}
           path: |
             artifacts/frontend/
             .zt/artifacts/

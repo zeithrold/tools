@@ -1,7 +1,6 @@
 import type { PreferenceSnapshot, PreferenceStore } from './store-types.js'
 import type { FrontendPreferences, PreferencePolicy } from './types.js'
-import { persistBrowserPreferences, readLegacyPreference } from './browser-environment.js'
-import { readPreferenceCookie } from './cookies.js'
+import { persistBrowserPreferences, readBrowserPreferences, readLegacyPreference } from './browser-environment.js'
 import { migrateLegacyPreferences } from './migration.js'
 import { normalizePreferences, serializePreferences } from './preferences.js'
 
@@ -29,12 +28,7 @@ export function createPreferenceStore(initial: FrontendPreferences, policy: Pref
     commit(normalized, saved ? 'saved' : 'unavailable')
   }
   function restore(): void {
-    const read = readPreferenceCookie(document.cookie, policy)
-    const changed = read.preferences !== null
-      && serializePreferences(read.preferences) !== serializePreferences(snapshot.preferences)
-    if (changed && read.preferences !== null) {
-      commit(read.preferences)
-    }
+    restoreFromCookie(snapshot, policy, commit)
   }
   const actions = {
     setMode: (mode: FrontendPreferences['mode']) => change({ ...snapshot.preferences, mode }),
@@ -83,16 +77,14 @@ function connectBrowser(
   }
   actions.setSystem(media.matches)
   actions.commit(initial)
-  const read = readPreferenceCookie(document.cookie, policy)
+  const read = readBrowserPreferences(policy)
   if (read.status === 'missing') {
     const migrated = migrateLegacyPreferences(readLegacyPreference(policy), policy.namespace, initial)
     if (serializePreferences(migrated) !== serializePreferences(initial)) {
       actions.change(migrated)
     }
   }
-  else {
-    actions.restore()
-  }
+  actions.restore()
   const onStorage = (event: StorageEvent): void => {
     if (event.key === policy.name) {
       actions.restore()
@@ -112,5 +104,25 @@ function connectBrowser(
     window.removeEventListener('storage', onStorage)
     document.removeEventListener('visibilitychange', onVisible)
     media.removeEventListener('change', refreshMedia)
+  }
+}
+
+function restoreFromCookie(
+  snapshot: PreferenceSnapshot,
+  policy: PreferencePolicy,
+  commit: (preferences: FrontendPreferences, persistence: PreferenceSnapshot['persistence']) => void,
+): void {
+  const read = readBrowserPreferences(policy)
+  if (read.status === 'unavailable') {
+    commit(snapshot.preferences, 'unavailable')
+    return
+  }
+  if (read.preferences === null) {
+    return
+  }
+  const recovered = snapshot.persistence === 'unavailable'
+  const changed = serializePreferences(read.preferences) !== serializePreferences(snapshot.preferences)
+  if (changed || recovered) {
+    commit(read.preferences, recovered ? 'saved' : snapshot.persistence)
   }
 }
