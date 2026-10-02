@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict'
+import { execFileSync } from 'node:child_process'
 import { resolve } from 'node:path'
+import process from 'node:process'
 import test from 'node:test'
 import { fixtureRoot, lintText, makeESLint, messagesFor } from './helpers.mjs'
 
@@ -39,6 +41,26 @@ test('Next and vinext typed server page/layout fixtures pass', async () => {
     const [page] = await nested.lintFiles(resolve(fixtureRoot, 'src/app/(marketing)/page.tsx'))
     assert.deepEqual(page.messages, [])
   }
+})
+
+test('a fresh single-run CI consumer accepts a typed server layout', () => {
+  const source = [
+    'import assert from \'node:assert/strict\'',
+    'import config from \'./dist/index.js\'',
+    'import { ESLint } from \'eslint\'',
+    'const options = {',
+    '  typescript: { tsconfigPath: \'test/fixtures/tsconfig.json\' },',
+    '  react: { framework: \'vinext\', appDir: \'test/fixtures/app\' }, gitignore: false,',
+    '}',
+    'const eslint = new ESLint({ overrideConfigFile: true, overrideConfig: await config(options) })',
+    'const [result] = await eslint.lintFiles(\'test/fixtures/app/layout.tsx\')',
+    'assert.deepEqual(result.messages, [])',
+  ].join('\n')
+  assert.doesNotThrow(() => execFileSync(process.execPath, [
+    '--input-type=module',
+    '-e',
+    source,
+  ], { env: { ...process.env, CI: 'true', TSESTREE_SINGLE_RUN: 'true' } }))
 })
 
 test('route scopes handle root, src, groups, parallel slots and dynamic segments', async () => {
