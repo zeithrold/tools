@@ -7,3 +7,7 @@ coverage/
 packages/eslint-config/dist/
 packages/eslint-config/*.tgz
 packages/eslint-config/stage-result.json
+
+.zt/
+artifacts/
+packages/frontend-checks/*.tgz

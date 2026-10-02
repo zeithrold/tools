@@ -2,27 +2,32 @@
   "schemaVersion": 1,
   "modules": [
     {
-      "id": "web",
+      "id": "cli",
       "path": ".",
+      "stack": "go",
+      "profiles": {
+        "native": [
+          "unit"
+        ]
+      }
+    },
+    {
+      "id": "frontend-checks",
+      "path": "packages/frontend-checks",
       "stack": "js-ts",
-      "expect": {
-        "lint": "required",
-        "typecheck": "required",
-        "unit": "required",
-        "e2e": "required",
-        "css": "required",
-        "build": "required",
-        "a11y": "required"
-      },
       "profiles": {
         "frontend": [
           "lint",
-          "css",
           "typecheck",
           "unit",
-          "build",
-          "e2e",
           "a11y"
+        ]
+      },
+      "commands": {
+        "a11y": [
+          "pnpm",
+          "run",
+          "test:browser"
         ]
       }
     }
@@ -33,8 +38,5 @@
     "ui-web",
     "frontend-engineering",
     "frontend-verification"
-  ],
-  "lint": {
-    "js-ts": "@ztd-me/eslint"
-  }
+  ]
 }

@@ -40,7 +40,41 @@ func TestJSTSPlanUsesDeclaredReadOnlyScript(t *testing.T) {
 	root := t.TempDir()
 	put(t, root, "package.json", `{"packageManager":"pnpm@10.33.0","scripts":{"lint":"eslint .","lint:fix":"eslint . --fix","test":"vitest run"}}`)
 	result, err := Build(root, "root", "lint")
-	if err != nil || len(result.Steps) != 1 || strings.Join(result.Steps[0].Argv, " ") != "pnpm lint" {
+	if err != nil || len(result.Steps) != 1 || strings.Join(result.Steps[0].Argv, " ") != "pnpm --config.verify-deps-before-run=error lint" {
 		t.Fatalf("unexpected lint plan: %+v, %v", result, err)
+	}
+}
+
+func TestJSTSUsesLockfileAndRejectsAmbiguityWithoutExecution(t *testing.T) {
+	root := t.TempDir()
+	put(t, root, "package.json", `{"scripts":{"lint:css":"touch must-not-exist","build":"native-build","test:a11y":"native-browser"}}`)
+	put(t, root, "pnpm-lock.yaml", "lockfileVersion: '9.0'\n")
+	for _, capability := range []string{"css", "build", "a11y"} {
+		result, err := Build(root, "root", capability)
+		if err != nil || len(result.Steps) != 1 || result.Steps[0].Argv[0] != "pnpm" {
+			t.Fatalf("%s: %+v %v", capability, result, err)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(root, "must-not-exist")); !os.IsNotExist(err) {
+		t.Fatal("planning executed a script")
+	}
+	put(t, root, "package-lock.json", "{}")
+	result, err := Build(root, "root", "css")
+	if err != nil || len(result.Steps) != 0 || len(result.Warnings) == 0 {
+		t.Fatalf("ambiguous manager was guessed: %+v %v", result, err)
+	}
+	put(t, root, "package.json", `{"packageManager":"pnpm@11.22.0","scripts":{"lint:css":"native-css"}}`)
+	result, err = Build(root, "root", "css")
+	if err != nil || len(result.Steps) != 1 {
+		t.Fatalf("explicit manager not respected: %+v %v", result, err)
+	}
+}
+
+func TestExplicitCommandsRemainArgv(t *testing.T) {
+	root := t.TempDir()
+	put(t, root, "zt.json", `{"schemaVersion":1,"modules":[{"id":"web","path":".","stack":"js-ts","commands":{"a11y":["runner","literal;argument","$TOKEN"]}}]}`)
+	result, err := Build(root, "web", "a11y")
+	if err != nil || len(result.Steps) != 1 || strings.Join(result.Steps[0].Argv, "|") != "runner|literal;argument|$TOKEN" {
+		t.Fatalf("argv changed: %+v %v", result, err)
 	}
 }

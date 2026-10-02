@@ -13,6 +13,17 @@ import (
 
 const ConfigName = "zt.json"
 
+var Capabilities = []string{"unit", "integration", "property", "fuzz", "mutation", "lint", "typecheck", "e2e", "build", "css", "a11y"}
+
+func ValidCapability(name string) bool {
+	for _, candidate := range Capabilities {
+		if name == candidate {
+			return true
+		}
+	}
+	return false
+}
+
 var identifier = regexp.MustCompile(`^[a-z][a-z0-9-]*$`)
 
 type Config struct {
@@ -23,11 +34,13 @@ type Config struct {
 }
 
 type Module struct {
-	ID       string              `json:"id"`
-	Path     string              `json:"path"`
-	Stack    string              `json:"stack"`
-	Expect   map[string]string   `json:"expect,omitempty"`
-	Profiles map[string][]string `json:"profiles,omitempty"`
+	ID        string              `json:"id"`
+	Path      string              `json:"path"`
+	Stack     string              `json:"stack"`
+	Expect    map[string]string   `json:"expect,omitempty"`
+	Profiles  map[string][]string `json:"profiles,omitempty"`
+	Commands  map[string][]string `json:"commands,omitempty"`
+	Artifacts []string            `json:"artifacts,omitempty"`
 }
 
 // Load returns nil when a project has not adopted zt yet. Inspect can still
@@ -73,7 +86,7 @@ func (c Config) Validate(root string) error {
 			return fmt.Errorf("%s: module %s: %w", ConfigName, module.ID, err)
 		}
 		for capability, level := range module.Expect {
-			if !identifier.MatchString(capability) || (level != "required" && level != "warn" && level != "off") {
+			if !ValidCapability(capability) || (level != "required" && level != "warn" && level != "off") {
 				return fmt.Errorf("%s: module %s: invalid expectation %q=%q", ConfigName, module.ID, capability, level)
 			}
 		}
@@ -81,10 +94,34 @@ func (c Config) Validate(root string) error {
 			if !identifier.MatchString(profile) {
 				return fmt.Errorf("%s: module %s: invalid profile %q", ConfigName, module.ID, profile)
 			}
+			if len(capabilities) == 0 {
+				return fmt.Errorf("empty profile %q", profile)
+			}
+			seen := map[string]bool{}
 			for _, capability := range capabilities {
-				if !identifier.MatchString(capability) {
+				if !ValidCapability(capability) || seen[capability] {
 					return fmt.Errorf("%s: module %s: invalid capability %q", ConfigName, module.ID, capability)
 				}
+				seen[capability] = true
+			}
+		}
+		for capability, argv := range module.Commands {
+			if !ValidCapability(capability) || len(argv) == 0 || strings.TrimSpace(argv[0]) == "" {
+				return fmt.Errorf("invalid command for %q", capability)
+			}
+			for _, arg := range argv {
+				if strings.ContainsRune(arg, 0) {
+					return fmt.Errorf("command contains NUL")
+				}
+				if strings.HasPrefix(arg, "--config.verify-deps-before-run") && arg != "--config.verify-deps-before-run=error" {
+					return fmt.Errorf("native checks must not override pnpm dependency readiness with %q", arg)
+				}
+			}
+		}
+		for _, artifact := range module.Artifacts {
+			clean := filepath.Clean(artifact)
+			if artifact == "" || clean == "." || filepath.IsAbs(artifact) || strings.Contains(artifact, "\\") || clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) {
+				return fmt.Errorf("invalid artifact path %q", artifact)
 			}
 		}
 	}

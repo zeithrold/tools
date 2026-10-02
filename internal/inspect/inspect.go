@@ -86,8 +86,11 @@ func Run(root string) (Report, error) {
 		case "jvm":
 			c.inspectJVM()
 		}
+		for capability := range declared.Commands {
+			c.add(capability, "zt.json:commands."+capability)
+		}
 		module := Module{ID: declared.ID, Path: declared.Path, Stack: declared.Stack, Capabilities: []Capability{}}
-		for _, name := range []string{"unit", "integration", "property", "fuzz", "mutation", "lint", "typecheck", "e2e"} {
+		for _, name := range project.Capabilities {
 			evidence := c.evidence[name]
 			status := "not_detected"
 			if len(evidence) > 0 {
@@ -190,6 +193,7 @@ func (c *collector) inspectJSTS() {
 	data, err := os.ReadFile(filepath.Join(c.root, "package.json"))
 	if err != nil {
 		c.warnings = append(c.warnings, "cannot read package.json: "+err.Error())
+		c.incomplete = true
 		return
 	}
 	var pkg struct {
@@ -197,6 +201,7 @@ func (c *collector) inspectJSTS() {
 	}
 	if err := json.Unmarshal(data, &pkg); err != nil {
 		c.warnings = append(c.warnings, "cannot parse package.json: "+err.Error())
+		c.incomplete = true
 		return
 	}
 	for name := range pkg.Scripts {
@@ -207,6 +212,12 @@ func (c *collector) inspectJSTS() {
 			c.add("lint", evidence)
 		case lower == "typecheck" || lower == "check:types" || lower == "check-types":
 			c.add("typecheck", evidence)
+		case lower == "build":
+			c.add("build", evidence)
+		case lower == "lint:css" || lower == "check:css":
+			c.add("css", evidence)
+		case lower == "test:a11y" || lower == "check:a11y":
+			c.add("a11y", evidence)
 		case lower == "test:e2e" || lower == "e2e" || lower == "e2e:test":
 			c.add("e2e", evidence)
 		case lower == "test" || lower == "test:unit" || lower == "test-unit":
@@ -370,7 +381,7 @@ func (c *collector) walk(visit func(path, relative string)) {
 
 func excludedDir(name string) bool {
 	switch name {
-	case ".git", "node_modules", ".venv", "venv", "target", "build", "dist", ".dart_tool", "coverage", ".gradle", ".next", ".svelte-kit", "vendor":
+	case ".git", ".zt", "artifacts", "node_modules", ".venv", "venv", "target", "build", "dist", ".dart_tool", "coverage", ".gradle", ".next", ".svelte-kit", "vendor":
 		return true
 	default:
 		return false

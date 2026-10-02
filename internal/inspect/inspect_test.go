@@ -75,3 +75,23 @@ func TestJVMRootDoesNotClaimChildTestsAreAbsent(t *testing.T) {
 		t.Fatalf("root-only JVM inspection must remain inconclusive: %+v", item)
 	}
 }
+
+func TestBrokenPackageManifestIsUnknownAndFrontendScriptsAreOnlyDiscovered(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "package.json", `{broken`)
+	report, err := Run(root)
+	if err != nil || capability(t, report, "css").Detection != "unknown" {
+		t.Fatalf("%+v %v", report, err)
+	}
+	write(t, root, "package.json", `{"scripts":{"lint:css":"native-css","build":"native-build","test:a11y":"native-browser"}}`)
+	report, err = Run(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"css", "build", "a11y"} {
+		item := capability(t, report, name)
+		if item.Detection != "discovered" || item.LastRun != "not_run" || item.Environment != "not_checked" {
+			t.Fatalf("%+v", item)
+		}
+	}
+}

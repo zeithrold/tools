@@ -1,0 +1,65 @@
+# @ztd-me/frontend-checks
+
+Private `0.1.0` review artifact for native CSS and Playwright accessibility checks. Requires Node >=22.14 and Playwright Test ^1.62.0. This package is not published to npm. See [source/artifact integration](../../docs/frontend-tooling.md). No ESLint standards are changed; consumers retain `@ztd-me/eslint@0.1.1`.
+
+## CSS
+
+```js
+// css-check.config.mjs
+export default {
+  files: ['src/**/*.css'],
+  tokenFiles: ['node_modules/tailwindcss/theme.css'],
+  externalCustomProperties: [],
+}
+```
+
+```sh
+pnpm exec ztd-css ./css-check.config.mjs
+```
+
+The config module is reviewed project code and executes during import. `checkCss(options)` is also exported from `@ztd-me/frontend-checks/css`. Every supplied glob must match; missing files and syntax/configuration errors fail. JSON findings print to stdout; a nonzero exit fails the gate. Under `zt check`, the CLI also writes `css.json` to `ZT_ARTIFACTS_DIR`.
+
+Stylelint 17.15 / standard 40 provide native CSS validation; only documented Tailwind directives and `--alpha`/`--spacing` functions receive syntax allowances. Undefined `var()` references fail across the supplied files/declaration sources, even with fallbacks. Exact runtime-generated variables can be declared in `externalCustomProperties`; document their owner in the project contract. Imports are not resolved automatically. Neither Sass/Less nor embedded Vue styles are parsed by this CSS-only entrypoint.
+
+Hex, named and CSS color-function paint literals outside custom-property definitions fail. Token definitions retain each project's values. `transparent`, `currentColor`, inheritance and URLs are allowed. This check covers declarations, not Tailwind arbitrary-value classes, inline JS styles or every possible CSS color expression. An inventory definition is not proof of cascade/theme availability; render the relevant states. No autofix rewrites token values.
+
+## Playwright
+
+```js
+import { defineConfig } from '@playwright/test'
+import { verificationArtifacts } from '@ztd-me/frontend-checks/playwright'
+
+const artifacts = verificationArtifacts()
+export default defineConfig({
+  ...artifacts,
+  webServer: existingWebServer,
+  projects: existingProjects,
+  use: { ...artifacts.use, baseURL: existingBaseURL },
+})
+```
+
+```js
+import { test } from '@playwright/test'
+import { assertAccessible, captureState } from '@ztd-me/frontend-checks/playwright'
+
+test('translated dialog', async ({ page }, info) => {
+  await page.goto('/settings')
+  // Establish the real dialog state using project locators and interactions.
+  await assertAccessible(page, info, { label: 'settings-dialog' })
+  await captureState(page, info, 'settings-dialog')
+})
+```
+
+`assertAccessible` uses Axe 4.13 and defaults to WCAG 2 A/AA, 2.1 AA and 2.2 AA tags. It attaches the complete scan before asserting zero violations. Optional `include` scopes a supplemental scan; optional nonempty `tags` changes the selected coverage and must be justified locally. Full-page and keyboard/focus tests remain necessary. Projects own routes, states, browser matrices, service mocks and the built-Worker server. This helper does not provision or start them.
+
+`verificationArtifacts(root?)` provides HTML/JSON reports, test attachments, failure traces/screenshots/videos. The root defaults to `ZT_ARTIFACTS_DIR`, otherwise `.zt/browser`. Merge with existing config; preserve native server/projects/use settings. `captureState` attaches a named PNG for review without maintaining screenshot baselines.
+
+## Verification
+
+```sh
+pnpm install --frozen-lockfile
+pnpm exec playwright install chromium
+pnpm run check
+```
+
+Tests execute native CSS parsing/lint, real Chromium Axe/keyboard/dialog behavior, a deliberate accessibility failure, typed imports, and fresh tarball installation/CLI use. The workspace keeps release-age/trust policy and only the previously approved exact ESLint 0.1.1 / semver 6.3.1 exceptions. Consumer production dependencies install without these development-only exceptions.

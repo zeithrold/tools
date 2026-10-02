@@ -12,3 +12,5 @@ For each changed flow, review the user's goal, primary and secondary actions, in
 Use the project's stack-specific UI skill for implementation details. Record what was observed in real runtime or device captures, what automated checks established, and what still needs human visual judgment. A design document, build, or screenshot alone does not prove the interface works.
 
 See [review matrix](references/review-matrix.md) for a concise state and environment inventory. Keep colors, typography, spacing values, and business-specific component patterns in the project design contract.
+
+Use [design contract extraction](references/design-contract.md) when consolidating principles from existing projects. Trace semantic token roles, component variants, local typography and preferences to source evidence; preserve project-specific values and business choices.

@@ -57,3 +57,23 @@ func TestSyncInstallsCompleteDirectoryAndPreservesProjectEdits(t *testing.T) {
 		t.Fatalf("local edit overwritten: %q, %v", data, err)
 	}
 }
+
+func TestFrontendSkillsIncludeReusableReferences(t *testing.T) {
+	root := t.TempDir()
+	config := &project.Config{SchemaVersion: 1, Skills: []string{"ui-foundation", "ui-web", "frontend-engineering", "frontend-verification"}}
+	if _, err := Apply(root, config); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{
+		"ui-foundation/references/design-contract.md",
+		"ui-web/references/browser-review.md",
+		"frontend-engineering/references/preferences-i18n.md",
+		"frontend-verification/references/gates.md",
+		"frontend-verification/references/evidence.md",
+	} {
+		data, err := os.ReadFile(filepath.Join(root, ".agents", "skills", name))
+		if err != nil || len(data) == 0 {
+			t.Fatalf("reference not distributed: %s %v", name, err)
+		}
+	}
+}
