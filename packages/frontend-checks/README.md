@@ -1,6 +1,15 @@
 # @ztd-me/frontend-checks
 
-Private `0.1.0` review artifact for native CSS and Playwright accessibility checks. Requires Node >=22.14 and Playwright Test ^1.62.0. This package is not published to npm. See [source/artifact integration](../../docs/frontend-tooling.md). No ESLint standards are changed; consumers retain `@ztd-me/eslint@0.1.1`.
+Native CSS and Playwright accessibility checks. Requires Node >=22.14 and Playwright Test ^1.62.0. Version `0.1.0` is prepared for public npm publication through automatic staging and owner 2FA promotion. See [publishing](docs/publishing.md) and [CLI integration](https://github.com/zeithrold/tools/blob/main/docs/frontend-tooling.md). Consumers retain `@ztd-me/eslint@0.1.1` and its strict standards.
+
+After promotion and verified public installation:
+
+```sh
+pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.0 @playwright/test@1.62.0
+pnpm exec playwright install chromium
+```
+
+Retain the consuming project's release-age, trust and build policy. Wait if a newly promoted release is not yet eligible. The `0.0.0-stage` placeholder for a new package is not a usable helper release.
 
 ## CSS
 
@@ -62,4 +71,4 @@ pnpm exec playwright install chromium
 pnpm run check
 ```
 
-Tests execute native CSS parsing/lint, real Chromium Axe/keyboard/dialog behavior, a deliberate accessibility failure, typed imports, and fresh tarball installation/CLI use. The workspace keeps release-age/trust policy and only the previously approved exact ESLint 0.1.1 / semver 6.3.1 exceptions. Consumer production dependencies install without these development-only exceptions.
+Tests execute native CSS parsing/lint, real Chromium Axe/keyboard/dialog behavior, a deliberate accessibility failure, typed imports, fresh tarball installation/CLI use, and stage authorization/duplicate guards. The workspace keeps release-age/trust policy and only the previously approved exact ESLint 0.1.1 / semver 6.3.1 exceptions. Fresh consumers use strict 24-hour release age with no exceptions. After promotion, `test:registry` verifies registry integrity against the reviewed tarball and repeats consumer import/type/CLI/browser checks; a metadata lookup alone is insufficient.

@@ -10,6 +10,9 @@ permissions:
 
 jobs:
   frontend:
+    strategy:
+      matrix:
+        node: [22, 24]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -19,7 +22,7 @@ jobs:
           cache: false
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: ${{ matrix.node }}
           package-manager-cache: false
       - uses: pnpm/action-setup@v6
         with:
@@ -27,6 +30,8 @@ jobs:
           run_install: false
       - run: pnpm install --frozen-lockfile
         working-directory: packages/frontend-checks
+      - name: Lint shared stage guard
+        run: packages/frontend-checks/node_modules/.bin/eslint scripts/npm-staging.mjs --config packages/frontend-checks/eslint.config.js --max-warnings 0
       - run: pnpm exec playwright install --with-deps chromium
         working-directory: packages/frontend-checks
       - run: |
@@ -43,7 +48,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: frontend-${{ github.sha }}
+          name: frontend-${{ github.sha }}-node${{ matrix.node }}
           path: |
             artifacts/frontend/
             .zt/artifacts/

@@ -1,14 +1,24 @@
 # Frontend tooling integration
 
-This phase adds shared guidance and native check execution to tools. Consumers retain product-specific branding, layout values, business rules, framework/runtime configuration and their existing strict ESLint profile. Visual snapshot baselines and performance budgets are deferred. Changes are reviewed through a draft PR; no consumer migration or package publication occurs in this phase.
+This phase adds shared guidance and native check execution to tools, including the authorized public frontend helper release. Consumers retain product-specific branding, layout values, business rules, framework/runtime configuration and their existing strict ESLint profile. Visual snapshot baselines and performance budgets are deferred. Changes are reviewed through a draft PR; consumer migrations follow successful public installation verification and parent confirmation.
 
 ## Distribution
 
 - `@ztd-me/eslint@0.1.1` is already published. Its standards are unchanged.
 - `zt` and complete Skill directories are shipped together. Pin an exact reviewed tools commit with `go install github.com/zeithrold/tools/cmd/zt@<SHA>` after it is reachable, or use the CI-built Linux binary from that revision. There is no official CLI release tag yet.
-- `@ztd-me/frontend-checks@0.1.0` is private and un-published. CI uploads its tarball, checksum and source SHA. Download the artifact for the exact reviewed run, verify `SHA256SUMS`, retain it in a project-owned vendor location, then use `pnpm add -D ./vendor/ztd-me-frontend-checks-0.1.0.tgz`. Do not depend on an expiring Actions download URL. Alternatively checkout the exact tools revision and run `pnpm pack --pack-destination <DIR>` in packages/frontend-checks. An npm release would require separate authorization before publication; this route needs no new credentials or trust grant.
+- `@ztd-me/frontend-checks@0.1.0` is prepared for public npm publication. The automatic `publish-frontend.yml` workflow verifies relevant `main` pushes on Node 22 and 24, then stages the exact tested tarball using the existing authorized `NPM_TOKEN` route if its permissions include this package. An owner must review and promote that stage with 2FA. The first-package `0.0.0-stage` placeholder is not the helper release. See [publication and verification](../packages/frontend-checks/docs/publishing.md).
 
-Set the consumer `packageManager` to its approved pnpm version (currently 11.22.0), retain its dependency policies and test the resulting frozen lockfile. The helper's peer is Playwright Test ^1.62.0; package validation pins 1.62.0. CI validates on Node 24. Browser binaries are installed explicitly by the consuming environment.
+After owner promotion and successful registry smoke checks, consumers install the exact release:
+
+```sh
+pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.0 @playwright/test@1.62.0
+pnpm install --frozen-lockfile
+pnpm exec playwright install chromium
+```
+
+CI tarballs, source SHAs and checksums are release review evidence. Consumers use the pinned registry package rather than vendoring those artifacts. Preserve release-age, trust and build-script restrictions; if a fresh version is rejected, wait until it is eligible. Do not lower policy or add an exception to force the rollout. Publication is complete only after the exact public version has been installed and both exported modules and declarations verified from a fresh consumer.
+
+Set the consumer `packageManager` to its approved pnpm version (currently 11.22.0), retain its dependency policies and test the resulting frozen lockfile. The helper's peer is Playwright Test ^1.62.0; package validation pins 1.62.0. CI validates on Node 22 and 24. Browser binaries are installed explicitly by the consuming environment.
 
 ## Explicit project profile
 
