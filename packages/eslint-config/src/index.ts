@@ -1,7 +1,9 @@
+import type { OptionsReact } from '@antfu/eslint-config'
 import type { ConfigOptions, LocalConfig } from './options.js'
 import antfu, { GLOB_SRC, GLOB_TESTS, GLOB_TS, GLOB_TSX } from '@antfu/eslint-config'
 import hooks from 'eslint-plugin-react-hooks'
 import sonar from 'eslint-plugin-sonarjs'
+import { appRouterConfigs, appRouterExports } from './app-router.js'
 import { arrayLayout } from './array-layout.js'
 import { isRecord } from './array-simple.js'
 import { reactRules } from './rules/react.js'
@@ -22,7 +24,10 @@ function shared(sfcFiles: string[]): LocalConfig {
       GLOB_SRC,
       ...sfcFiles,
     ],
-    plugins: { sonarjs: sonar, ztd: { rules: { 'array-layout': arrayLayout } } },
+    plugins: { sonarjs: sonar, ztd: { rules: {
+      'array-layout': arrayLayout,
+      'app-router-exports': appRouterExports,
+    } } },
     linterOptions: { reportUnusedDisableDirectives: 'error' },
     rules: {
       ...sharedRules,
@@ -97,6 +102,7 @@ function react(options: ConfigOptions['react']): LocalConfig[] {
         ])),
       },
     },
+    ...appRouterConfigs(settings),
   ]
 }
 
@@ -157,7 +163,17 @@ function antfuReact(options: ConfigOptions['react'], tsFiles: string[]) {
     return false
   }
   const files = typeof options === 'object' ? options.files ?? [GLOB_SRC] : [GLOB_SRC]
-  return { files, filesTypeAware: files.flatMap(file => tsFiles.map(tsFile => [file, tsFile])), overrides: {} }
+  const overrides: OptionsReact['overrides'] = {
+    'react-refresh/only-export-components': [
+      'error',
+      { allowConstantExport: false, allowExportNames: [] },
+    ],
+  }
+  return {
+    files,
+    filesTypeAware: files.flatMap(file => tsFiles.map(tsFile => [file, tsFile])),
+    overrides,
+  }
 }
 
 function antfuVue(files: string[]) {

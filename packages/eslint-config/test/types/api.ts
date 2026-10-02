@@ -12,6 +12,10 @@ const options: ConfigOptions = {
 const pending: Promise<Linter.Config[]> = config(options, { files: ['cli/**'], rules: { 'no-console': 'off' } })
 void pending
 void createConfig({ typescript: false })
+void config({ react: { framework: 'vinext', appDir: 'apps/web/app' } })
+void config({ react: { framework: 'next' } })
+// @ts-expect-error -- Only the explicitly supported App Router integrations are accepted.
+void config({ react: { framework: 'remix' } })
 // @ts-expect-error -- JSX a11y is deliberately absent from this public API while incompatible with ESLint 10.
 void config({ jsx: { a11y: true } })
 // @ts-expect-error -- TypeScript cannot be silently downgraded to a syntax-only strictTypes:false profile.

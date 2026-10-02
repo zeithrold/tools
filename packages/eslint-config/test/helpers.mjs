@@ -1,7 +1,12 @@
 import { resolve } from 'node:path'
+import process from 'node:process'
 import { ESLint } from 'eslint'
 // eslint-disable-next-line antfu/no-import-dist -- These integration tests exercise the published build.
 import config from '../dist/index.js'
+
+// This harness repeatedly lints the same TS files with different configs, so it needs watch programs.
+// Immutable single-run CI programs are validated separately in a fresh consumer process.
+process.env.TSESTREE_SINGLE_RUN = 'false'
 
 export const fixtureRoot = resolve('test/fixtures')
 

@@ -21,6 +21,8 @@ Core/TS extensions, unused-variable owners, React Hooks owners, SFC line-width o
 
 The implementation does not claim a Vue index-key check: current stable Vue rules ensure a key exists but cannot ensure it is not a loop index. Vue template typing and dynamic component inference also remain outside this package’s static proof boundary.
 
+Version 0.1.1 adds a scoped App Router adapter for the inherited Fast Refresh export rule without changing the 198-entry catalog. [Framework compatibility](framework-compatibility.md) explains the explicit API, scope, upstream contracts and runtime evidence. Antfu also inherits package-manager policy checks outside the research catalog; [pnpm policy](pnpm-policy.md) describes their effects and version requirements.
+
 ## shared
 
 | Rule | Exact researched value | Disposition |

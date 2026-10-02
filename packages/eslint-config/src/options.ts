@@ -15,6 +15,10 @@ export interface ReactOptions {
   compiler?: boolean
   /** Opt in to the experimental fetch cleanup check. */
   experimental?: boolean
+  /** Explicit App Router integration. Defaults to framework-neutral React. */
+  framework?: 'next' | 'vinext'
+  /** Literal app directory relative to the config root. Default: app and src/app. Requires framework. */
+  appDir?: string
 }
 
 export interface VueOptions {
