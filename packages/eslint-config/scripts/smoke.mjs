@@ -44,8 +44,21 @@ export async function consumerSmoke(spec, label) {
   await writeFile(join(directory, 'package.json'), JSON.stringify({
     private: true,
     type: 'module',
+    packageManager: 'pnpm@11.22.0',
     dependencies: { '@ztd-me/eslint': spec, 'eslint': '10.11.0', 'typescript': '6.0.3' },
   }))
+  await writeFile(join(directory, 'pnpm-workspace.yaml'), `packages:
+  - .
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+minimumReleaseAgeExclude:
+  - '@ztd-me/*'
+minimumReleaseAgeExcludePrune: true
+shellEmulator: true
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - semver@6.3.1
+`)
   execFileSync('pnpm', ['install'], { cwd: directory, stdio: 'inherit', env })
   await writeConsumerFiles(directory)
   execFileSync('node', ['smoke.mjs'], { cwd: directory, stdio: 'inherit' })

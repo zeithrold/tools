@@ -1,6 +1,8 @@
 # Public stage-only release
 
-`@ztd-me/frontend-checks@0.1.0` is prepared for authorized public publication. `.github/workflows/publish-frontend.yml` runs automatically on relevant pushes to `main`. It uses pnpm 11.22.0, frozen installation, strict lint, declarations, CSS fixtures, Chromium tests and fresh packed-consumer checks on Node 22 and 24. The Node 24 job packs the tested bytes and records the immutable source SHA and checksums. A separate job verifies those checksums and source identity before staging that exact tarball. It never directly publishes or promotes a version.
+`@ztd-me/frontend-checks@0.1.0` is published from source `3f9a3a7d33befc5a954ba1e86d3aa6d72e2c762f`. Its [automatic staging run](https://github.com/zeithrold/tools/actions/runs/36995178595) created stage `bc4c19ac-2c8b-4525-88f0-e0ec1e333903`; owner promotion made the exact verified tarball public. SHA-256 is `a3b7209f90746bf71c1b5b4ef69910a70ff747acc394696a778996f69efcb87c`.
+
+`.github/workflows/publish-frontend.yml` runs automatically on relevant pushes to `main`. It uses pnpm 11.22.0, frozen installation, strict lint, declarations, CSS fixtures, Chromium tests and fresh packed-consumer checks on Node 22 and 24. The Node 24 job packs the tested bytes and records the immutable source SHA and checksums. A separate job verifies those checksums and source identity before staging that exact tarball. It never directly publishes or promotes a version. Documentation/policy changes without a version bump verify and skip the public version rather than republishing it.
 
 The existing repository `NPM_TOKEN` secret is the authorized route. It must permit Read and write (stage only) for this package under `@ztd-me`, with Bypass 2FA disabled. Its actual scope for this new package cannot be inferred from its success publishing ESLint. If permission is missing, the package owner must supply the narrowly authorized access; the workflow fails without creating credentials or expanding rights. Organization administration rights alone do not grant package publication rights. The token is bound to the registry in memory in the stage step only; installation, checks and packing receive no token.
 
@@ -26,7 +28,7 @@ pnpm run test:registry 0.1.0 /path/to/verified/package.tgz
 
 The script checks the exact public package/version and registry SHA-512 integrity against the reviewed tarball, then creates a fresh pnpm consumer. It installs the exact registry version, reruns frozen installation, imports both `/css` and `/playwright`, invokes `ztd-css`, checks TypeScript declarations with strict settings and executes a deliberately failing browser Axe scan that must retain the violation evidence. Browser infrastructure errors cannot satisfy that assertion.
 
-The consumer uses `minimumReleaseAge: 1440`, `minimumReleaseAgeStrict: true` and `trustPolicy: no-downgrade` without exceptions. A newly promoted release may require waiting 24 hours before this check is eligible. Wait and retry if the policy blocks it; do not lower policy or add an exception to force publication verification. Consumers retain their own approved policies and pin the verified version:
+The user authorizes `minimumReleaseAgeExclude: ['@ztd-me/*']` in tools verification and the three consumer projects. The consumer retains `minimumReleaseAge: 1440`, `minimumReleaseAgeStrict: true`, pruning and `trustPolicy: no-downgrade`. Other packages still wait 24 hours. Scope packages keep integrity/trust checks; no scope-wide trust exclusion is authorized. Preserve the existing exact `semver@6.3.1` trust exception wherever the ESLint graph needs it. Pin the verified registry version:
 
 ```sh
 pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.0 @playwright/test@1.62.0

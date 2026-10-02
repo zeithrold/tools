@@ -5,6 +5,6 @@ minimumReleaseAgeExcludePrune: true
 shellEmulator: true
 trustPolicy: no-downgrade
 minimumReleaseAgeExclude:
-  - "@ztd-me/eslint@0.1.1"
+  - "@ztd-me/*"
 trustPolicyExclude:
   - semver@6.3.1

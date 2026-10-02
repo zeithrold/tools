@@ -18,8 +18,9 @@ export async function consumerSmoke(spec, label) {
   ], { cwd: consumer, encoding: 'utf8' }))
   assert.equal(report.status, 'passed')
   await checkTypes(consumer)
+  await checkBrowserPass(consumer)
   await checkBrowserFailure(consumer)
-  process.stdout.write(`${label} imports, types, CSS CLI and browser failure evidence verified in ${consumer}\n`)
+  process.stdout.write(`${label} imports, types, CSS CLI and browser pass/failure evidence verified in ${consumer}\n`)
   return consumer
 }
 
@@ -36,6 +37,8 @@ async function writeConsumerFiles(consumer, spec) {
 minimumReleaseAge: 1440
 minimumReleaseAgeStrict: true
 minimumReleaseAgeExcludePrune: true
+minimumReleaseAgeExclude:
+  - '@ztd-me/*'
 shellEmulator: true
 trustPolicy: no-downgrade
 `)
@@ -66,6 +69,33 @@ async function checkTypes(consumer) {
     include: ['api.ts'],
   }))
   execFileSync('pnpm', ['exec', 'tsc'], { cwd: consumer, stdio: 'inherit' })
+}
+
+async function checkBrowserPass(consumer) {
+  await mkdir(path.join(consumer, 'browser-positive'))
+  await writeFile(path.join(consumer, 'positive.config.mjs'), `
+import { defineConfig } from '@playwright/test'
+import { verificationArtifacts } from '@ztd-me/frontend-checks/playwright'
+export default defineConfig({
+  ...verificationArtifacts('positive-artifacts'), testDir: './browser-positive', workers: 1,
+})
+`)
+  const source = await readFile('test/browser/accessibility.spec.mjs', 'utf8')
+  assert.ok(source.includes('from \'../../src/playwright.mjs\''))
+  const imported = source.replace('from \'../../src/playwright.mjs\'', 'from \'@ztd-me/frontend-checks/playwright\'')
+  const specFile = path.join(consumer, 'browser-positive', 'accessibility.spec.mjs')
+  await writeFile(specFile, imported)
+  execFileSync('pnpm', [
+    'exec',
+    'playwright',
+    'test',
+    '-c',
+    'positive.config.mjs',
+  ], { cwd: consumer, stdio: 'inherit' })
+  const reportFile = path.join(consumer, 'positive-artifacts', 'playwright.json')
+  const browserReport = JSON.parse(await readFile(reportFile, 'utf8'))
+  assert.equal(browserReport.stats.expected, 3)
+  assert.equal(browserReport.stats.unexpected, 0)
 }
 
 async function checkBrowserFailure(consumer) {
