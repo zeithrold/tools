@@ -7,6 +7,7 @@ on:
       - 'packages/eslint-config/**'
       - '.github/workflows/publish-eslint.yml'
       - 'scripts/npm-staging.mjs'
+      - 'scripts/attach-publish-main.sh'
 
 permissions:
   contents: read
@@ -73,6 +74,8 @@ jobs:
         with:
           name: eslint-package-${{ github.sha }}
           path: ${{ runner.temp }}/eslint-artifact/
+      - name: Attach main at immutable source
+        run: bash ../../scripts/attach-publish-main.sh
       - name: Stage with authorized stage-only token
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
