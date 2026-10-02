@@ -1,0 +1,57 @@
+import type { Linter } from 'eslint'
+
+export const reactRules: Linter.RulesRecord = {
+  'react/exhaustive-deps': [
+    'error',
+    {
+      enableDangerousAutofixThisMayCauseInfiniteLoops: false,
+      requireExplicitEffectDeps: false,
+    },
+  ],
+  'react/no-array-index-key': 'error',
+  'react/purity': 'error',
+  'react/set-state-in-effect': 'error',
+  'react/web-api-no-leaked-event-listener': 'error',
+  'react/web-api-no-leaked-intersection-observer': 'error',
+  'react/web-api-no-leaked-interval': 'error',
+  'react/web-api-no-leaked-resize-observer': 'error',
+  'react/web-api-no-leaked-timeout': 'error',
+  'react/jsx-no-comment-textnodes': 'error',
+  'react/jsx-no-leaked-dollar': 'error',
+  'react/jsx-no-leaked-semicolon': 'error',
+  'react/dom-no-dangerously-set-innerhtml': 'error',
+  'react/dom-no-script-url': 'error',
+  'react/dom-no-unsafe-iframe-sandbox': 'error',
+  'react/use-state': [
+    'error',
+    {
+      enforceAssignment: true,
+      enforceLazyInitialization: true,
+      enforceSetterName: true,
+    },
+  ],
+  'react/no-unstable-context-value': 'error',
+  'react/no-unstable-default-props': [
+    'error',
+    {
+      safeDefaultProps: [],
+    },
+  ],
+  'react/dom-no-missing-button-type': 'error',
+  'react/dom-no-missing-iframe-sandbox': 'error',
+  'react/dom-no-unsafe-target-blank': 'error',
+  'react/rules-of-hooks': 'error',
+  'react/error-boundaries': 'error',
+  'react/no-missing-key': 'error',
+  'react/no-nested-component-definitions': 'error',
+  'react/no-nested-lazy-component-declarations': 'error',
+  'react/set-state-in-render': 'error',
+  'react/static-components': 'error',
+  'react/use-memo': 'error',
+  'react/dom-no-dangerously-set-innerhtml-with-children': 'error',
+  'react/dom-no-void-elements-with-children': 'error',
+  'react/no-leaked-conditional-rendering': 'error',
+  'react-hooks/globals': 'error',
+  'react-hooks/immutability': 'error',
+  'react-hooks/refs': 'error',
+}

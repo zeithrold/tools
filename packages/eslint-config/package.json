@@ -1,14 +1,61 @@
 {
-  "name": "@zeithrold/eslint-config",
-  "version": "0.1.0-dev",
-  "private": true,
+  "name": "@ztd-me/eslint",
+  "version": "0.1.0",
   "type": "module",
-  "description": "Composable JavaScript and TypeScript lint defaults for zeithrold projects",
+  "description": "Strict typed ESLint flat configs for TypeScript, React and Vue, built on antfu",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zeithrold/tools.git",
+    "directory": "packages/eslint-config"
+  },
+  "engines": {
+    "node": ">=22.14.0"
+  },
   "exports": {
-    ".": "./index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "docs",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.build.json --noEmit && tsc -p test/types/tsconfig.json",
+    "lint": "eslint src test scripts eslint.config.js --max-warnings 0",
+    "test": "pnpm run build && node --test test/*.test.mjs",
+    "test:pack": "node scripts/pack-smoke.mjs",
+    "check": "pnpm run build && pnpm run typecheck && pnpm run lint && pnpm test && pnpm run test:pack",
+    "prepack": "pnpm run build",
+    "prepublishOnly": "pnpm run check"
   },
   "peerDependencies": {
-    "@antfu/eslint-config": "^9.0.0",
-    "eslint": ">=10.0.0"
-  }
+    "eslint": "^10.11.0",
+    "typescript": ">=5.4.0 <6.1.0"
+  },
+  "dependencies": {
+    "@antfu/eslint-config": "9.5.1",
+    "@eslint-react/eslint-plugin": "5.23.3",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.5.7",
+    "eslint-plugin-sonarjs": "4.2.2",
+    "eslint-plugin-vuejs-accessibility": "2.6.0"
+  },
+  "devDependencies": {
+    "@types/estree": "1.0.8",
+    "@types/node": "24.12.0",
+    "@types/react": "19.2.14",
+    "eslint": "10.11.0",
+    "react": "19.2.4",
+    "typescript": "6.0.3"
+  },
+  "packageManager": "pnpm@11.19.0"
 }
