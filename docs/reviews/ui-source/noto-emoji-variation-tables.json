@@ -1,0 +1,186 @@
+[
+  {
+    "file": "2cabef97c1273ff87e3acc089cecbc4f892f500812d02587947bc74aecb0c733.woff2",
+    "family": "Noto Color Emoji",
+    "cmapFormats": [
+      4,
+      12,
+      14
+    ],
+    "heartMapped": false,
+    "whiteFlagMapped": true,
+    "variations": [
+      {
+        "selector": "FE0F",
+        "heart": [],
+        "whiteFlag": [
+          [
+            127987,
+            null
+          ]
+        ]
+      }
+    ],
+    "colorTables": [
+      "COLR",
+      "CPAL"
+    ]
+  },
+  {
+    "file": "e144ddd2116789d1b5c0534ea148a7cbcbc4586bc24eef14a18d7c25916e4308.woff2",
+    "family": "Noto Emoji",
+    "cmapFormats": [
+      4,
+      12,
+      14
+    ],
+    "heartMapped": true,
+    "whiteFlagMapped": false,
+    "variations": [
+      {
+        "selector": "FE0F",
+        "heart": [],
+        "whiteFlag": []
+      }
+    ],
+    "colorTables": []
+  },
+  {
+    "file": "26319a23921e1f54c062eff5ec6fa63a7f8c5b33ad7aafd353b3724ad00e8ee2.woff2",
+    "family": "Noto Emoji",
+    "cmapFormats": [
+      4,
+      12,
+      14
+    ],
+    "heartMapped": false,
+    "whiteFlagMapped": true,
+    "variations": [
+      {
+        "selector": "FE0F",
+        "heart": [],
+        "whiteFlag": []
+      }
+    ],
+    "colorTables": []
+  },
+  {
+    "file": "5cf34302d4019f9884116dcee8443d6f2a6bc894ce18b7de07cbffbe4cc29631.woff2",
+    "family": "Noto Color Emoji",
+    "cmapFormats": [
+      4,
+      12,
+      14
+    ],
+    "heartMapped": true,
+    "whiteFlagMapped": false,
+    "variations": [
+      {
+        "selector": "FE0F",
+        "heart": [
+          [
+            10084,
+            null
+          ]
+        ],
+        "whiteFlag": []
+      }
+    ],
+    "colorTables": [
+      "COLR",
+      "CPAL"
+    ]
+  },
+  {
+    "file": "a2080d461bfb7fa1add8cdbda450042fb423db606d33d119f6382ab74648cb8e.woff2",
+    "family": "Noto Emoji",
+    "cmapFormats": [
+      4,
+      12,
+      14
+    ],
+    "heartMapped": true,
+    "whiteFlagMapped": false,
+    "variations": [
+      {
+        "selector": "FE0F",
+        "heart": [],
+        "whiteFlag": []
+      }
+    ],
+    "colorTables": []
+  },
+  {
+    "file": "5cd51c24587a0b94606a1b7a8b4e1adfaac31391c9b8d79306ad73fe160a68be.woff2",
+    "family": "Noto Color Emoji",
+    "cmapFormats": [
+      4,
+      12,
+      14
+    ],
+    "heartMapped": true,
+    "whiteFlagMapped": false,
+    "variations": [
+      {
+        "selector": "FE0F",
+        "heart": [
+          [
+            10084,
+            null
+          ]
+        ],
+        "whiteFlag": []
+      }
+    ],
+    "colorTables": [
+      "COLR",
+      "CPAL"
+    ]
+  },
+  {
+    "file": "48e27dccfc62dee3b819f02e5bdc4e3b351794b6a6f211f621b71e2dfc4c096a.woff2",
+    "family": "Noto Color Emoji",
+    "cmapFormats": [
+      4,
+      12,
+      14
+    ],
+    "heartMapped": true,
+    "whiteFlagMapped": false,
+    "variations": [
+      {
+        "selector": "FE0F",
+        "heart": [
+          [
+            10084,
+            null
+          ]
+        ],
+        "whiteFlag": []
+      }
+    ],
+    "colorTables": [
+      "COLR",
+      "CPAL"
+    ]
+  },
+  {
+    "file": "f078507fe6ec836ca62e40808a0d2b4be4b210561342d175c38eda9a8e2ba01e.woff2",
+    "family": "Noto Emoji",
+    "cmapFormats": [
+      4,
+      12,
+      14
+    ],
+    "heartMapped": true,
+    "whiteFlagMapped": false,
+    "variations": [
+      {
+        "selector": "FE0F",
+        "heart": [],
+        "whiteFlag": []
+      }
+    ],
+    "colorTables": []
+  }
+]

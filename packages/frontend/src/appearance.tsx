@@ -16,7 +16,7 @@ export function AppearanceMenu(): React.JSX.Element {
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <Button aria-label={messages.appearance}>
-          <PaletteIcon aria-hidden="true" size={18} />
+          <PaletteIcon aria-hidden="true" size={16} />
           <span className="ztd-wide-label">{messages.appearance}</span>
         </Button>
       </DropdownMenu.Trigger>

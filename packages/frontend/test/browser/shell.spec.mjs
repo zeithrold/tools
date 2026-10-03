@@ -1,6 +1,14 @@
-import { expect, test } from '@playwright/test'
-import { assertAccessible, captureState } from '@ztd-me/frontend-checks/playwright'
-import { appbar, chooseAppearance, chooseChinese, watchErrors } from './helpers.mjs'
+import { expect } from '@playwright/test'
+import { captureState } from '@ztd-me/frontend-checks/playwright'
+import {
+  appbar,
+  assertAccessible,
+  chooseAppearance,
+  chooseChinese,
+  settleOverlay,
+  test,
+  watchErrors,
+} from './helpers.mjs'
 
 const developmentKey = 'harbor.ui.v1'
 const preferences = { version: 1, mode: 'dark', palette: 'ocean', locale: 'zh-CN' }
@@ -20,7 +28,7 @@ test('SSR cookie snapshot matches hydrated locale and theme', async ({ context, 
   await assertAccessible(page, info)
   await captureState(page, info, 'ssr-chinese-dark-ocean')
   await page.evaluate(async () => document.fonts.ready)
-  expect(await page.evaluate(() => document.fonts.check('14px "Inter Variable"', 'Appearance'))).toBe(true)
+  expect(await page.evaluate(() => document.fonts.check('14px "Noto Sans"', 'Appearance'))).toBe(true)
   expect(errors).toEqual([])
 })
 
@@ -90,14 +98,17 @@ test('all six palettes and both modes are accessible, including open appearance 
       await assertAccessible(page, info)
       await captureState(page, info, `${mode.toLowerCase()}-${palette.toLowerCase()}`)
       await appbar(page).getByRole('button', { name: 'Appearance' }).press('Enter')
+      await settleOverlay(page)
       await assertAccessible(page, info, { label: 'appearance' })
       await page.keyboard.press('Escape')
       await appbar(page).getByRole('combobox', { name: 'Language' }).press('Enter')
+      await settleOverlay(page)
       await assertAccessible(page, info, { label: 'locale' })
       await page.keyboard.press('Escape')
     }
   }
   await appbar(page).getByRole('button', { name: 'Appearance' }).press('Enter')
+  await settleOverlay(page)
   await assertAccessible(page, info)
   await captureState(page, info, 'appearance-menu')
 })

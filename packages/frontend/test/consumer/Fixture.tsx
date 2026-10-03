@@ -1,6 +1,9 @@
 import type { FrontendPreferences, PreferencePolicy, LinkProps } from '@ztd-me/frontend'
 import { useCallback, useState } from 'react'
 import { FrontendProvider, PublicShell, ApplicationShell, useFrontendPreferences } from '@ztd-me/frontend/client'
+import { ReviewContent, ReviewNavigation } from './ReviewContent.js'
+import { FontSpecimens } from './FontSpecimens.js'
+import { ChineseReviewContent } from './ChineseReviewContent.js'
 
 export interface FixtureProps {
   initialPreferences: FrontendPreferences
@@ -8,6 +11,9 @@ export interface FixtureProps {
   application: boolean
   styleNonce: string
   footer: boolean
+  review: boolean
+  fonts: boolean
+  chinese?: boolean
 }
 function FixtureLink(props: LinkProps): React.JSX.Element {
   return <a {...props} data-router-link="fixture" />
@@ -32,7 +38,8 @@ export function Fixture(props: FixtureProps): React.JSX.Element {
   const reportPersistenceError = useCallback(() => setPersistenceErrors(count => count + 1), [])
   const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null)
   const common = {
-    brand: { label: 'Fixture', homeHref: '/' },
+    brand: { label: props.review ? 'Harbor Studio' : 'Fixture', homeHref: '/' },
+    ...(props.review ? { projectActions: <ReviewNavigation /> } : {}),
     ...(props.footer ? {
       footer: {
         copyright: '© Harbor Studio',
@@ -45,7 +52,7 @@ export function Fixture(props: FixtureProps): React.JSX.Element {
     linkComponent: FixtureLink,
   }
   return (
-    <div ref={setPortalContainer} id="fullscreen-shell">
+    <div ref={setPortalContainer} id="fullscreen-shell" className={props.review ? 'review-document' : undefined}>
       <FrontendProvider
         initialPreferences={props.initialPreferences}
         policy={props.policy}
@@ -59,7 +66,15 @@ export function Fixture(props: FixtureProps): React.JSX.Element {
             contextSidebar={<aside aria-label="Context">Project sidebar</aside>}
             serviceNotice={<p role="status">Synthetic service notice</p>}
           ><State persistenceErrors={persistenceErrors} /></ApplicationShell>
-        ) : <PublicShell {...common}><State persistenceErrors={persistenceErrors} /></PublicShell>}
+        ) : <PublicShell {...common}>
+          {props.fonts
+            ? <FontSpecimens />
+            : props.chinese
+              ? <ChineseReviewContent />
+              : props.review
+                ? <ReviewContent />
+                : <State persistenceErrors={persistenceErrors} />}
+        </PublicShell>}
       </FrontendProvider>
     </div>
   )

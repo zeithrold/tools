@@ -1,0 +1,1858 @@
+{
+  "sourceSha": "217e92afa01a0626019677cc0b97976c48fe23c2",
+  "run": "https://github.com/zeithrold/tools/actions/runs/37103043378",
+  "node": 22,
+  "scope": "Actual Google Fonts browser requests; isolated synthetic consumers, not production pages",
+  "units": {
+    "MB": 1000000,
+    "MiB": 1048576,
+    "httpResponseBytes": "Chromium CDP encoded response bytes; HTTP headers and encoded payload, excluding socket/TLS framing",
+    "httpDecodedBodyBytes": "Cold response body after HTTP decompression; WOFF2 font data remains compressed as a font container",
+    "warmDecodedBody": "Previous cold resource body size is retained for reference; it is not new network traffic"
+  },
+  "conditions": "Separate fresh browser context for each cold page; immediate ordinary reload in that same context for warm phase; DNS/TLS/socket initialization is not measured",
+  "profiles": [
+    {
+      "scenario": "english-shell",
+      "phase": "cold",
+      "localPreview": false,
+      "byFamily": {
+        "font-css": {
+          "requests": 1,
+          "cached": 0,
+          "httpResponseBytes": 341420,
+          "httpDecodedBodyBytes": 1304025
+        },
+        "Noto Sans": {
+          "requests": 1,
+          "cached": 0,
+          "httpResponseBytes": 36371,
+          "httpDecodedBodyBytes": 35820
+        }
+      },
+      "resources": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Color+Emoji&display=swap",
+          "kind": "font-css",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 341420,
+          "httpDecodedBodyBytes": 1304025,
+          "decodedBodySource": "current-response",
+          "faces": []
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notosans/v42/o-0bIpQlx3QUlC5A4PNB6Ryti20_6n1iPHjc5a7duw.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 36371,
+          "httpDecodedBodyBytes": 35820,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "700"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "english-shell",
+      "phase": "warm",
+      "localPreview": false,
+      "byFamily": {
+        "font-css": {
+          "requests": 1,
+          "cached": 1,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 1304025
+        },
+        "Noto Sans": {
+          "requests": 1,
+          "cached": 1,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 35820
+        }
+      },
+      "resources": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Color+Emoji&display=swap",
+          "kind": "font-css",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 1304025,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": []
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notosans/v42/o-0bIpQlx3QUlC5A4PNB6Ryti20_6n1iPHjc5a7duw.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 35820,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "700"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "chinese-page",
+      "phase": "cold",
+      "localPreview": false,
+      "byFamily": {
+        "font-css": {
+          "requests": 1,
+          "cached": 0,
+          "httpResponseBytes": 342522,
+          "httpDecodedBodyBytes": 1372529
+        },
+        "Noto Sans": {
+          "requests": 1,
+          "cached": 0,
+          "httpResponseBytes": 24411,
+          "httpDecodedBodyBytes": 24004
+        },
+        "Noto Sans SC": {
+          "requests": 7,
+          "cached": 0,
+          "httpResponseBytes": 406751,
+          "httpDecodedBodyBytes": 405932
+        }
+      },
+      "resources": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Color+Emoji&display=swap",
+          "kind": "font-css",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 342522,
+          "httpDecodedBodyBytes": 1372529,
+          "decodedBodySource": "current-response",
+          "faces": []
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=o-0xIpQlx3QUlC5A4PNB6Ryti20_6n1iPHjcz6L1SoM-jCpoiyD9A71WwaMiUNhe27Ou2d-FazZm&skey=2b960fe17823056f&v=v42",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 24411,
+          "httpDecodedBodyBytes": 24004,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lY&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 55888,
+          "httpDecodedBodyBytes": 55720,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lA&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 52884,
+          "httpDecodedBodyBytes": 52792,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lE&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 52228,
+          "httpDecodedBodyBytes": 52096,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lQ&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 57545,
+          "httpDecodedBodyBytes": 57436,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lM&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 45727,
+          "httpDecodedBodyBytes": 45636,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_k8&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 61588,
+          "httpDecodedBodyBytes": 61488,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lI&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 80891,
+          "httpDecodedBodyBytes": 80764,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "chinese-page",
+      "phase": "warm",
+      "localPreview": false,
+      "byFamily": {
+        "font-css": {
+          "requests": 1,
+          "cached": 1,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 1372529
+        },
+        "Noto Sans": {
+          "requests": 1,
+          "cached": 1,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 24004
+        },
+        "Noto Sans SC": {
+          "requests": 7,
+          "cached": 7,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 405932
+        }
+      },
+      "resources": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Color+Emoji&display=swap",
+          "kind": "font-css",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 1372529,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": []
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=o-0xIpQlx3QUlC5A4PNB6Ryti20_6n1iPHjcz6L1SoM-jCpoiyD9A71WwaMiUNhe27Ou2d-FazZm&skey=2b960fe17823056f&v=v42",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 24004,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_k8&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 61488,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lQ&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 57436,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lY&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 55720,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lE&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 52096,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lA&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 52792,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lM&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 45636,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lI&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 80764,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full-specimen",
+      "phase": "cold",
+      "localPreview": false,
+      "byFamily": {
+        "font-css": {
+          "requests": 1,
+          "cached": 0,
+          "httpResponseBytes": 342522,
+          "httpDecodedBodyBytes": 1372529
+        },
+        "Noto Sans JP": {
+          "requests": 4,
+          "cached": 0,
+          "httpResponseBytes": 133682,
+          "httpDecodedBodyBytes": 133008
+        },
+        "Noto Sans SC": {
+          "requests": 7,
+          "cached": 0,
+          "httpResponseBytes": 413175,
+          "httpDecodedBodyBytes": 412432
+        },
+        "Noto Sans KR": {
+          "requests": 3,
+          "cached": 0,
+          "httpResponseBytes": 48012,
+          "httpDecodedBodyBytes": 47684
+        },
+        "Noto Sans": {
+          "requests": 1,
+          "cached": 0,
+          "httpResponseBytes": 24165,
+          "httpDecodedBodyBytes": 24004
+        },
+        "Noto Color Emoji": {
+          "requests": 10,
+          "cached": 0,
+          "httpResponseBytes": 2075196,
+          "httpDecodedBodyBytes": 2073208
+        }
+      },
+      "resources": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Color+Emoji&display=swap",
+          "kind": "font-css",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 342522,
+          "httpDecodedBodyBytes": 1372529,
+          "decodedBodySource": "current-response",
+          "faces": []
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=-F6QfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEjjZD6ImSiA8eCYb5JAYdIYkgaTAYvjRpOorIJUNsD2DweZq14IA&skey=72472b0eb8793570&v=v57",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 13536,
+          "httpDecodedBodyBytes": 13148,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans JP",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=-F6QfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEjjZD6ImSiA8eCYb5JAYdIYkgaTAYvjRpOorIJUNsD2DweZq14JA&skey=72472b0eb8793570&v=v57",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 16938,
+          "httpDecodedBodyBytes": 16864,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans JP",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lA&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 52911,
+          "httpDecodedBodyBytes": 52792,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lE&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 52213,
+          "httpDecodedBodyBytes": 52096,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=PbyCFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyGr_IAKa93uftYFRn826Shq_2JvYU73XZnFQGJRiGoEMgA1M&skey=87e7ee645936e2c7&v=v40",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 14788,
+          "httpDecodedBodyBytes": 14696,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans KR",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lM&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 45719,
+          "httpDecodedBodyBytes": 45636,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=-F6QfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEjjZD6ImSiA8eCYb5JAYdIYkgaTAYvjRpOorIJUNsD2DweZq14Iw&skey=72472b0eb8793570&v=v57",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 18518,
+          "httpDecodedBodyBytes": 18416,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans JP",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lI&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 80865,
+          "httpDecodedBodyBytes": 80764,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=o-0xIpQlx3QUlC5A4PNB6Ryti20_6n1iPHjcz6L1SoM-jCpoiyD9A71WwaMiUNhe27Ou2d-FazZm&skey=2b960fe17823056f&v=v42",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 24165,
+          "httpDecodedBodyBytes": 24004,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=-F6QfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEjjZD6ImSiA8eCYb5JAYdIYkgaTAYvjRpOorIJUNsD2DweZq14Ig&skey=72472b0eb8793570&v=v57",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 84690,
+          "httpDecodedBodyBytes": 84580,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans JP",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=PbyCFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyGr_IAKa93uftYFRn826Shq_2JvYU73XZnFQGJRiGoEMgA1A&skey=87e7ee645936e2c7&v=v40",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 14857,
+          "httpDecodedBodyBytes": 14708,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans KR",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.1.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 14916,
+          "httpDecodedBodyBytes": 14800,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.9.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 141528,
+          "httpDecodedBodyBytes": 141084,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_kg&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 60813,
+          "httpDecodedBodyBytes": 60720,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.7.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 211791,
+          "httpDecodedBodyBytes": 211564,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_kw&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 62178,
+          "httpDecodedBodyBytes": 62052,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.8.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 422712,
+          "httpDecodedBodyBytes": 422368,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lc&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 58476,
+          "httpDecodedBodyBytes": 58372,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=PbyCFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyGr_IAKa93uftYFRn826Shq_2JvYU73XZnFQGJRiGoEMgA0s&skey=87e7ee645936e2c7&v=v40",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 18367,
+          "httpDecodedBodyBytes": 18280,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Sans KR",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.0.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 709524,
+          "httpDecodedBodyBytes": 709020,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.6.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 124812,
+          "httpDecodedBodyBytes": 124628,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.5.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 121128,
+          "httpDecodedBodyBytes": 121084,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.3.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 163101,
+          "httpDecodedBodyBytes": 163052,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.2.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 64830,
+          "httpDecodedBodyBytes": 64796,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.4.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": false,
+          "httpResponseBytes": 100854,
+          "httpDecodedBodyBytes": 100812,
+          "decodedBodySource": "current-response",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "full-specimen",
+      "phase": "warm",
+      "localPreview": false,
+      "byFamily": {
+        "font-css": {
+          "requests": 1,
+          "cached": 1,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 1372529
+        },
+        "Noto Color Emoji": {
+          "requests": 10,
+          "cached": 10,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 2073208
+        },
+        "Noto Sans": {
+          "requests": 1,
+          "cached": 1,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 24004
+        },
+        "Noto Sans JP": {
+          "requests": 4,
+          "cached": 4,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 133008
+        },
+        "Noto Sans KR": {
+          "requests": 3,
+          "cached": 3,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 47684
+        },
+        "Noto Sans SC": {
+          "requests": 7,
+          "cached": 7,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 412432
+        }
+      },
+      "resources": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Color+Emoji&display=swap",
+          "kind": "font-css",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 1372529,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": []
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.0.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 709020,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.1.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 14800,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.2.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 64796,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.3.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 163052,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.4.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 100812,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.5.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 121084,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.6.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 124628,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.7.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 211564,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.8.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 422368,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/notocoloremoji/v47/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.9.woff2",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 141084,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Color Emoji",
+              "weight": "400"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=o-0xIpQlx3QUlC5A4PNB6Ryti20_6n1iPHjcz6L1SoM-jCpoiyD9A71WwaMiUNhe27Ou2d-FazZm&skey=2b960fe17823056f&v=v42",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 24004,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=-F6QfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEjjZD6ImSiA8eCYb5JAYdIYkgaTAYvjRpOorIJUNsD2DweZq14JA&skey=72472b0eb8793570&v=v57",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 16864,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans JP",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=-F6QfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEjjZD6ImSiA8eCYb5JAYdIYkgaTAYvjRpOorIJUNsD2DweZq14IA&skey=72472b0eb8793570&v=v57",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 13148,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans JP",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=-F6QfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEjjZD6ImSiA8eCYb5JAYdIYkgaTAYvjRpOorIJUNsD2DweZq14Iw&skey=72472b0eb8793570&v=v57",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 18416,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans JP",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=-F6QfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEjjZD6ImSiA8eCYb5JAYdIYkgaTAYvjRpOorIJUNsD2DweZq14Ig&skey=72472b0eb8793570&v=v57",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 84580,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans JP",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans JP",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=PbyCFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyGr_IAKa93uftYFRn826Shq_2JvYU73XZnFQGJRiGoEMgA0s&skey=87e7ee645936e2c7&v=v40",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 18280,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans KR",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=PbyCFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyGr_IAKa93uftYFRn826Shq_2JvYU73XZnFQGJRiGoEMgA1A&skey=87e7ee645936e2c7&v=v40",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 14708,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans KR",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=PbyCFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyGr_IAKa93uftYFRn826Shq_2JvYU73XZnFQGJRiGoEMgA1M&skey=87e7ee645936e2c7&v=v40",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 14696,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans KR",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans KR",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_kw&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 62052,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_kg&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 60720,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lc&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 58372,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lE&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 52096,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lA&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 52792,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lM&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 45636,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        },
+        {
+          "url": "https://fonts.gstatic.com/l/font?kit=k3kxo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_F_4dvnCROR3dc8DdDa2rvFtpbOhx81yxcvgl7asOkOvAptREi5017v_tIwjCo_lI&skey=cf0bb10b5602fdc3&v=v41",
+          "kind": "font",
+          "status": 200,
+          "cached": true,
+          "httpResponseBytes": 0,
+          "httpDecodedBodyBytes": 80764,
+          "decodedBodySource": "previous-cold-response-body",
+          "faces": [
+            {
+              "family": "Noto Sans SC",
+              "weight": "400"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "500"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "600"
+            },
+            {
+              "family": "Noto Sans SC",
+              "weight": "700"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -6,16 +6,24 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { renderToString } from 'react-dom/server'
 import { Fixture } from './Fixture.js'
+import { localFontPreview } from './preview-fonts.js'
 
 const client = fileURLToPath(new URL('../client/', import.meta.url))
 const template = await readFile(path.join(client, 'index.html'), 'utf8')
+const previewDirectory = process.env.ZTD_LOCAL_FONT_PREVIEW
+const preview = localFontPreview(previewDirectory)
 const server = createServer(async (request, response) => {
   const url = new URL(request.url ?? '/', 'http://127.0.0.1:4317')
+  if (await preview(url, response)) return
   if (url.pathname.startsWith('/assets/')) {
     const filename = path.basename(url.pathname)
     const type = filename.endsWith('.css') ? 'text/css' : filename.endsWith('.woff2') ? 'font/woff2' : 'text/javascript'
     response.setHeader('Content-Type', type)
-    response.end(await readFile(path.join(client, 'assets', filename)))
+    const asset = await readFile(path.join(client, 'assets', filename))
+    response.end(previewDirectory && filename.endsWith('.css')
+      ? asset.toString().replace(/https:\/\/fonts\.googleapis\.com\/css2[^"')\s]+/u,
+        '/__local-noto-preview/fonts.css')
+      : asset)
     return
   }
   const domain = url.searchParams.get('cookie-domain')
@@ -35,12 +43,21 @@ const server = createServer(async (request, response) => {
     styleNonce,
     application: url.pathname === '/application',
     footer: url.searchParams.get('footer') !== 'none',
+    review: ['/review', '/fonts', '/review-zh'].includes(url.pathname),
+    fonts: url.pathname === '/fonts',
+    chinese: url.pathname === '/review-zh',
   }
   const root = Object.entries(frontendRootAttributes(initialPreferences)).map(([key, value]) => `${key}="${value}"`).join(' ')
   const html = template.replace('lang="en"', root).replace('<!--content-->', renderToString(<Fixture {...props} />))
   const payload = JSON.stringify(props).replaceAll('<', '\u003c')
   response.setHeader('Content-Type', 'text/html; charset=utf-8')
-  response.setHeader('Content-Security-Policy', `default-src 'self'; script-src 'self'; style-src-elem 'self' 'nonce-${styleNonce}'; style-src-attr 'unsafe-inline'; font-src 'self'`)
+  response.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self'",
+    `style-src-elem 'self' 'nonce-${styleNonce}' https://fonts.googleapis.com`,
+    "style-src-attr 'unsafe-inline'",
+    "font-src 'self' https://fonts.gstatic.com",
+  ].join('; '))
   response.end(html.replace('<!--initial-->', `<script type="application/json" id="initial">${payload}</script>`))
 })
 server.listen(4317, '127.0.0.1')

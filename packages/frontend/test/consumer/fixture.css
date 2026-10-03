@@ -6,3 +6,13 @@ textarea { background: var(--ztd-surface); color: var(--ztd-foreground); }
 main a, nav a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ztd-foreground); }
 main button { min-height: 44px; padding: 8px 12px; margin-inline: 16px; background: var(--ztd-surface); color: var(--ztd-foreground); border: 1px solid var(--ztd-border); }
 textarea { min-height: 80px; margin-block: 16px; }
+
+.font-specimens {
+  max-width: 960px;
+  margin: 40px auto;
+  font-family: var(--ztd-font-sans);
+}
+
+.font-specimens p[id] { font-size: 24px; }
+.font-specimens strong { font-weight: 600; }
+.emoji-specimens { display: flex; flex-wrap: wrap; gap: 24px; font-size: 40px; }

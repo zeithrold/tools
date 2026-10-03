@@ -1,6 +1,5 @@
-import { expect, test } from '@playwright/test'
-import { assertAccessible } from '@ztd-me/frontend-checks/playwright'
-import { appbar, chooseAppearance, chooseChinese, watchErrors } from './helpers.mjs'
+import { expect } from '@playwright/test'
+import { appbar, assertAccessible, chooseAppearance, chooseChinese, test, watchErrors } from './helpers.mjs'
 
 async function denyStorage(context, afterFirstRead = false) {
   await context.addInitScript((delayed) => {
