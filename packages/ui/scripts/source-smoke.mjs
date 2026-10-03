@@ -83,17 +83,19 @@ async function prepareProject() {
   ]) {
     const filename = path.join(consumer, file)
     const source = await readFile(filename, 'utf8')
-    const local = source.replaceAll('@ztd-me/frontend/client', `./${destination}/client.js`)
-      .replaceAll('@ztd-me/frontend/styles.css', `./${destination}/styles.css`)
-      .replaceAll('@ztd-me/frontend', `./${destination}/index.js`)
+    const local = source.replaceAll('@ztd-me/ui/client', `./${destination}/client.js`)
+      .replaceAll('@ztd-me/ui/styles.css', `./${destination}/styles.css`)
+      .replaceAll('@ztd-me/ui', `./${destination}/index.js`)
     await writeFile(filename, local)
   }
 }
 
 async function inventorySource(item) {
   const packageInfo = JSON.parse(await readFile(path.join(consumer, 'package.json'), 'utf8'))
-  assert.equal('@ztd-me/frontend' in (packageInfo.dependencies ?? {}), false)
-  assert.equal('@ztd-me/frontend' in packageInfo.devDependencies, false)
+  for (const name of ['@ztd-me/ui', '@ztd-me/frontend']) {
+    assert.equal(name in (packageInfo.dependencies ?? {}), false)
+    assert.equal(name in packageInfo.devDependencies, false)
+  }
   return Promise.all(item.files.map(async (file) => {
     const installed = file.target.replace('@ui/', 'components/ui/')
     const bytes = await readFile(path.join(consumer, installed))
@@ -124,8 +126,8 @@ async function checkUnits() {
   ]) {
     const original = await readFile(`test/${file}`, 'utf8')
     const base = `../dist/type-smoke/${destination}`
-    const localClient = original.replaceAll('@ztd-me/frontend/client', `${base}/client.js`)
-    const localServer = localClient.replaceAll('@ztd-me/frontend', `${base}/index.js`)
+    const localClient = original.replaceAll('@ztd-me/ui/client', `${base}/client.js`)
+    const localServer = localClient.replaceAll('@ztd-me/ui', `${base}/index.js`)
     const test = localServer.replace('src/radix-probe.mts', `${destination}/radix-probe.mts`)
     await writeFile(path.join(consumer, 'test', file), test)
   }
@@ -189,7 +191,7 @@ await run('pnpm', [
   'build',
   'registry.json',
   '--output',
-  'packages/frontend/.artifacts/registry',
+  'packages/ui/.artifacts/registry',
 ], repository)
 await prepareProject()
 await run('pnpm', ['install'])
@@ -241,7 +243,7 @@ const receipt = {
   payloadSha256: createHash('sha256').update(await readFile(payloadPath)).digest('hex'),
   dependencies: payload.dependencies,
   files,
-  requiredFrontendPackage: false,
+  requiredUiPackage: false,
   sourceSha,
   registryUrl,
   fontVerification: process.env.ZTD_LOCAL_FONT_PREVIEW ? 'local-preview-only' : 'google-fonts-api',
@@ -252,6 +254,6 @@ await run('pnpm', [
   'exec',
   'playwright',
   'test',
-], process.cwd(), { ...process.env, ZTD_FRONTEND_CONSUMER: consumer })
+], process.cwd(), { ...process.env, ZTD_UI_CONSUMER: consumer })
 receipt.publicInstallationVerified = sourceSha !== undefined
 await writeFile('.artifacts/source-consumer.json', JSON.stringify(receipt, null, 2))

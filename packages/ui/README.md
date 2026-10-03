@@ -1,29 +1,27 @@
-# @ztd-me/frontend
+# @ztd-me/ui source
 
-The selected successor is **`@ztd-me/ui` source delivery**, not a renamed npm UI package. See the
-[source registry](../../registry/README.md). Existing npm installs remain available until their
-source replacements are reviewed and validated; installed registry source has no frontend package dependency.
-This directory hosts the canonical registry source and the existing package verification harness.
+Editable shadcn-compatible UI source lives in `packages/ui` and is delivered as the `@ztd-me/ui`
+registry item. Install a reviewed full source SHA using the [source registry recipe](../../registry/README.md).
+Consumers own copied files and reviewed updates. The package manifest is **private**; its `0.0.0`
+version, compiled exports and packed artifact exist only to verify the source in an independent consumer.
+There is no npm UI publishing workflow. The existing `@ztd-me/frontend@0.2.0` remains unchanged and
+available on npm; this directory move does not unpublish or deprecate it.
 
-Generic shadcn new-york/Radix chrome for React 19 projects. The default is **Neutral + System**; mode and palette are independent. All six palettes support light and dark. Brand, footer content, deployment/storage policy, business navigation, identity and application state stay with the consumer.
+Generic shadcn new-york/Radix chrome for React 19 projects. The default is **Neutral + System**; mode
+and palette are independent. All six palettes support light and dark. Brand, footer content,
+deployment/storage policy, business navigation, identity and application state stay with the consumer.
+Requires Node >=22.14 and React/react-dom >=19.2 <20. The verified toolchain uses React 19.3,
+TypeScript 6.0.3 and pnpm 11.22.0.
 
-```sh
-pnpm add @ztd-me/frontend@0.2.0
-```
-
-Version 0.2.0 is published and verified. Its artifact remains unchanged. The registry source
-adds compact chrome, menu motion and Google Fonts Noto typography for registry delivery; the packed
-artifact is a verification harness, not a new npm publication. Requires Node >=22.14 and
-React/react-dom >=19.2 <20. The verified toolchain uses React 19.3, TypeScript 6.0.3 and pnpm 11.22.0.
-
-## Exports
+## Installed entries
 
 | Entry | Contract |
 | --- | --- |
-| `@ztd-me/frontend` | Server-safe types, defaults, normalization, cookie policy/serialization and locale negotiation; no DOM or React runtime import |
-| `@ztd-me/frontend/client` | `FrontendProvider`, `useFrontendPreferences`, `PublicShell`, `ApplicationShell`, `Appbar`, `SiteFooter`, `AppearanceMenu`, `LocaleSelect`; preserved `use client` boundary |
-| `@ztd-me/frontend/styles.css` | Compiled namespaced CSS; current source harness uses the Google Fonts API for Noto Sans/CJK/Emoji; published 0.2.0 retains Inter |
+| `./components/ui/ztd-me/index.js` | Server-safe types, defaults, normalization, cookie policy/serialization and locale negotiation; no DOM or React runtime import |
+| `./components/ui/ztd-me/client.js` | `FrontendProvider`, `useFrontendPreferences`, `PublicShell`, `ApplicationShell`, `Appbar`, `SiteFooter`, `AppearanceMenu`, `LocaleSelect`; preserved `use client` boundary |
+| `./components/ui/ztd-me/styles.css` | Namespaced source CSS, with Google Fonts API Noto Sans/CJK/Color Emoji imports |
 
+The table and examples assume `aliases.ui = components/ui`; use the consumer’s own aliases or relative paths.
 ESM only. Client callbacks, custom links, identity and portal containers belong in a client adapter, not a serialized server payload. Use one provider per document; its initial preferences and policy identify that mounted document.
 
 ```tsx
@@ -32,7 +30,7 @@ import {
   createPreferencePolicy,
   frontendRootAttributes,
   resolveInitialPreferences,
-} from '@ztd-me/frontend'
+} from './components/ui/ztd-me/index.js'
 
 const policy = createPreferencePolicy({
   name: 'harbor.ui.v1',
@@ -52,8 +50,8 @@ const initialPreferences = resolveInitialPreferences({
 ```tsx
 'use client'
 
-import { FrontendProvider, PublicShell } from '@ztd-me/frontend/client'
-import '@ztd-me/frontend/styles.css'
+import { FrontendProvider, PublicShell } from './components/ui/ztd-me/client.js'
+import './components/ui/ztd-me/styles.css'
 
 <FrontendProvider initialPreferences={initialPreferences} policy={policy}>
   <PublicShell
@@ -104,7 +102,7 @@ Only the explicitly configured cookie is read. There is no legacy extraction or 
 
 An explicit `mirrorKey` enables localStorage writes solely to notify same-origin tabs, which re-read the cookie on matching storage events. The key must be nonempty, at most 128 characters and free of control characters. Mirror values are never read and mirror failure does not invalidate a successful cookie write. Omit it to avoid all localStorage access. Different subdomains do not receive localStorage events; active pages re-read cookies on focus/visibility recovery. Sharing is eventual with last-write-wins values. Consumers must verify locale-sensitive CDN/Worker cache variations and their own business hydration/metadata behavior.
 
-## Verification and staging
+## Source verification
 
 ```sh
 pnpm install --frozen-lockfile
@@ -115,6 +113,11 @@ Checks retain strict ESLint, CSS, full TypeScript declaration checking, unit bou
 
 The Select declaration compatibility patch is documented in [Radix compatibility](docs/radix-compatibility.md). The package retains the original Radix Select interaction and unmodified runtime. Consumers of this package's public declarations do not need the development patch.
 
-`publish-frontend-shell.yml` automatically verifies and stages the immutable main artifact through the existing stage-only route. It has no manual dispatch and performs no npm promotion. The owner merges and approves the staged version using npm 2FA. The development CSS gate uses the published `@ztd-me/frontend-checks@0.1.1`, whose native scoping exception is limited to Tailwind `custom-variant`. Final consumer integration requires a fresh registry installation of the promoted exact version: run `node scripts/registry-smoke.mjs 0.2.0` after owner promotion. See [verification scope](docs/verification.md) for evidence and limitations.
+The CSS gate uses the separate published `@ztd-me/frontend-checks@0.1.1` helper. A disposable packed
+consumer verifies the private compiled exports; the registry consumer verifies the delivered source,
+including its strict declaration patch. After owner merge, verify the exact full public source SHA with
+`node scripts/source-smoke.mjs <SOURCE_SHA>` before changing consumer pins. CI verifies both the merged
+base and pushed PR candidate and repeats the gate on main. A candidate receipt is review evidence;
+consumer acceptance still requires the approved merged revision. See [verification scope](docs/verification.md).
 
 Self-owned code is MIT; upstream dependencies and font licenses remain intact. See [third-party notices](THIRD_PARTY_NOTICES.md).

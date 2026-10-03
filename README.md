@@ -11,6 +11,7 @@
 - `zt sync`: installs selected complete Skill directories and writes `zt.lock.json`. It refuses to overwrite unmanaged or locally edited Skill directories. Removal is intentionally manual in this slice.
 - `packages/frontend-checks`: publishable CSS and Playwright/Axe helpers, with packed consumer tests and an automatic stage-only npm workflow. Owner 2FA promotion and public installation verification precede consumer rollout. See [frontend integration](docs/frontend-tooling.md).
 - `packages/eslint-config`: strict JS/TS/React/Vue flat-config package (`@ztd-me/eslint`), with a pnpm stage-only publication workflow. It is a native ESLint package, not code executed by the Go CLI.
+- `packages/ui`: canonical editable UI source and private verification harness; no npm UI publication.
 - `registry.json` and `registry/`: `@ztd-me/ui` source delivery through the existing GitHub route. Consumers own installed source and reviewed updates; see the [registry recipe](registry/README.md). The owner reviews upstream changes; fresh public installation is required before consumer migrations.
 
 `zt run`, `zt doctor`, native command planning for the other four stacks, and lint distribution for other stacks are **not implemented yet**. Release automation is configured, but no versioned release exists yet. This repository does not replace `ledger-tooling` or modify Ledger's current gates.
@@ -87,6 +88,7 @@ internal/skills/        Skill planning, collision detection, and sync
 skills/                 complete bundled Skill directories
 packages/eslint-config/ native strict ESLint package
 packages/frontend-checks/ CSS and browser verification helpers
+packages/ui/            editable UI registry source and private verification harness
 examples/               proposed pilot configurations
 ```
 

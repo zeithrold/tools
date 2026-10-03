@@ -25,4 +25,4 @@ execFileSync('pnpm', [
   'exec',
   'playwright',
   'test',
-], { stdio: 'inherit', env: { ...process.env, ZTD_FRONTEND_CONSUMER: consumer } })
+], { stdio: 'inherit', env: { ...process.env, ZTD_UI_CONSUMER: consumer } })

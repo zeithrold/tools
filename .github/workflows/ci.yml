@@ -56,7 +56,7 @@ jobs:
             .zt/artifacts/
           include-hidden-files: true
           if-no-files-found: error
-  frontend-shell:
+  ui:
     strategy:
       fail-fast: false
       matrix:
@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: packages/frontend
+        working-directory: packages/ui
     steps:
       - uses: actions/checkout@v6
         with:
@@ -87,22 +87,23 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: frontend-shell-${{ github.event.pull_request.head.sha || github.sha }}-node${{ matrix.node }}
+          name: ui-${{ github.event.pull_request.head.sha || github.sha }}-node${{ matrix.node }}
           path: |
-            packages/frontend/.artifacts/
-            !packages/frontend/.artifacts/consumer-*/node_modules/**
-            !packages/frontend/.artifacts/source-consumer-*/node_modules/**
+            packages/ui/.artifacts/
+            !packages/ui/.artifacts/consumer-*/node_modules/**
+            !packages/ui/.artifacts/source-consumer-*/node_modules/**
           include-hidden-files: true
           if-no-files-found: error
   public-ui-source:
-    name: Public UI source from main
+    name: Public UI source (${{ matrix.revision }})
+    strategy:
+      fail-fast: false
+      matrix:
+        revision: ${{ fromJSON(github.event_name == 'pull_request' && '["merged","candidate"]' || '["merged"]') }}
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: packages/frontend
     env:
-      # PR source is not yet merged; verify its immutable public main base instead.
-      SOURCE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+      # Candidate verification is review evidence; only merged revisions become consumer pins.
+      SOURCE_SHA: ${{ github.event_name == 'pull_request' && (matrix.revision == 'candidate' && github.event.pull_request.head.sha || github.event.pull_request.base.sha) || github.sha }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -115,15 +116,35 @@ jobs:
         with:
           version: 11.22.0
           run_install: false
+      - name: Resolve canonical source directory from pinned inventory
+        id: source
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict'
+          import { appendFile, readFile } from 'node:fs/promises'
+          import path from 'node:path'
+          const inventory = JSON.parse(await readFile('registry.json', 'utf8'))
+          const item = inventory.items.find(item => item.name === 'ui')
+          const entry = item.files.find(file => file.target === '@ui/ztd-me/index.ts')
+          const directory = path.dirname(path.dirname(entry.path))
+          assert.match(directory, /^packages\/[a-z0-9-]+$/u)
+          await readFile(`${directory}/scripts/source-smoke.mjs`, 'utf8')
+          await appendFile(process.env.GITHUB_OUTPUT, `package_dir=${directory}\n`)
+          JS
       - name: Record public source revision
+        working-directory: ${{ steps.source.outputs.package_dir }}
         run: |
           mkdir -p .artifacts
           git rev-parse HEAD > .artifacts/SOURCE_SHA
       - run: pnpm install --frozen-lockfile
+        working-directory: ${{ steps.source.outputs.package_dir }}
       - run: pnpm exec playwright install --with-deps chromium
+        working-directory: ${{ steps.source.outputs.package_dir }}
       - name: Install and verify immutable public registry source
+        working-directory: ${{ steps.source.outputs.package_dir }}
         run: node scripts/source-smoke.mjs "$SOURCE_SHA"
       - name: Report public installation receipt
+        working-directory: ${{ steps.source.outputs.package_dir }}
         run: |
           node --input-type=module <<'JS'
           import assert from 'node:assert/strict'
@@ -132,12 +153,14 @@ jobs:
           assert.equal(receipt.sourceSha, process.env.SOURCE_SHA)
           assert.equal(receipt.publicInstallationVerified, true)
           assert.equal(receipt.fontVerification, 'google-fonts-api')
+          const requiredUiPackage = receipt.requiredUiPackage ?? receipt.requiredFrontendPackage
+          assert.equal(requiredUiPackage, false)
           console.log('PUBLIC_SOURCE_VERIFIED', JSON.stringify({
             sourceSha: receipt.sourceSha,
             registryUrl: receipt.registryUrl,
             payloadSha256: receipt.payloadSha256,
             installedFiles: receipt.files.length,
-            requiredFrontendPackage: receipt.requiredFrontendPackage,
+            requiredUiPackage,
             fontVerification: receipt.fontVerification,
             publicInstallationVerified: receipt.publicInstallationVerified,
           }))
@@ -147,8 +170,8 @@ jobs:
         with:
           name: public-ui-source-${{ env.SOURCE_SHA }}
           path: |
-            packages/frontend/.artifacts/
-            !packages/frontend/.artifacts/source-consumer-*/node_modules/**
+            ${{ steps.source.outputs.package_dir }}/.artifacts/
+            !${{ steps.source.outputs.package_dir }}/.artifacts/source-consumer-*/node_modules/**
           include-hidden-files: true
           if-no-files-found: error
   eslint:

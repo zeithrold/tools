@@ -32,8 +32,8 @@
       }
     },
     {
-      "id": "frontend",
-      "path": "packages/frontend",
+      "id": "ui",
+      "path": "packages/ui",
       "stack": "js-ts",
       "profiles": {
         "frontend": [

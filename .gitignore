@@ -15,7 +15,6 @@ docs/reviews/
 packages/frontend-checks/*.tgz
 packages/frontend-checks/stage-result.json
 
-packages/frontend/dist/
-packages/frontend/.artifacts/
-packages/frontend/*.tgz
-packages/frontend/stage-result.json
+packages/ui/dist/
+packages/ui/.artifacts/
+packages/ui/*.tgz

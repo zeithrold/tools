@@ -2,7 +2,7 @@ import process from 'node:process'
 import { defineConfig } from '@playwright/test'
 import { verificationArtifacts } from '@ztd-me/frontend-checks/playwright'
 
-const consumer = process.env.ZTD_FRONTEND_CONSUMER
+const consumer = process.env.ZTD_UI_CONSUMER
 const artifacts = process.env.ZTD_LOCAL_FONT_PREVIEW
   ? '.artifacts/browser-local-font-preview'
   : '.artifacts/browser'

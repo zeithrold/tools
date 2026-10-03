@@ -7,7 +7,7 @@ Fontsource dependency. The emoji token and ordinary Latin/CJK stacks use the sam
 
 The complete default and public-install gates verify actual remote browser delivery, including six
 composed Noto Color Emoji samples rendered as single custom-font glyphs. Local preview evidence does
-not replace those gates. See [verification](verification.md) for commands, evidence and limitations.
+not replace those gates. See [verification](https://github.com/zeithrold/tools/blob/main/packages/ui/docs/verification.md) for commands, evidence and limitations.
 
 Noto Sans handles English and Latin text. Simplified Chinese uses Noto Sans SC. Elements marked
 `lang="ja"` or `lang="ko"` prioritize the matching CJK family for regional glyph forms. Set the

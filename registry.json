@@ -19,157 +19,157 @@
       ],
       "files": [
         {
-          "path": "packages/frontend/src/appbar.tsx",
+          "path": "packages/ui/src/appbar.tsx",
           "type": "registry:file",
           "target": "@ui/ztd-me/appbar.tsx"
         },
         {
-          "path": "packages/frontend/src/appearance.tsx",
+          "path": "packages/ui/src/appearance.tsx",
           "type": "registry:file",
           "target": "@ui/ztd-me/appearance.tsx"
         },
         {
-          "path": "packages/frontend/src/browser-environment.ts",
+          "path": "packages/ui/src/browser-environment.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/browser-environment.ts"
         },
         {
-          "path": "packages/frontend/src/client.ts",
+          "path": "packages/ui/src/client.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/client.ts"
         },
         {
-          "path": "packages/frontend/src/context.ts",
+          "path": "packages/ui/src/context.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/context.ts"
         },
         {
-          "path": "packages/frontend/src/cookies.ts",
+          "path": "packages/ui/src/cookies.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/cookies.ts"
         },
         {
-          "path": "packages/frontend/src/footer.tsx",
+          "path": "packages/ui/src/footer.tsx",
           "type": "registry:file",
           "target": "@ui/ztd-me/footer.tsx"
         },
         {
-          "path": "packages/frontend/src/href.ts",
+          "path": "packages/ui/src/href.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/href.ts"
         },
         {
-          "path": "packages/frontend/src/index.ts",
+          "path": "packages/ui/src/index.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/index.ts"
         },
         {
-          "path": "packages/frontend/src/link.tsx",
+          "path": "packages/ui/src/link.tsx",
           "type": "registry:file",
           "target": "@ui/ztd-me/link.tsx"
         },
         {
-          "path": "packages/frontend/src/locale-select.tsx",
+          "path": "packages/ui/src/locale-select.tsx",
           "type": "registry:file",
           "target": "@ui/ztd-me/locale-select.tsx"
         },
         {
-          "path": "packages/frontend/src/locale.ts",
+          "path": "packages/ui/src/locale.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/locale.ts"
         },
         {
-          "path": "packages/frontend/src/messages.ts",
+          "path": "packages/ui/src/messages.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/messages.ts"
         },
         {
-          "path": "packages/frontend/src/policy.ts",
+          "path": "packages/ui/src/policy.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/policy.ts"
         },
         {
-          "path": "packages/frontend/src/preferences.ts",
+          "path": "packages/ui/src/preferences.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/preferences.ts"
         },
         {
-          "path": "packages/frontend/src/provider.tsx",
+          "path": "packages/ui/src/provider.tsx",
           "type": "registry:file",
           "target": "@ui/ztd-me/provider.tsx"
         },
         {
-          "path": "packages/frontend/src/shell-types.ts",
+          "path": "packages/ui/src/shell-types.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/shell-types.ts"
         },
         {
-          "path": "packages/frontend/src/shell.tsx",
+          "path": "packages/ui/src/shell.tsx",
           "type": "registry:file",
           "target": "@ui/ztd-me/shell.tsx"
         },
         {
-          "path": "packages/frontend/src/store-types.ts",
+          "path": "packages/ui/src/store-types.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/store-types.ts"
         },
         {
-          "path": "packages/frontend/src/store.ts",
+          "path": "packages/ui/src/store.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/store.ts"
         },
         {
-          "path": "packages/frontend/src/text.ts",
+          "path": "packages/ui/src/text.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/text.ts"
         },
         {
-          "path": "packages/frontend/src/types.ts",
+          "path": "packages/ui/src/types.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/types.ts"
         },
         {
-          "path": "packages/frontend/src/ui/button.tsx",
+          "path": "packages/ui/src/ui/button.tsx",
           "type": "registry:file",
           "target": "@ui/ztd-me/ui/button.tsx"
         },
         {
-          "path": "packages/frontend/src/ui/inert.ts",
+          "path": "packages/ui/src/ui/inert.ts",
           "type": "registry:file",
           "target": "@ui/ztd-me/ui/inert.ts"
         },
         {
-          "path": "packages/frontend/src/ui/menu-choice.tsx",
+          "path": "packages/ui/src/ui/menu-choice.tsx",
           "type": "registry:file",
           "target": "@ui/ztd-me/ui/menu-choice.tsx"
         },
         {
-          "path": "packages/frontend/src/styles.css",
+          "path": "packages/ui/src/styles.css",
           "type": "registry:file",
           "target": "@ui/ztd-me/styles.css"
         },
         {
-          "path": "packages/frontend/src/styles/tokens.css",
+          "path": "packages/ui/src/styles/tokens.css",
           "type": "registry:file",
           "target": "@ui/ztd-me/styles/tokens.css"
         },
         {
-          "path": "packages/frontend/src/styles/shell.css",
+          "path": "packages/ui/src/styles/shell.css",
           "type": "registry:file",
           "target": "@ui/ztd-me/styles/shell.css"
         },
         {
-          "path": "packages/frontend/src/styles/motion.css",
+          "path": "packages/ui/src/styles/motion.css",
           "type": "registry:file",
           "target": "@ui/ztd-me/styles/motion.css"
         },
         {
-          "path": "packages/frontend/src/styles/fonts.css",
+          "path": "packages/ui/src/styles/fonts.css",
           "type": "registry:file",
           "target": "@ui/ztd-me/styles/fonts.css"
         },
         {
-          "path": "packages/frontend/LICENSE",
+          "path": "packages/ui/LICENSE",
           "type": "registry:file",
           "target": "@ui/ztd-me/LICENSE"
         },
@@ -179,12 +179,12 @@
           "target": "@ui/ztd-me/THIRD_PARTY_NOTICES.md"
         },
         {
-          "path": "packages/frontend/third-party/SHADCN-MIT.txt",
+          "path": "packages/ui/third-party/SHADCN-MIT.txt",
           "type": "registry:file",
           "target": "@ui/ztd-me/third-party/SHADCN-MIT.txt"
         },
         {
-          "path": "packages/frontend/patches/@radix-ui__react-select@2.3.7.patch",
+          "path": "packages/ui/patches/@radix-ui__react-select@2.3.7.patch",
           "type": "registry:file",
           "target": "@ui/ztd-me/patches/@radix-ui__react-select@2.3.7.patch"
         },
@@ -194,37 +194,37 @@
           "target": "@ui/ztd-me/README.md"
         },
         {
-          "path": "packages/frontend/third-party/NOTO-SANS-OFL.txt",
+          "path": "packages/ui/third-party/NOTO-SANS-OFL.txt",
           "type": "registry:file",
           "target": "@ui/ztd-me/third-party/NOTO-SANS-OFL.txt"
         },
         {
-          "path": "packages/frontend/third-party/NOTO-SANS-SC-OFL.txt",
+          "path": "packages/ui/third-party/NOTO-SANS-SC-OFL.txt",
           "type": "registry:file",
           "target": "@ui/ztd-me/third-party/NOTO-SANS-SC-OFL.txt"
         },
         {
-          "path": "packages/frontend/third-party/NOTO-SANS-JP-OFL.txt",
+          "path": "packages/ui/third-party/NOTO-SANS-JP-OFL.txt",
           "type": "registry:file",
           "target": "@ui/ztd-me/third-party/NOTO-SANS-JP-OFL.txt"
         },
         {
-          "path": "packages/frontend/third-party/NOTO-SANS-KR-OFL.txt",
+          "path": "packages/ui/third-party/NOTO-SANS-KR-OFL.txt",
           "type": "registry:file",
           "target": "@ui/ztd-me/third-party/NOTO-SANS-KR-OFL.txt"
         },
         {
-          "path": "packages/frontend/third-party/NOTO-EMOJI-OFL.txt",
+          "path": "packages/ui/third-party/NOTO-EMOJI-OFL.txt",
           "type": "registry:file",
           "target": "@ui/ztd-me/third-party/NOTO-EMOJI-OFL.txt"
         },
         {
-          "path": "packages/frontend/third-party/NOTO-COLOR-EMOJI-OFL.txt",
+          "path": "packages/ui/third-party/NOTO-COLOR-EMOJI-OFL.txt",
           "type": "registry:file",
           "target": "@ui/ztd-me/third-party/NOTO-COLOR-EMOJI-OFL.txt"
         },
         {
-          "path": "packages/frontend/docs/fonts.md",
+          "path": "packages/ui/docs/fonts.md",
           "type": "registry:file",
           "target": "@ui/ztd-me/fonts.md"
         }

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { SiteFooter } from '@ztd-me/frontend/client'
+import { SiteFooter } from '@ztd-me/ui/client'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 
