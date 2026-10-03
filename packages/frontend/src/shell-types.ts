@@ -10,9 +10,18 @@ export type LinkProps = Omit<ComponentProps<'a'>, 'href' | 'children'> & {
   children: ReactNode
 }
 export type LinkComponent = ComponentType<LinkProps>
+export interface FooterLink {
+  label: string
+  href: string
+  ariaLabel?: string
+}
+export interface SiteFooterProps {
+  copyright?: ReactNode
+  links?: readonly FooterLink[]
+}
 export interface ShellProps {
   brand: Brand
-  repositoryUrl: string
+  footer?: SiteFooterProps
   children: ReactNode
   projectActions?: ReactNode
   identity?: ReactNode

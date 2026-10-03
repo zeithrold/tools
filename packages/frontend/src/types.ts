@@ -16,7 +16,6 @@ export const PALETTES = [
 export type Mode = (typeof MODES)[number]
 export type Locale = (typeof LOCALES)[number]
 export type Palette = (typeof PALETTES)[number]
-export type Project = 'website' | 'showcase' | 'memory'
 export interface FrontendPreferences {
   version: 1
   mode: Mode
@@ -24,16 +23,16 @@ export interface FrontendPreferences {
   locale: Locale
 }
 export interface PreferencePolicyOptions {
-  environment: 'production' | 'preview' | 'development'
-  namespace: Project
-  hostname: string
-  protocol: 'http:' | 'https:'
+  name?: string
+  domain?: string
+  secure?: boolean
+  mirrorKey?: string
 }
 export interface PreferencePolicy {
-  name: string
-  domain?: 'ztd.me'
-  secure: boolean
-  namespace: Project
+  readonly name: string
+  readonly domain?: string
+  readonly secure: boolean
+  readonly mirrorKey?: string
 }
 export interface PreferenceCookieResult {
   status: 'valid' | 'missing' | 'invalid' | 'future'

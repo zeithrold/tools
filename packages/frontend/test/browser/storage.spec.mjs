@@ -33,7 +33,7 @@ for (const width of [390, 1280]) {
   test(`denied cookie reads preserve SSR, controls and recovery at width ${width}`, async ({ context, page }, info) => {
     await context.addCookies([
       {
-        name: 'ztd.frontend.development.memory.v1',
+        name: 'harbor.ui.v1',
         value: encodeURIComponent(JSON.stringify({ version: 1, mode: 'dark', palette: 'ocean', locale: 'en' })),
         url: 'http://127.0.0.1:4317',
       },
@@ -41,7 +41,7 @@ for (const width of [390, 1280]) {
     await denyStorage(context)
     await page.setViewportSize({ width, height: 900 })
     const errors = watchErrors(page)
-    const response = await page.goto('/application?project=memory')
+    const response = await page.goto('/application')
     expect(await response.text()).toContain('data-frontend-palette="ocean"')
     await expect(page.getByRole('heading', { name: 'Shared shell fixture' })).toBeVisible()
     await expect(page.locator('#persistence')).toHaveText('unavailable')
@@ -52,7 +52,7 @@ for (const width of [390, 1280]) {
     await expect(page.locator('#resolved')).toHaveText('light')
     await page.evaluate(() => {
       window.dispatchEvent(new Event('focus'))
-      window.dispatchEvent(new StorageEvent('storage', { key: 'ztd.frontend.development.memory.v1' }))
+      window.dispatchEvent(new StorageEvent('storage', { key: 'harbor.ui.notification' }))
       document.dispatchEvent(new Event('visibilitychange'))
     })
     await page.emulateMedia({ colorScheme: 'dark' })
@@ -73,10 +73,11 @@ for (const width of [390, 1280]) {
   })
 }
 
-test('denial during Memory legacy-cookie extraction does not replace the application', async ({ context, page }) => {
+test('later cookie denial preserves the application', async ({ context, page }) => {
   await denyStorage(context, true)
   const errors = watchErrors(page)
-  await page.goto('/application?project=memory')
+  await page.goto('/application')
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')))
   await expect(page.getByRole('heading', { name: 'Shared shell fixture' })).toBeVisible()
   await chooseAppearance(page, 'Dark')
   await expect(page.locator('#resolved')).toHaveText('dark')

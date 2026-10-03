@@ -46,8 +46,8 @@ importers:
         specifier: 0.1.1
         version: 0.1.1(@typescript-eslint/typescript-estree@8.71.0(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/utils@8.71.0(eslint@10.11.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@vue/compiler-sfc@3.5.43)(eslint@10.11.0(supports-color@10.2.2))(globals@17.13.0)(supports-color@10.2.2)(typescript@6.0.3)
       '@ztd-me/frontend-checks':
-        specifier: 0.1.0
-        version: 0.1.0(@playwright/test@1.62.0)(playwright-core@1.62.0)(supports-color@10.2.2)(typescript@6.0.3)
+        specifier: 0.1.1
+        version: 0.1.1(@playwright/test@1.62.0)(playwright-core@1.62.0)(supports-color@10.2.2)(typescript@6.0.3)
       eslint:
         specifier: 10.11.0
         version: 10.11.0(supports-color@10.2.2)
@@ -1068,8 +1068,8 @@ packages:
       eslint: ^10.11.0
       typescript: '>=5.4.0 <6.1.0'
 
-  '@ztd-me/frontend-checks@0.1.0':
-    resolution: {integrity: sha512-G08fkILnHqB73h7avWwGGMJ++yEKJE25hig5+sSBPdGLCxuRKT7Q63H9NHe+qwHW4vBFM1YisnvLBL4ZCCnThQ==}
+  '@ztd-me/frontend-checks@0.1.1':
+    resolution: {integrity: sha512-R0Xk4nTpHvd+8Z/N2qu/TeOZ+OLdwy+L67JyNk5/+Aa1GRUm08pydHUffvebEKvGPQjpEhiY3yRMN3I9ZO5dWg==}
     engines: {node: '>=22.14.0'}
     hasBin: true
     peerDependencies:
@@ -3838,7 +3838,7 @@ snapshots:
       - ts-declaration-location
       - vitest
 
-  '@ztd-me/frontend-checks@0.1.0(@playwright/test@1.62.0)(playwright-core@1.62.0)(supports-color@10.2.2)(typescript@6.0.3)':
+  '@ztd-me/frontend-checks@0.1.1(@playwright/test@1.62.0)(playwright-core@1.62.0)(supports-color@10.2.2)(typescript@6.0.3)':
     dependencies:
       '@axe-core/playwright': 4.13.0(playwright-core@1.62.0)
       '@playwright/test': 1.62.0
@@ -5286,9 +5286,9 @@ snapshots:
     dependencies:
       yaml: 2.9.1
 
-  postcss-safe-parser@7.1.0(postcss@8.5.27):
+  postcss-safe-parser@7.1.0(postcss@8.5.28):
     dependencies:
-      postcss: 8.5.27
+      postcss: 8.5.28
 
   postcss-selector-parser@7.1.6:
     dependencies:
@@ -5506,8 +5506,8 @@ snapshots:
       micromatch: 4.0.8
       normalize-path: 3.0.0
       picocolors: 1.1.1
-      postcss: 8.5.27
-      postcss-safe-parser: 7.1.0(postcss@8.5.27)
+      postcss: 8.5.28
+      postcss-safe-parser: 7.1.0(postcss@8.5.28)
       postcss-selector-parser: 7.1.6
       postcss-value-parser: 4.2.0
       string-width: 8.3.0

@@ -8,5 +8,13 @@ export { SiteFooter } from './footer.js'
 export { LocaleSelect } from './locale-select.js'
 export { FrontendProvider } from './provider.js'
 export type { FrontendProviderProps } from './provider.js'
-export type { ApplicationShellProps, Brand, LinkComponent, LinkProps, ShellProps } from './shell-types.js'
+export type {
+  ApplicationShellProps,
+  Brand,
+  FooterLink,
+  LinkComponent,
+  LinkProps,
+  ShellProps,
+  SiteFooterProps,
+} from './shell-types.js'
 export { ApplicationShell, PublicShell } from './shell.js'

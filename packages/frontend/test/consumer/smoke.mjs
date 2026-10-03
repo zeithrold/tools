@@ -3,12 +3,15 @@ import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import { DEFAULT_PREFERENCES, resolveInitialPreferences } from '@ztd-me/frontend'
+import * as frontend from '@ztd-me/frontend'
 import { PublicShell, FrontendProvider } from '@ztd-me/frontend/client'
 
 assert.equal(typeof PublicShell, 'function')
 assert.equal(typeof FrontendProvider, 'function')
 assert.equal(typeof resolveInitialPreferences, 'function')
 assert.equal(DEFAULT_PREFERENCES.mode, 'system')
+assert.equal('migrateLegacyPreferences' in frontend, false)
+assert.equal('LEGACY_STORAGE_KEYS' in frontend, false)
 const require = createRequire(import.meta.url)
 const css = require.resolve('@ztd-me/frontend/styles.css')
 const source = await readFile(css, 'utf8')

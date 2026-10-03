@@ -1,10 +1,11 @@
 import type { PreferenceSnapshot, PreferenceStore } from './store-types.js'
 import type { FrontendPreferences, PreferencePolicy } from './types.js'
-import { persistBrowserPreferences, readBrowserPreferences, readLegacyPreference } from './browser-environment.js'
-import { migrateLegacyPreferences } from './migration.js'
+import { persistBrowserPreferences, readBrowserPreferences } from './browser-environment.js'
+import { createPreferencePolicy } from './policy.js'
 import { normalizePreferences, serializePreferences } from './preferences.js'
 
 export function createPreferenceStore(initial: FrontendPreferences, policy: PreferencePolicy): PreferenceStore {
+  const validatedPolicy = createPreferencePolicy(policy)
   const preferences = normalizePreferences(initial)
   const server: PreferenceSnapshot = {
     preferences,
@@ -24,11 +25,11 @@ export function createPreferenceStore(initial: FrontendPreferences, policy: Pref
   }
   function change(next: FrontendPreferences): void {
     const normalized = normalizePreferences(next)
-    const saved = persistBrowserPreferences(normalized, policy)
+    const saved = persistBrowserPreferences(normalized, validatedPolicy)
     commit(normalized, saved ? 'saved' : 'unavailable')
   }
   function restore(): void {
-    restoreFromCookie(snapshot, policy, commit)
+    restoreFromCookie(snapshot, validatedPolicy, commit)
   }
   const actions = {
     setMode: (mode: FrontendPreferences['mode']) => change({ ...snapshot.preferences, mode }),
@@ -36,10 +37,8 @@ export function createPreferenceStore(initial: FrontendPreferences, policy: Pref
     setLocale: (locale: FrontendPreferences['locale']) => change({ ...snapshot.preferences, locale }),
   }
   function connect(): () => void {
-    return connectBrowser(policy, snapshot.preferences, {
-      commit,
+    return connectBrowser(validatedPolicy, {
       restore,
-      change,
       setSystem: (dark) => {
         systemDark = dark
         commit(snapshot.preferences)
@@ -60,14 +59,11 @@ export function createPreferenceStore(initial: FrontendPreferences, policy: Pref
   }
 }
 interface BrowserActions {
-  commit: (preferences: FrontendPreferences) => void
   restore: () => void
-  change: (preferences: FrontendPreferences) => void
   setSystem: (dark: boolean) => void
 }
 function connectBrowser(
   policy: PreferencePolicy,
-  initial: FrontendPreferences,
   actions: BrowserActions,
 ): () => void {
   const media = window.matchMedia('(prefers-color-scheme: dark)')
@@ -76,17 +72,9 @@ function connectBrowser(
     actions.restore()
   }
   actions.setSystem(media.matches)
-  actions.commit(initial)
-  const read = readBrowserPreferences(policy)
-  if (read.status === 'missing') {
-    const migrated = migrateLegacyPreferences(readLegacyPreference(policy), policy.namespace, initial)
-    if (serializePreferences(migrated) !== serializePreferences(initial)) {
-      actions.change(migrated)
-    }
-  }
   actions.restore()
   const onStorage = (event: StorageEvent): void => {
-    if (event.key === policy.name) {
+    if (policy.mirrorKey !== undefined && event.key === policy.mirrorKey) {
       actions.restore()
     }
   }

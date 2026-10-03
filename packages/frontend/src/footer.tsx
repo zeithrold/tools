@@ -1,21 +1,21 @@
 'use client'
 
-import { useFrontendPreferences } from './context.js'
-import { shellMessages } from './messages.js'
+import type { FooterLink, SiteFooterProps } from './shell-types.js'
+import { safeHref } from './href.js'
 
-export function SiteFooter({ repositoryUrl }: { repositoryUrl: string }): React.JSX.Element {
-  if (!/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/?$/u.test(repositoryUrl)) {
-    throw new Error('SiteFooter requires the current project GitHub repository URL')
-  }
-  const { preferences } = useFrontendPreferences()
-  const messages = shellMessages(preferences.locale)
+const EMPTY_LINKS: readonly FooterLink[] = []
+
+export function SiteFooter({ copyright, links = EMPTY_LINKS }: SiteFooterProps): React.JSX.Element {
   return (
     <footer className="ztd-footer">
       <div className="ztd-chrome">
-        <span>© Zeithrold</span>
+        {copyright === undefined ? null : <span>{copyright}</span>}
         <div className="ztd-footer-links">
-          <a href={repositoryUrl} aria-label={messages.source}>GitHub</a>
-          <a href="mailto:hello@ztd.me">hello@ztd.me</a>
+          {links.map(link => (
+            <a key={`${link.href}:${link.label}`} href={safeHref(link.href, true)} aria-label={link.ariaLabel}>
+              {link.label}
+            </a>
+          ))}
         </div>
       </div>
     </footer>

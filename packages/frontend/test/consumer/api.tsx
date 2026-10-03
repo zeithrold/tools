@@ -1,11 +1,15 @@
 import type {} from '@ztd-me/frontend/styles.css'
 import type { FrontendPreferences, PreferencePolicy, ShellProps } from '@ztd-me/frontend'
 import { FrontendProvider, PublicShell, ApplicationShell, useFrontendPreferences } from '@ztd-me/frontend/client'
+// @ts-expect-error The package no longer enumerates its consuming projects.
+export type { Project } from '@ztd-me/frontend'
 
 const initialPreferences: FrontendPreferences = { version: 1, mode: 'system', palette: 'neutral', locale: 'en' }
-const policy: PreferencePolicy = { name: 'fixture', secure: false, namespace: 'website' }
+const policy: PreferencePolicy = { name: 'studio.preferences', secure: false, mirrorKey: 'studio.events' }
 const shell: ShellProps = {
-  brand: { label: 'Fixture', homeHref: '/' }, repositoryUrl: 'https://github.com/zeithrold/website', children: null,
+  brand: { label: 'Harbor Studio', homeHref: 'https://harbor.example/' },
+  footer: { copyright: '© Harbor Studio', links: [{ label: 'Source', href: 'https://codeberg.org/example/studio' }] },
+  children: null,
 }
 export const publicShell = <PublicShell {...shell} />
 export const applicationShell = <ApplicationShell {...shell} businessNavigation={<nav />} />
@@ -16,6 +20,10 @@ export const sensitivePreferences: FrontendPreferences = { ...initialPreferences
 export const publicNavigation = <PublicShell {...shell} businessNavigation={<nav />} />
 // @ts-expect-error Invalid palette values cannot enter the typed API.
 export const invalidPalette: FrontendPreferences = { ...initialPreferences, palette: 'brand-new' }
+// @ts-expect-error Project-specific policy is no longer part of the package API.
+export const projectPolicy: PreferencePolicy = { ...policy, namespace: 'arbitrary-project' }
+// @ts-expect-error Repository identity is supplied through generic footer links.
+export const fixedRepository = <PublicShell {...shell} repositoryUrl="https://codeberg.org/example/studio" />
 export function setters(): void {
   const state = useFrontendPreferences()
   state.setMode('system')

@@ -5,7 +5,6 @@ import {
   DEFAULT_PREFERENCES,
   frontendRootAttributes,
   MAX_PREFERENCE_COOKIE_BYTES,
-  migrateLegacyPreferences,
   negotiateLocale,
   normalizePreferences,
   PALETTES,
@@ -16,10 +15,9 @@ import {
 } from '@ztd-me/frontend'
 
 const policy = createPreferencePolicy({
-  environment: 'production',
-  namespace: 'website',
-  hostname: 'ztd.me',
-  protocol: 'https:',
+  name: 'atelier.ui.v1',
+  domain: 'atelier.example',
+  mirrorKey: 'atelier.ui.events',
 })
 const selected = { version: 1, mode: 'dark', palette: 'ocean', locale: 'zh-CN' }
 
@@ -48,34 +46,54 @@ test('unknown inputs are reduced to the exact non-sensitive schema', () => {
   }
 })
 
-test('production sharing is restricted to trusted HTTPS ztd.me deployment', () => {
-  assert.equal(policy.domain, 'ztd.me')
-  assert.match(preferenceCookie(selected, policy), /Domain=ztd\.me; Secure/u)
-  for (const hostname of [
-    'ztd.me.evil.test',
-    'localhost',
-    '127.0.0.1',
-  ]) {
-    const options = { ...policy, environment: 'production', hostname, protocol: 'https:' }
-    assert.equal(createPreferencePolicy(options).domain, undefined)
+test('default persistence is host-only and secure without a storage mirror', () => {
+  const defaults = createPreferencePolicy()
+  assert.deepEqual(defaults, { name: 'frontend.preferences.v1', secure: true })
+  const cookie = preferenceCookie(selected, defaults)
+  assert.match(cookie, /; Path=\/; SameSite=Lax; Max-Age=31536000; Secure$/u)
+  assert.ok(!cookie.includes('Domain='))
+  const local = createPreferencePolicy({ name: 'atelier.local.v1', secure: false })
+  assert.ok(!preferenceCookie(selected, local).includes('; Secure'))
+})
+
+test('domain, cookie name and optional mirror are independent consumer choices', () => {
+  assert.equal(policy.domain, 'atelier.example')
+  assert.equal(policy.mirrorKey, 'atelier.ui.events')
+  assert.match(preferenceCookie(selected, policy), /Domain=atelier\.example; Secure/u)
+  const existing = createPreferencePolicy({ name: 'ztd.frontend.v1', domain: 'ztd.me' })
+  const header = `${existing.name}=${serializePreferences(selected)}`
+  assert.deepEqual(readPreferenceCookie(header, existing).preferences, selected)
+  assert.equal(createPreferencePolicy({ domain: 'CUSTOMER.EXAMPLE' }).domain, 'customer.example')
+})
+
+test('policy rejects injection, invalid cookie prefixes and unsafe domain options', () => {
+  const invalid = [
+    { name: 'ui; Path=/auth' },
+    { name: '' },
+    { name: null },
+    { name: 'x'.repeat(129) },
+    { domain: 'https://atelier.example' },
+    { domain: 'atelier.example; HttpOnly' },
+    { domain: 'atelier.example:443' },
+    { domain: '.atelier.example' },
+    { domain: 'localhost' },
+    { domain: '127.0.0.1' },
+    { domain: 'atelier.example', secure: false },
+    { secure: null },
+    { secure: 'false' },
+    { name: '__Secure-ui', secure: false },
+    { name: '__Host-ui', domain: 'atelier.example' },
+    { mirrorKey: '' },
+    { mirrorKey: 'auth\nkey' },
+    { namespace: 'arbitrary' },
+    null,
+  ]
+  for (const options of invalid) {
+    assert.throws(() => createPreferencePolicy(options), TypeError)
   }
-  const preview = createPreferencePolicy({
-    environment: 'preview',
-    namespace: 'website',
-    hostname: 'preview.ztd.me',
-    protocol: 'https:',
-  })
-  const memory = createPreferencePolicy({
-    environment: 'development',
-    namespace: 'memory',
-    hostname: 'localhost',
-    protocol: 'http:',
-  })
-  assert.equal(preview.domain, undefined)
-  assert.equal(preview.secure, true)
-  assert.equal(memory.secure, false)
-  assert.notEqual(preview.name, policy.name)
-  assert.notEqual(preview.name, memory.name)
+  assert.equal(createPreferencePolicy({ name: '__Host-ui' }).secure, true)
+  assert.throws(() => preferenceCookie(selected, { name: 'bad=value', secure: true }), TypeError)
+  assert.throws(() => readPreferenceCookie('', { name: 'bad=value', secure: true }), TypeError)
 })
 
 test('valid, duplicate, malformed and future cookie versions are explicit', () => {
@@ -119,16 +137,4 @@ test('SSR cookie and ordered quality negotiation produce a deterministic first s
     'data-frontend-mode': 'dark',
     'data-frontend-palette': 'ocean',
   })
-})
-
-test('legacy extraction preserves valid UI choices and excludes business data', () => {
-  const legacy = { theme: 'dark', palette: 'moss', locale: 'zh-CN', timezone: 'UTC', seconds: true, auth: 'token' }
-  assert.deepEqual(migrateLegacyPreferences(legacy, 'showcase', DEFAULT_PREFERENCES), {
-    version: 1,
-    mode: 'dark',
-    palette: 'moss',
-    locale: 'zh-CN',
-  })
-  assert.deepEqual(legacy.timezone, 'UTC')
-  assert.equal(migrateLegacyPreferences('zh-CN', 'memory', DEFAULT_PREFERENCES).locale, 'zh-CN')
 })
