@@ -19,6 +19,7 @@ while normal CLI TLS returns HTTP 200. No certificate store or TLS security sett
 | Noto preview / appearance popup | [Menu](noto-local-preview-menu.png) |
 | Noto preview / Neutral dark | [Dark](noto-local-preview-dark.png) |
 | Noto preview / appearance and locale entry/exit | [Motion clip](noto-local-preview-motion.mp4) |
+| Approved Noto Color Emoji / multilingual specimen, 1100×850 | [Color-font preview](noto-color-local-preview-fonts.png) |
 
 Current Chinese controls are 66×44 and 90×44 with 13px text; the mobile appearance control is 44×44.
 Borders are transparent at rest, with a 32px hover/open surface inside the 44px hit target. Measurements
@@ -39,6 +40,10 @@ The [downloaded subset metadata](noto-emoji-variation-tables.json) shows base he
 in the monochrome font but no FE0F variation mappings for them; the color subsets have those mappings.
 That is consistent with Chromium's observed VS16 fallback; it does not establish universal browser
 behavior or a missing base glyph.
+
+The [approved-color capture receipt](noto-color-local-preview-fonts.json) verifies six single custom
+Noto Color Emoji glyphs in the fresh 42-file source consumer, with no browser errors. That capture
+uses the authorized local font preview; actual remote verification is recorded by CI separately.
 
 Default GitHub CI uses the actual Google API. At source `dc9e01b18606f84ff26ea20df47458926fcfd816`,
 Node 22 and 24 each passed 22 of 23 browser scenarios, including remote English/CJK fonts, actual weight 600,

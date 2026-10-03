@@ -72,6 +72,16 @@ test('English and CJK use Google Noto with real weights and bounded downloads', 
   expect(weight.widths[1]).not.toBe(weight.widths[0])
   // Google may use query URLs without a file extension. Observe actual font responses and encoded sizes.
   const transfers = await Promise.all(fontTransfers)
+  await info.attach('noto-font-evidence', {
+    body: JSON.stringify({
+      localPreview,
+      actualGoogleFontsBrowserLoad: !localPreview,
+      evidence,
+      weight,
+      transfers,
+    }, null, 2),
+    contentType: 'application/json',
+  })
   expect(transfers.length).toBeGreaterThanOrEqual(4)
   expect(transfers.length).toBeLessThan(80)
   expect(transfers.reduce((total, entry) => total + entry.bytes, 0)).toBeLessThan(2_000_000)
@@ -83,16 +93,6 @@ test('English and CJK use Google Noto with real weights and bounded downloads', 
     expect(requests.some(url => new URL(url).origin === 'https://fonts.googleapis.com')).toBe(true)
     expect(requests.some(url => new URL(url).origin === 'https://fonts.gstatic.com')).toBe(true)
   }
-  await info.attach('noto-font-evidence', {
-    body: JSON.stringify({
-      localPreview,
-      actualGoogleFontsBrowserLoad: !localPreview,
-      evidence,
-      weight,
-      transfers,
-    }, null, 2),
-    contentType: 'application/json',
-  })
   await assertAccessible(page, info)
   await captureState(page, info, 'noto-english-cjk')
   expect(errors).toEqual([])

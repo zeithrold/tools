@@ -1,0 +1,76 @@
+{
+  "scope": "AUTHORIZED CLOUD LOCAL-FONT PREVIEW ONLY; actual Google API delivery is verified separately in GitHub CI",
+  "source": "d95e6ccbe0a32ff66fbbbf505816b291f6852075",
+  "sourceConsumerFiles": 42,
+  "chromium": "151.0.7922.34",
+  "fontFamily": "Noto Color Emoji",
+  "sequences": [
+    {
+      "id": "face",
+      "fonts": [
+        {
+          "familyName": "Noto Color Emoji",
+          "postScriptName": "NotoColorEmoji",
+          "isCustomFont": true,
+          "glyphCount": 1
+        }
+      ]
+    },
+    {
+      "id": "heart",
+      "fonts": [
+        {
+          "familyName": "Noto Color Emoji",
+          "postScriptName": "NotoColorEmoji",
+          "isCustomFont": true,
+          "glyphCount": 1
+        }
+      ]
+    },
+    {
+      "id": "technologist",
+      "fonts": [
+        {
+          "familyName": "Noto Color Emoji",
+          "postScriptName": "NotoColorEmoji",
+          "isCustomFont": true,
+          "glyphCount": 1
+        }
+      ]
+    },
+    {
+      "id": "family",
+      "fonts": [
+        {
+          "familyName": "Noto Color Emoji",
+          "postScriptName": "NotoColorEmoji",
+          "isCustomFont": true,
+          "glyphCount": 1
+        }
+      ]
+    },
+    {
+      "id": "rainbow",
+      "fonts": [
+        {
+          "familyName": "Noto Color Emoji",
+          "postScriptName": "NotoColorEmoji",
+          "isCustomFont": true,
+          "glyphCount": 1
+        }
+      ]
+    },
+    {
+      "id": "flag",
+      "fonts": [
+        {
+          "familyName": "Noto Color Emoji",
+          "postScriptName": "NotoColorEmoji",
+          "isCustomFont": true,
+          "glyphCount": 1
+        }
+      ]
+    }
+  ],
+  "errors": []
+}
