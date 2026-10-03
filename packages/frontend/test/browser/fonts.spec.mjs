@@ -5,6 +5,19 @@ import { assertAccessible, test, watchErrors } from './helpers.mjs'
 
 const localPreview = Boolean(process.env.ZTD_LOCAL_FONT_PREVIEW)
 
+function observeFontTransfers(page) {
+  const transfers = []
+  page.on('requestfinished', (request) => {
+    if (request.resourceType() === 'font') {
+      transfers.push(request.sizes().then(size => ({
+        url: request.url(),
+        bytes: size.responseBodySize + size.responseHeadersSize,
+      })))
+    }
+  })
+  return transfers
+}
+
 async function renderedFonts(session, selector) {
   const { root } = await session.send('DOM.getDocument')
   const { nodeId } = await session.send('DOM.querySelector', { nodeId: root.nodeId, selector })
@@ -31,6 +44,7 @@ async function renderedWeight(page) {
 test('English and CJK use Google Noto with real weights and bounded downloads', async ({ page, context }, info) => {
   const errors = watchErrors(page)
   const requests = []
+  const fontTransfers = observeFontTransfers(page)
   page.on('request', request => requests.push(request.url()))
   await page.goto('/fonts')
   await page.evaluate(async () => document.fonts.ready)
@@ -56,9 +70,8 @@ test('English and CJK use Google Noto with real weights and bounded downloads', 
   expect(weight).toMatchObject({ weight: '600', synthesis: 'none' })
   expect(weight.faces.some(face => face.family.includes('Noto Sans SC'))).toBe(true)
   expect(weight.widths[1]).not.toBe(weight.widths[0])
-  const transfers = await page.evaluate(() => performance.getEntriesByType('resource')
-    .filter(entry => entry.name.endsWith('.woff2'))
-    .map(entry => ({ url: entry.name, bytes: entry.transferSize })))
+  // Google may use query URLs without a file extension. Observe actual font responses and encoded sizes.
+  const transfers = await Promise.all(fontTransfers)
   expect(transfers.length).toBeGreaterThanOrEqual(4)
   expect(transfers.length).toBeLessThan(80)
   expect(transfers.reduce((total, entry) => total + entry.bytes, 0)).toBeLessThan(2_000_000)
@@ -104,6 +117,8 @@ test('Noto Emoji renders complete sequences without platform emoji fallback', as
     const fonts = await renderedFonts(session, `#emoji-${id}`)
     evidence.push({ id, fonts })
     await info.attach(`emoji-${id}`, { body: JSON.stringify(fonts), contentType: 'application/json' })
+  }
+  for (const { fonts } of evidence) {
     expect(fonts).toHaveLength(1)
     expect(fonts[0].isCustomFont).toBe(true)
     expect(fonts[0].familyName).toMatch(/^Noto Emoji/u)
