@@ -10,3 +10,10 @@
 - `zt sync` owns only Skill directories explicitly selected in `zt.json` and its own lock file. Preserve project-owned Skills, `AGENTS.md`, design contracts, and local edits.
 - Ledger and memory are pilot consumers. Do not modify either consumer repository while developing this CLI unless the user explicitly requests that migration step. Keep `ledger-tooling` operational during incremental evaluation.
 - Run `go test ./...`, `go vet ./...`, and a local read-only inspection against the pilot checkouts after changing detectors or planning behavior. Report which checks actually ran.
+
+## Agent contribution naming
+
+- For new agent work, branch from current `main` using `<type>/<scope>-<description>`, with English lowercase kebab-case scope and description, for example `fix/ui-select-focus` or `docs/repo-agent-contribution-naming`. Use one branch per focused contribution; continue on its existing branch when revising it.
+- Write agent-authored commits as `<type>(<scope>): <imperative summary>`. Use lowercase type/scope and an English summary describing the change, with no trailing period. Keep the complete subject at most 72 characters. Example: `fix(ui): restore Select focus after dismissal`.
+- Use `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `style`, `build`, `ci` or `chore`. Choose the type for the main intent and the scope for the affected repository area. See [contribution examples](CONTRIBUTING.md#branch-and-commit-names) for scope guidance and breaking changes.
+- Apply these rules to new branches and future agent-authored commits. Preserve assigned or active branches, existing published history and Git-generated merge/revert messages; do not rename remote branches or rewrite history just to normalize names. Explicit owner instructions take precedence.
