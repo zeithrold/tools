@@ -9,7 +9,7 @@ export function PublicShell(props: ShellProps): React.JSX.Element {
     <div className="ztd-frontend">
       <Appbar {...props} />
       <main id={props.mainId ?? 'ztd-main'} tabIndex={-1}>{props.children}</main>
-      <SiteFooter repositoryUrl={props.repositoryUrl} />
+      {props.footer === undefined ? null : <SiteFooter {...props.footer} />}
     </div>
   )
 }
@@ -23,7 +23,7 @@ export function ApplicationShell(props: ApplicationShellProps): React.JSX.Elemen
         {props.contextSidebar ?? null}
         <main id={props.mainId ?? 'ztd-main'} tabIndex={-1}>{props.children}</main>
       </div>
-      <SiteFooter repositoryUrl={props.repositoryUrl} />
+      {props.footer === undefined ? null : <SiteFooter {...props.footer} />}
     </div>
   )
 }

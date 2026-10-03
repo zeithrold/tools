@@ -7,6 +7,7 @@ export interface FixtureProps {
   policy: PreferencePolicy
   application: boolean
   styleNonce: string
+  footer: boolean
 }
 function FixtureLink(props: LinkProps): React.JSX.Element {
   return <a {...props} data-router-link="fixture" />
@@ -32,7 +33,15 @@ export function Fixture(props: FixtureProps): React.JSX.Element {
   const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null)
   const common = {
     brand: { label: 'Fixture', homeHref: '/' },
-    repositoryUrl: 'https://github.com/zeithrold/website',
+    ...(props.footer ? {
+      footer: {
+        copyright: '© Harbor Studio',
+        links: [
+          { label: 'Source', href: 'https://codeberg.org/example/studio', ariaLabel: 'Studio source' },
+          { label: 'support@harbor.example', href: 'mailto:support@harbor.example' },
+        ],
+      },
+    } : {}),
     linkComponent: FixtureLink,
   }
   return (

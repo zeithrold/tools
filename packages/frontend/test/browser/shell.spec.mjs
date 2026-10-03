@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 import { assertAccessible, captureState } from '@ztd-me/frontend-checks/playwright'
 import { appbar, chooseAppearance, chooseChinese, watchErrors } from './helpers.mjs'
 
-const developmentKey = 'ztd.frontend.development.website.v1'
+const developmentKey = 'harbor.ui.v1'
 const preferences = { version: 1, mode: 'dark', palette: 'ocean', locale: 'zh-CN' }
 
 test('SSR cookie snapshot matches hydrated locale and theme', async ({ context, page }, info) => {
@@ -102,7 +102,7 @@ test('all six palettes and both modes are accessible, including open appearance 
   await captureState(page, info, 'appearance-menu')
 })
 
-test('Chinese controls and fixed footer reflow at narrow widths without adding navigation', async ({ page }, info) => {
+test('Chinese controls and consumer footer reflow at narrow widths', async ({ page }, info) => {
   await page.goto('/')
   await chooseChinese(page)
   for (const width of [
@@ -115,7 +115,7 @@ test('Chinese controls and fixed footer reflow at narrow widths without adding n
     await page.setViewportSize({ width, height: 900 })
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width)
     await expect(page.locator('.ztd-appbar nav')).toHaveCount(0)
-    await expect(page.locator('footer')).toHaveText(/© ZeithroldGitHubhello@ztd\.me/u)
+    await expect(page.locator('footer')).toHaveText(/© Harbor StudioSourcesupport@harbor\.example/u)
   }
   await page.setViewportSize({ width: 390, height: 844 })
   await assertAccessible(page, info)
@@ -140,61 +140,39 @@ test('storage rejection leaves choices usable in memory and reports failed persi
   await expect(appbar(page).getByRole('combobox', { name: '语言' })).toHaveText(/简体中文/u)
 })
 
-test('legacy migration preserves business storage', async ({ context, page }) => {
-  const old = {
-    theme: 'dark',
-    palette: 'moss',
-    locale: 'zh-CN',
-    timezone: 'UTC',
-    seconds: true,
-    auth: 'opaque',
-  }
-  await context.addInitScript((value) => {
-    localStorage.setItem('showcase.clock.v1', JSON.stringify(value))
-  }, old)
-  await page.goto('/?project=showcase')
-  await expect(page.locator('html')).toHaveAttribute('data-frontend-palette', 'moss')
-  const cookies = await context.cookies()
-  const shared = cookies.find(cookie => cookie.name === 'ztd.frontend.development.showcase.v1')
-  expect(JSON.parse(decodeURIComponent(shared.value))).toEqual({
-    version: 1,
-    mode: 'dark',
-    palette: 'moss',
-    locale: 'zh-CN',
-  })
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('showcase.clock.v1')))).toEqual(old)
-})
-
-test('production subdomains share preferences while preview stays isolated', async ({ context, page }) => {
-  await context.route('https://*.ztd.me/**', async (route) => {
+test('consumer domain shares preferences; host-only key stays isolated', async ({ context, page }) => {
+  await context.route('https://*.harbor.example/**', async (route) => {
     const url = new URL(route.request().url())
     const local = new URL(url.pathname + url.search, 'http://127.0.0.1:4317')
-    local.searchParams.set('environment', url.hostname === 'preview.ztd.me' ? 'preview' : 'production')
-    local.searchParams.set('hostname', url.hostname)
-    local.searchParams.set('project', url.hostname === 'showcase.ztd.me' ? 'showcase' : 'website')
+    local.searchParams.set('secure', 'true')
+    const isolated = url.searchParams.get('isolated') === 'true'
+    local.searchParams.set('cookie-name', isolated ? 'review.ui.v1' : 'harbor.shared.ui.v1')
+    if (!isolated) {
+      local.searchParams.set('cookie-domain', 'harbor.example')
+    }
     const response = await route.fetch({ url: local.toString() })
     await route.fulfill({ response })
   })
-  await page.goto('https://website.ztd.me/')
+  await page.goto('https://studio.harbor.example/')
   await chooseAppearance(page, 'Dark')
   await chooseAppearance(page, 'Ocean')
   await chooseChinese(page)
   const second = await context.newPage()
-  await second.goto('https://showcase.ztd.me/')
+  await second.goto('https://notes.harbor.example/')
   await expect(second.locator('html')).toHaveAttribute('data-frontend-palette', 'ocean')
   await expect(appbar(second).getByRole('combobox', { name: '语言' })).toHaveText(/简体中文/u)
   await chooseAppearance(second, '莓紫')
   await page.evaluate(() => window.dispatchEvent(new Event('focus')))
   await expect(page.locator('html')).toHaveAttribute('data-frontend-palette', 'plum')
   const preview = await context.newPage()
-  await preview.goto('https://preview.ztd.me/')
+  await preview.goto('https://review.harbor.example/?isolated=true')
   await expect(preview.locator('html')).toHaveAttribute('data-frontend-palette', 'neutral')
   await chooseAppearance(preview, 'Moss')
   const cookies = await context.cookies()
-  const production = cookies.find(cookie => cookie.name === 'ztd.frontend.v1')
-  expect(production.domain).toBe('.ztd.me')
+  const production = cookies.find(cookie => cookie.name === 'harbor.shared.ui.v1')
+  expect(production.domain).toBe('.harbor.example')
   expect(JSON.parse(decodeURIComponent(production.value)).palette).toBe('plum')
-  expect(cookies.find(cookie => cookie.name === 'ztd.frontend.preview.website.v1').domain).toBe('preview.ztd.me')
+  expect(cookies.find(cookie => cookie.name === 'review.ui.v1').domain).toBe('review.harbor.example')
 })
 
 test('same-origin tabs respond to the optional mirror notification', async ({ context, page }) => {

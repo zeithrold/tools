@@ -18,22 +18,24 @@ const server = createServer(async (request, response) => {
     response.end(await readFile(path.join(client, 'assets', filename)))
     return
   }
-  const requestedProject = url.searchParams.get('project')
-  const project = requestedProject === 'memory' || requestedProject === 'showcase' ? requestedProject : 'website'
-  const environment = url.searchParams.get('environment')
-  const production = environment === 'production'
-  const preview = environment === 'preview'
+  const domain = url.searchParams.get('cookie-domain')
   const policy = createPreferencePolicy({
-    environment: production ? 'production' : preview ? 'preview' : 'development',
-    namespace: project,
-    hostname: production || preview ? url.searchParams.get('hostname') ?? 'ztd.me' : '127.0.0.1',
-    protocol: production || preview ? 'https:' : 'http:',
+    name: url.searchParams.get('cookie-name') ?? 'harbor.ui.v1',
+    secure: url.searchParams.get('secure') === 'true',
+    ...(domain === null ? {} : { domain }),
+    ...(url.searchParams.get('mirror') === 'off' ? {} : { mirrorKey: 'harbor.ui.notification' }),
   })
   const initialPreferences = resolveInitialPreferences({
     policy, cookieHeader: request.headers.cookie, acceptLanguage: request.headers['accept-language'],
   })
   const styleNonce = randomBytes(18).toString('base64')
-  const props = { policy, initialPreferences, styleNonce, application: url.pathname === '/application' }
+  const props = {
+    policy,
+    initialPreferences,
+    styleNonce,
+    application: url.pathname === '/application',
+    footer: url.searchParams.get('footer') !== 'none',
+  }
   const root = Object.entries(frontendRootAttributes(initialPreferences)).map(([key, value]) => `${key}="${value}"`).join(' ')
   const html = template.replace('lang="en"', root).replace('<!--content-->', renderToString(<Fixture {...props} />))
   const payload = JSON.stringify(props).replaceAll('<', '\u003c')

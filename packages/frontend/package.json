@@ -1,9 +1,9 @@
 {
   "name": "@ztd-me/frontend",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "license": "MIT",
-  "description": "Shared accessible React shell, appearance and UI locale for ztd.me projects",
+  "description": "Generic accessible React shell, appearance and UI locale with consumer-owned identity and persistence policy",
   "engines": {
     "node": ">=22.14.0"
   },
@@ -59,7 +59,7 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@ztd-me/eslint": "0.1.1",
-    "@ztd-me/frontend-checks": "0.1.0",
+    "@ztd-me/frontend-checks": "0.1.1",
     "eslint": "10.11.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -67,7 +67,7 @@
     "vite": "8.3.1"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && node scripts/build-assets.mjs",
+    "build": "node scripts/clean-build.mjs && tsc -p tsconfig.build.json && node scripts/build-assets.mjs",
     "lint": "eslint src scripts test eslint.config.js playwright.config.mjs css-check.config.mjs --max-warnings 0",
     "typecheck": "tsc -p tsconfig.build.json --noEmit",
     "css": "ztd-css css-check.config.mjs",

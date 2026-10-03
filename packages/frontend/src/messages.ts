@@ -6,7 +6,6 @@ interface ShellMessages {
   palette: string
   language: string
   skip: string
-  source: string
   modes: Record<Mode, string>
   palettes: Record<Palette, string>
 }
@@ -16,7 +15,6 @@ const en: ShellMessages = {
   palette: 'Palette',
   language: 'Language',
   skip: 'Skip to content',
-  source: 'GitHub repository',
   modes: { system: 'System', light: 'Light', dark: 'Dark' },
   palettes: {
     neutral: 'Neutral',
@@ -33,7 +31,6 @@ const zh: ShellMessages = {
   palette: '配色',
   language: '语言',
   skip: '跳到内容',
-  source: 'GitHub 仓库',
   modes: { system: '跟随系统', light: '浅色', dark: '深色' },
   palettes: {
     neutral: '中性',
