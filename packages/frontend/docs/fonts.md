@@ -57,8 +57,10 @@ Test the real production headers, network availability and browser font usage be
 
 The source SHA, API query and dependency lock are pinned. Google controls the returned CSS and font
 files and may update them; remote font bytes are not made immutable by the source pin. Browser checks
-record actual font identities and resource transfers. Their sample budget is fewer than 80 font
-requests and under 2 MB transferred for the multilingual specimen, not a universal page-size guarantee.
+record actual font identities and resource transfers. The specimen retains a guard of fewer than
+80 font requests. Its draft 2,000,000-byte assertion currently fails on the full all-color specimen;
+this provisional threshold is under review, not an accepted product page-size requirement. Measure
+normal English/Chinese cold loads and warm cache reuse separately before selecting performance budgets.
 The harness observes actual font requests and encoded response sizes; API URLs need not end in a font
 file extension.
 

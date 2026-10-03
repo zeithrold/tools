@@ -45,6 +45,11 @@ The [approved-color capture receipt](noto-color-local-preview-fonts.json) verifi
 Noto Color Emoji glyphs in the fresh 42-file source consumer, with no browser errors. That capture
 uses the authorized local font preview; actual remote verification is recorded by CI separately.
 
+The [bounded transfer diagnosis](font-transfer-report.md) records actual cold/warm Google API traffic
+after the four Lucide icon replacements. It separates English/Chinese initial pages from the broad
+multilingual/emoji specimen, font files from API CSS, and encoded HTTP bytes from decoded body sizes.
+The remaining draft 2 MB specimen assertion is under review; no performance budget was silently raised.
+
 Default GitHub CI uses the actual Google API. At source `dc9e01b18606f84ff26ea20df47458926fcfd816`,
 Node 22 and 24 each passed 22 of 23 browser scenarios, including remote English/CJK fonts, actual weight 600,
 bounded font transfers and the CSP regression before/after Axe; only the emoji sequence check fails.
