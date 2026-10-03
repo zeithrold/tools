@@ -25,9 +25,26 @@ Borders are transparent at rest, with a 32px hover/open surface inside the 44px 
 and detected CSS animations are recorded in [the capture receipt](noto-local-preview-measurements.json).
 
 English/CJK font usage, loaded weight 600, distinct Latin weight metrics and no synthesis are tested
-through actual Chromium rendering. The current monochrome emoji candidate still fails the VS16
-heart test because Chromium selects a platform color font. The owner emoji-family choice remains
-pending; the test is retained as an acceptance gate. Default GitHub CI uses the actual Google API.
+through actual Chromium rendering. The owner selected Noto Color Emoji for all emoji. The API query,
+tokens, ordinary text stacks and sequence tests now select that family; no monochrome-first fallback
+is used. The earlier monochrome candidate failed the VS16 heart and rainbow flag checks because
+Chromium selected a platform color font.
+
+The [isolated alternative probe](noto-emoji-alternatives-local-preview.json) records all six sequences
+for three font stacks. Noto Color Emoji alone renders six custom color glyphs. Noto Emoji followed by
+Noto Color Emoji renders four custom monochrome glyphs and the two affected sequences in Google's
+custom color font. These isolated probes informed the owner's all-color choice; they do not establish
+actual browser API/network/CSP delivery.
+The [downloaded subset metadata](noto-emoji-variation-tables.json) shows base heart/white-flag mappings
+in the monochrome font but no FE0F variation mappings for them; the color subsets have those mappings.
+That is consistent with Chromium's observed VS16 fallback; it does not establish universal browser
+behavior or a missing base glyph.
+
+Default GitHub CI uses the actual Google API. At source `dc9e01b18606f84ff26ea20df47458926fcfd816`,
+Node 22 and 24 each passed 22 of 23 browser scenarios, including remote English/CJK fonts, actual weight 600,
+bounded font transfers and the CSP regression before/after Axe; only the emoji sequence check fails.
+See [run 37100048735](https://github.com/zeithrold/tools/actions/runs/37100048735). That run preceded the
+approved all-color implementation; the PR checks must pass on its final source SHA.
 After owner merge, fresh public source installation with the full approved SHA must pass before
 consumer migration acceptance. These captures do not replace either gate.
 

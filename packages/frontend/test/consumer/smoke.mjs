@@ -19,8 +19,19 @@ assert.ok(source.includes('.ztd-appbar'))
 const fonts = [...source.matchAll(/url\((?:['"])?\.\/([^)'"\s]+)/gu)]
 assert.equal(fonts.length, 0)
 assert.ok(source.includes('https://fonts.googleapis.com/css2?family=Noto+Sans'))
-const emojiLicense = path.join(path.dirname(css), 'assets/NOTO-EMOJI-OFL.txt')
-assert.ok((await readFile(emojiLicense, 'utf8')).includes('SIL OPEN FONT LICENSE Version 1.1'))
+assert.ok(source.includes('family=Noto+Color+Emoji&display=swap'))
+assert.equal(source.includes('family=Noto+Emoji'), false)
+for (const family of [
+  'SANS',
+  'SANS-SC',
+  'SANS-JP',
+  'SANS-KR',
+  'EMOJI',
+  'COLOR-EMOJI',
+]) {
+  const license = path.join(path.dirname(css), `assets/NOTO-${family}-OFL.txt`)
+  assert.ok((await readFile(license, 'utf8')).includes('SIL OPEN FONT LICENSE Version 1.1'))
+}
 assert.ok((await readFile(path.join(path.dirname(css), 'assets/SHADCN-MIT.txt'), 'utf8')).includes('MIT'))
 const client = await readFile(new URL(import.meta.resolve('@ztd-me/frontend/client')), 'utf8')
 assert.ok(client.startsWith("'use client'"))

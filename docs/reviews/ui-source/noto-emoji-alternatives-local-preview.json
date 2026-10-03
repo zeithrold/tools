@@ -1,0 +1,241 @@
+{
+  "scope": "Cloud local-font preview; normal TLS downloaded official Google font bytes; no real browser API/CSP acceptance and no production font choice",
+  "chromium": "151.0.7922.34",
+  "errors": [],
+  "cases": [
+    {
+      "policy": "current-mono",
+      "family": "\"Noto Emoji\",sans-serif",
+      "sequences": [
+        {
+          "id": "face",
+          "text": "😀",
+          "fonts": [
+            {
+              "familyName": "Noto Emoji",
+              "postScriptName": "NotoEmoji-Regular",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "heart",
+          "text": "❤️",
+          "fonts": [
+            {
+              "familyName": "Noto Color Emoji",
+              "postScriptName": "NotoColorEmoji",
+              "isCustomFont": false,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "technologist",
+          "text": "👩🏽‍💻",
+          "fonts": [
+            {
+              "familyName": "Noto Emoji",
+              "postScriptName": "NotoEmoji-Regular",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "family",
+          "text": "👨‍👩‍👧‍👦",
+          "fonts": [
+            {
+              "familyName": "Noto Emoji",
+              "postScriptName": "NotoEmoji-Regular",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "rainbow",
+          "text": "🏳️‍🌈",
+          "fonts": [
+            {
+              "familyName": "Noto Color Emoji",
+              "postScriptName": "NotoColorEmoji",
+              "isCustomFont": false,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "flag",
+          "text": "🇯🇵",
+          "fonts": [
+            {
+              "familyName": "Noto Emoji",
+              "postScriptName": "NotoEmoji-Regular",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "policy": "all-color",
+      "family": "\"Noto Color Emoji\",sans-serif",
+      "sequences": [
+        {
+          "id": "face",
+          "text": "😀",
+          "fonts": [
+            {
+              "familyName": "Noto Color Emoji",
+              "postScriptName": "NotoColorEmoji",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "heart",
+          "text": "❤️",
+          "fonts": [
+            {
+              "familyName": "Noto Color Emoji",
+              "postScriptName": "NotoColorEmoji",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "technologist",
+          "text": "👩🏽‍💻",
+          "fonts": [
+            {
+              "familyName": "Noto Color Emoji",
+              "postScriptName": "NotoColorEmoji",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "family",
+          "text": "👨‍👩‍👧‍👦",
+          "fonts": [
+            {
+              "familyName": "Noto Color Emoji",
+              "postScriptName": "NotoColorEmoji",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "rainbow",
+          "text": "🏳️‍🌈",
+          "fonts": [
+            {
+              "familyName": "Noto Color Emoji",
+              "postScriptName": "NotoColorEmoji",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "flag",
+          "text": "🇯🇵",
+          "fonts": [
+            {
+              "familyName": "Noto Color Emoji",
+              "postScriptName": "NotoColorEmoji",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "policy": "mono-plus-color",
+      "family": "\"Noto Emoji\",\"Noto Color Emoji\",sans-serif",
+      "sequences": [
+        {
+          "id": "face",
+          "text": "😀",
+          "fonts": [
+            {
+              "familyName": "Noto Emoji",
+              "postScriptName": "NotoEmoji-Regular",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "heart",
+          "text": "❤️",
+          "fonts": [
+            {
+              "familyName": "Noto Color Emoji",
+              "postScriptName": "NotoColorEmoji",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "technologist",
+          "text": "👩🏽‍💻",
+          "fonts": [
+            {
+              "familyName": "Noto Emoji",
+              "postScriptName": "NotoEmoji-Regular",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "family",
+          "text": "👨‍👩‍👧‍👦",
+          "fonts": [
+            {
+              "familyName": "Noto Emoji",
+              "postScriptName": "NotoEmoji-Regular",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "rainbow",
+          "text": "🏳️‍🌈",
+          "fonts": [
+            {
+              "familyName": "Noto Color Emoji",
+              "postScriptName": "NotoColorEmoji",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        },
+        {
+          "id": "flag",
+          "text": "🇯🇵",
+          "fonts": [
+            {
+              "familyName": "Noto Emoji",
+              "postScriptName": "NotoEmoji-Regular",
+              "isCustomFont": true,
+              "glyphCount": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

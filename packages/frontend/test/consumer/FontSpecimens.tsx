@@ -9,7 +9,7 @@ export function FontSpecimens(): React.JSX.Element {
       <p id="font-ko" lang="ko">한국어 한글 글꼴</p>
       <p id="font-bold" lang="zh-CN"><strong>English 中文 日本語 한국어 600</strong></p>
       <p id="font-mixed" lang="en">Noto emoji 😀 with English 0123</p>
-      <p>Monochrome Noto Emoji, including composed sequences:</p>
+      <p>Color Noto Emoji, including composed sequences:</p>
       <div className="emoji-specimens">
         <span id="emoji-face" className="ztd-emoji" role="img" aria-label="Smiling face">😀</span>
         <span id="emoji-heart" className="ztd-emoji" role="img" aria-label="Heart">❤️</span>

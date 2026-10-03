@@ -15,7 +15,7 @@ source transition is not a new npm release.
 - Eleven unit cases covering preference boundaries, generic policy, cookie/locale validation, footer
   URLs and the reproduced/patched Select declaration defect.
 - A fresh consumer installs the actual packed artifact using pnpm, reinstalls with a frozen lock,
-  imports all exports, validates Google Fonts CSS and five OFL/MIT notices without font binaries,
+  imports all exports, validates Google Fonts CSS and six complete OFL notices plus MIT without font binaries,
   rejects invalid typed API usage, and builds real React SSR and client assets.
 - A separate source consumer uses the real pinned shadcn CLI to preview/install the item, compares all
   installed file bytes, confirms no frontend runtime dependency, applies the documented declaration

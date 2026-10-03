@@ -9,14 +9,15 @@ Read AGENTS.md, the project design contract, scripts, compiler config and framew
 
 1. Map the feature from route/server boundary through validation, state owner and components. Follow [boundaries](references/boundaries.md); keep business/deployment assumptions local.
 2. Reuse semantic tokens, typography and component variants. Define missing semantic roles, including destructive actions, in the project contract without copying another product's values.
-   Fonts must use Noto Sans or Noto Serif families, including appropriate CJK variants, and Noto Emoji
-   for emoji. Support at least English and Chinese/Japanese/Korean glyphs. Use Noto Sans for ordinary
+   Fonts must use Noto Sans or Noto Serif families, including appropriate CJK variants, and Noto Color
+   Emoji for all emoji. Support at least English and Chinese/Japanese/Korean glyphs. Use Noto Sans for ordinary
    UI; choose Noto Serif only where the content benefits from serif typography. The Google Fonts
    API is the delivery route; document third-party browser requests, CSP and performance implications.
    Use Unicode-ranged subsets and the required weights; do not self-host or vendor font binaries.
    Preserve font licenses and verify actual rendered glyphs, weights and emoji sequences in the
    browser rather than relying on a CSS family name or platform
-   fallback. Record the monochrome/color emoji choice in the local design contract.
+   fallback. Keep emoji consistently color; do not use a monochrome-first stack. Record this choice
+   in the local design contract.
 3. Validate unknown runtime input using the existing schema mechanism. Preserve retry and input; do not expand a boundary improvement into an unrelated client/server rewrite.
 4. Normalize supported preferences and render deterministic SSR defaults. Apply [preferences and localization](references/preferences-i18n.md) to hydration, persistence, errors and dialogs.
 5. Preserve framework exports and native browser fallback. Run the compiler/build alongside strict ESLint; lint alone cannot validate routing or Worker deployment.

@@ -65,8 +65,8 @@ diagnostic. Review and remove the patch only when a verified upstream release fi
 For the same example layout, the server-safe entry is `components/ui/ztd-me/index.ts`, the client entry
 is `components/ui/ztd-me/client.ts`, and the stylesheet is `components/ui/ztd-me/styles.css`. Import these
 through the consumer's own aliases or relative paths. The stylesheet includes font, tokens, shell and
-motion CSS. Fonts load directly from the Google Fonts API, with English/CJK Noto Sans and monochrome
-Noto Emoji. There are no font binaries or Fontsource dependencies. Read the delivered `fonts.md` for
+motion CSS. Fonts load directly from the Google Fonts API, with English/CJK Noto Sans and Noto Color
+Emoji for all emoji. There are no font binaries or Fontsource dependencies. Read the delivered `fonts.md` for
 language-specific glyphs, weights, third-party requests, CSP, privacy and remote-font mutability.
 Preserve the delivered MIT and Noto OFL notices.
 

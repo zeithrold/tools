@@ -1,15 +1,15 @@
 # Noto typography through Google Fonts
 
 The source UI uses the Google Fonts CSS2 API directly. `styles/fonts.css` imports Noto Sans and
-Noto Sans SC/JP/KR at weights 400, 500, 600 and 700, plus **Noto Emoji** at 400 and 600. Noto Emoji is
-the monochrome family; this candidate does not select the separate Noto Color Emoji family. Confirm
-that visual choice during owner review. There are no bundled font binaries or Fontsource dependencies.
+Noto Sans SC/JP/KR at weights 400, 500, 600 and 700, plus **Noto Color Emoji** at its native weight 400.
+The owner selected color for all emoji. There is no monochrome-first fallback, bundled font binary or
+Fontsource dependency. The emoji token and ordinary Latin/CJK stacks use the same color family.
 
-The current monochrome candidate has an acceptance blocker: Chromium renders the VS16 heart with its
-platform color font despite the requested Noto Emoji family. Plain emoji, skin-tone technologist,
-family and flag use the custom font. The sequence test deliberately fails on platform fallback; owner
-selection of Google Noto Color Emoji or an explicit Noto Color Emoji fallback is pending. Do not treat
-the current mono candidate as fully verified or substitute a system font silently.
+An earlier monochrome candidate caused Chromium to use its platform color font for the VS16 heart
+(`❤️`) and rainbow flag (`🏳️‍🌈`). An isolated Chromium 151 preview tested official Google font bytes
+downloaded with normal TLS: Noto Color Emoji renders all six sample sequences as single custom-font
+glyphs. The production query now selects that family. The complete default and post-merge public gates
+must verify actual remote browser delivery; local preview evidence does not replace them.
 
 Noto Sans handles English and Latin text. Simplified Chinese uses Noto Sans SC. Elements marked
 `lang="ja"` or `lang="ko"` prioritize the matching CJK family for regional glyph forms. Set the
@@ -57,13 +57,16 @@ Test the real production headers, network availability and browser font usage be
 
 The source SHA, API query and dependency lock are pinned. Google controls the returned CSS and font
 files and may update them; remote font bytes are not made immutable by the source pin. Browser checks
-record actual font identities and resource transfers. Their sample budget is fewer than 80 WOFF2
+record actual font identities and resource transfers. Their sample budget is fewer than 80 font
 requests and under 2 MB transferred for the multilingual specimen, not a universal page-size guarantee.
+The harness observes actual font requests and encoded response sizes; API URLs need not end in a font
+file extension.
 
 ## Licensing and evidence
 
-The five Noto families use SIL Open Font License 1.1. Complete copyright/license notices are delivered
-in `third-party/NOTO-*-OFL.txt`; preserve them with the source. Fonts are served by Google, rather than
+The five loaded Noto families use SIL Open Font License 1.1. Complete copyright/license notices are
+delivered in `third-party/NOTO-*-OFL.txt`, including `NOTO-COLOR-EMOJI-OFL.txt`. The earlier monochrome
+notice is also retained; preserve these six notices with the source. Fonts are served by Google, rather than
 redistributed as registry or npm assets. The shadcn MIT notice remains separate and intact.
 
 The browser specimen checks real rendered font usage through Chromium's
@@ -71,5 +74,5 @@ The browser specimen checks real rendered font usage through Chromium's
 not just `font-family` or `document.fonts.check`. It exercises English, Chinese, Japanese, Korean,
 weight 600 (loaded faces, distinct Latin weight metrics and no synthesis), mixed text and emoji,
 VS16, skin tone, ZWJ family/technologist/rainbow flag and a regional
-flag. A composed emoji must render as one custom Noto Emoji glyph. Axe and captures cover the specimen.
+flag. A composed emoji must render as one custom Noto Color Emoji glyph. Axe and captures cover the specimen.
 This does not certify every Unicode sequence, browser, screen reader or network region.

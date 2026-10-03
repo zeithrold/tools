@@ -98,7 +98,7 @@ test('English and CJK use Google Noto with real weights and bounded downloads', 
   expect(errors).toEqual([])
 })
 
-test('Noto Emoji renders complete sequences without platform emoji fallback', async ({ page, context }, info) => {
+test('Noto Color Emoji renders complete sequences without platform emoji fallback', async ({ page, context }, info) => {
   const errors = watchErrors(page)
   await page.goto('/fonts')
   await page.evaluate(async () => document.fonts.ready)
@@ -121,12 +121,12 @@ test('Noto Emoji renders complete sequences without platform emoji fallback', as
   for (const { fonts } of evidence) {
     expect(fonts).toHaveLength(1)
     expect(fonts[0].isCustomFont).toBe(true)
-    expect(fonts[0].familyName).toMatch(/^Noto Emoji/u)
+    expect(fonts[0].familyName).toBe('Noto Color Emoji')
     expect(fonts[0].glyphCount).toBe(1)
   }
   const mixed = await renderedFonts(session, '#font-mixed')
-  expect(mixed.every(font => font.isCustomFont && /^Noto (?:Sans|Emoji)/u.test(font.familyName))).toBe(true)
-  expect(mixed.some(font => font.familyName.startsWith('Noto Emoji'))).toBe(true)
+  expect(mixed.every(font => font.isCustomFont && /^Noto (?:Sans|Color Emoji)/u.test(font.familyName))).toBe(true)
+  expect(mixed.some(font => font.familyName === 'Noto Color Emoji')).toBe(true)
   expect(mixed.some(font => font.familyName === 'Noto Sans')).toBe(true)
   await info.attach('mixed-text-fonts', { body: JSON.stringify({ mixed, evidence }), contentType: 'application/json' })
   await assertAccessible(page, info)

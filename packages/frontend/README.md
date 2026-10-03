@@ -87,7 +87,7 @@ Chrome is at most 1280px wide, 72px high on desktop and 64px below 1024px, with 
 44px control targets. Body width, content and layout remain project-owned. Import CSS once. Include
 its actual declaration file as a `tokenFiles` source in the existing CSS checker when business CSS
 references its tokens; do not exempt arbitrary unknown variables. The current source uses Google Fonts
-Noto Sans with Chinese/Japanese/Korean variants and monochrome Noto Emoji. Read [typography](docs/fonts.md)
+Noto Sans with Chinese/Japanese/Korean variants and Noto Color Emoji for all emoji. Read [typography](docs/fonts.md)
 for the additional API style/font CSP origins, third-party requests and preserved OFL notices.
 
 ## Preferences and boundaries

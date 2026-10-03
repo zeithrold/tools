@@ -7,12 +7,13 @@ description: Apply cross-frontend principles for information hierarchy, accessib
 
 Read the project's own design contract and component guidance first. Use its brand, tokens, product content, and component foundation.
 
-Typography uses Noto Sans or Noto Serif families with appropriate CJK variants, plus Noto Emoji for
-emoji. Provide English and Chinese/Japanese/Korean glyph coverage through the Google Fonts API; do not
+Typography uses Noto Sans or Noto Serif families with appropriate CJK variants, plus Noto Color Emoji
+for all emoji. Provide English and Chinese/Japanese/Korean glyph coverage through the Google Fonts API; do not
 self-host or vendor font binaries. Retain licenses, document third-party requests/CSP/privacy and load
 only required subsets and weights. Prefer Noto Sans for UI and Noto Serif for content that benefits
 from it, without loading both by default. Verify rendered
-glyphs and multi-codepoint emoji with the intended Noto fonts; document monochrome versus color emoji.
+glyphs and multi-codepoint emoji with the intended Noto fonts. Keep emoji consistently color rather
+than using a monochrome-first stack, and record this choice in the local design contract.
 
 For each changed flow, review the user's goal, primary and secondary actions, information that must remain visible, and the recovery path. Inspect loading, empty, populated, error, disabled, and success states. Check labels, focus order, keyboard use, accessible names, and error association. At narrow viewports, large text, long translations, and reduced motion, preserve important content and reachable actions.
 

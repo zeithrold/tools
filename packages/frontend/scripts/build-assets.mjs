@@ -9,6 +9,7 @@ for (const family of [
   'SANS-JP',
   'SANS-KR',
   'EMOJI',
+  'COLOR-EMOJI',
 ]) {
   await copyFile(`third-party/NOTO-${family}-OFL.txt`, `dist/assets/NOTO-${family}-OFL.txt`)
 }

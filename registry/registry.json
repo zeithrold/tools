@@ -219,6 +219,11 @@
           "target": "@ui/ztd-me/third-party/NOTO-EMOJI-OFL.txt"
         },
         {
+          "path": "packages/frontend/third-party/NOTO-COLOR-EMOJI-OFL.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/NOTO-COLOR-EMOJI-OFL.txt"
+        },
+        {
           "path": "packages/frontend/docs/fonts.md",
           "type": "registry:file",
           "target": "@ui/ztd-me/fonts.md"
