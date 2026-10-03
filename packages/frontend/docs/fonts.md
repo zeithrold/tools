@@ -5,11 +5,9 @@ Noto Sans SC/JP/KR at weights 400, 500, 600 and 700, plus **Noto Color Emoji** a
 The owner selected color for all emoji. There is no monochrome-first fallback, bundled font binary or
 Fontsource dependency. The emoji token and ordinary Latin/CJK stacks use the same color family.
 
-An earlier monochrome candidate caused Chromium to use its platform color font for the VS16 heart
-(`❤️`) and rainbow flag (`🏳️‍🌈`). An isolated Chromium 151 preview tested official Google font bytes
-downloaded with normal TLS: Noto Color Emoji renders all six sample sequences as single custom-font
-glyphs. The production query now selects that family. The complete default and post-merge public gates
-must verify actual remote browser delivery; local preview evidence does not replace them.
+The complete default and public-install gates verify actual remote browser delivery, including six
+composed Noto Color Emoji samples rendered as single custom-font glyphs. Local preview evidence does
+not replace those gates. See [verification](verification.md) for commands, evidence and limitations.
 
 Noto Sans handles English and Latin text. Simplified Chinese uses Noto Sans SC. Elements marked
 `lang="ja"` or `lang="ko"` prioritize the matching CJK family for regional glyph forms. Set the

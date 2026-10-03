@@ -41,4 +41,6 @@ Replace the removed `repositoryUrl` shell prop with optional `footer`:
 
 `FooterLink` and `SiteFooterProps` are exported as types from the root and client entries. `SiteFooter` is exported from the client entry. Both shells omit the footer when no configuration is supplied; a standalone footer accepts the same optional fields. HTTP/HTTPS and relative links are valid, with `mailto:` also supported in footer links. Consumer identity has no fixed default or repository-host restriction.
 
-Upgrade only after the owner merges the reviewed source and promotes the staged 0.2.0 version. Validate the exact public package using the registry smoke script before final consumer dependency locks.
+Validate an exact public npm version using the registry smoke script before final consumer dependency
+locks. For the selected source delivery path, follow the [registry installation and reviewed-update
+recipe](../../../registry/README.md), keeping the provider, hooks and stylesheet together.

@@ -6,9 +6,9 @@ reserved npm names. The root `registry.json` is the canonical file inventory; `r
 generated, self-contained item payload. Source files currently share the legacy package's source
 directory during the reviewed transition, avoiding two separately maintained implementations.
 
-The owner approved the compact chrome and source delivery direction. This branch is submitted through
-a draft PR; the owner retains merge. Use an approved full source SHA and verify a fresh public install
-after merge before consumer migrations. No automatic updater or production migration is included.
+Use an approved full source SHA and verify a fresh public install after upstream merge before consumer
+migrations. The owner reviews upstream changes; consumers review their own source adaptations.
+No automatic updater or production migration is included.
 
 ## Install a pinned source revision
 

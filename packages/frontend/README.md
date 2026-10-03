@@ -3,7 +3,7 @@
 The selected successor is **`@ztd-me/ui` source delivery**, not a renamed npm UI package. See the
 [source registry](../../registry/README.md). Existing npm installs remain available until their
 source replacements are reviewed and validated; installed registry source has no frontend package dependency.
-This directory temporarily hosts the canonical source and verification harness during that transition.
+This directory hosts the canonical registry source and the existing package verification harness.
 
 Generic shadcn new-york/Radix chrome for React 19 projects. The default is **Neutral + System**; mode and palette are independent. All six palettes support light and dark. Brand, footer content, deployment/storage policy, business navigation, identity and application state stay with the consumer.
 
@@ -11,7 +11,7 @@ Generic shadcn new-york/Radix chrome for React 19 projects. The default is **Neu
 pnpm add @ztd-me/frontend@0.2.0
 ```
 
-Version 0.2.0 is published and verified. Its artifact remains unchanged. The current source candidate
+Version 0.2.0 is published and verified. Its artifact remains unchanged. The registry source
 adds compact chrome, menu motion and Google Fonts Noto typography for registry delivery; the packed
 artifact is a verification harness, not a new npm publication. Requires Node >=22.14 and
 React/react-dom >=19.2 <20. The verified toolchain uses React 19.3, TypeScript 6.0.3 and pnpm 11.22.0.

@@ -1,8 +1,8 @@
-# @ztd-me/ui source delivery decision
+# @ztd-me/ui source architecture and migration
 
-Status: the owner approved the compact chrome and source direction and authorized branch publication
-with an English draft PR. Merge remains with the owner. A fresh public install after merge is required
-before consumer migrations. No updater, synchronization service or production migration is included.
+The selected delivery path installs editable source through a pinned GitHub registry. The owner reviews
+upstream changes; consumers own installed files and local adaptations. Verify a fresh public install of
+the full approved source SHA before consumer migration. No updater or synchronization service is included.
 
 ## Selected implementation
 
