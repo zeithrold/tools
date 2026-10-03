@@ -1,12 +1,17 @@
 # @ztd-me/frontend
 
+The selected successor is **`@ztd-me/ui` source delivery**, not a renamed npm UI package. See the
+[local registry candidate](../../registry/README.md). Existing npm installs remain available until their
+source replacements are reviewed and validated; installed registry source has no frontend package dependency.
+This directory temporarily hosts the canonical source and verification harness during that transition.
+
 Generic shadcn new-york/Radix chrome for React 19 projects. The default is **Neutral + System**; mode and palette are independent. All six palettes support light and dark. Brand, footer content, deployment/storage policy, business navigation, identity and application state stay with the consumer.
 
 ```sh
 pnpm add @ztd-me/frontend@0.2.0
 ```
 
-Install from npm only after the owner promotes the staged version. Requires Node >=22.14 and React/react-dom >=19.2 <20. The verified package uses React 19.3, TypeScript 6.0.3 and pnpm 11.22.0.
+Version 0.2.0 is published and verified. Requires Node >=22.14 and React/react-dom >=19.2 <20. The verified package uses React 19.3, TypeScript 6.0.3 and pnpm 11.22.0.
 
 ## Exports
 

@@ -1,0 +1,227 @@
+import assert from 'node:assert/strict'
+import { spawn } from 'node:child_process'
+import { createHash } from 'node:crypto'
+import { cp, mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
+import { createServer } from 'node:http'
+import path from 'node:path'
+import process from 'node:process'
+
+const cli = 'shadcn@4.21.1'
+const repository = path.resolve('../..')
+await mkdir('.artifacts', { recursive: true })
+const consumer = await mkdtemp(path.resolve('.artifacts/source-consumer-'))
+const destination = 'components/ui/ztd-me'
+const payloadPath = path.resolve('.artifacts/registry/ui.json')
+
+async function run(command, args, cwd = consumer, env = process.env) {
+  await new Promise((resolve, reject) => {
+    const child = spawn(command, args, { cwd, env, stdio: 'inherit' })
+    child.once('error', reject)
+    child.once('exit', (code) => {
+      if (code === 0) {
+        resolve()
+      }
+      else {
+        reject(new Error(`${command} ${args.join(' ')} exited ${code}`))
+      }
+    })
+  })
+}
+
+async function prepareProject() {
+  await cp('test/consumer', consumer, { recursive: true })
+  const packageInfo = JSON.parse(await readFile('package.json', 'utf8'))
+  await writeFile(path.join(consumer, 'package.json'), JSON.stringify({
+    private: true,
+    type: 'module',
+    packageManager: 'pnpm@11.22.0',
+    devDependencies: packageInfo.devDependencies,
+  }))
+  const workspace = await readFile('pnpm-workspace.yaml', 'utf8')
+  await writeFile(path.join(consumer, 'pnpm-workspace.yaml'), workspace.split('patchedDependencies:')[0])
+  const config = JSON.parse(await readFile('tsconfig.build.json', 'utf8'))
+  delete config.compilerOptions.rootDir
+  config.compilerOptions.types.push('vite/client')
+  config.compilerOptions.paths = { '@/*': ['./*'] }
+  config.include = [
+    '*.tsx',
+    `${destination}/**/*.ts`,
+    `${destination}/**/*.tsx`,
+  ]
+  await writeFile(path.join(consumer, 'tsconfig.json'), JSON.stringify(config))
+  await writeFile(path.join(consumer, 'components.json'), JSON.stringify({
+    $schema: 'https://ui.shadcn.com/schema.json',
+    style: 'new-york',
+    rsc: false,
+    tsx: true,
+    tailwind: { config: '', css: 'fixture.css', baseColor: 'neutral', cssVariables: true },
+    aliases: {
+      components: '@/components',
+      ui: '@/components/ui',
+      utils: '@/lib/utils',
+      lib: '@/lib',
+      hooks: '@/hooks',
+    },
+    registries: { '@ztd-me': 'http://127.0.0.1:4329/{name}.json' },
+  }))
+  for (const file of [
+    'Fixture.tsx',
+    'api.tsx',
+    'client.tsx',
+    'server.tsx',
+  ]) {
+    const filename = path.join(consumer, file)
+    const source = await readFile(filename, 'utf8')
+    const local = source.replaceAll('@ztd-me/frontend/client', `./${destination}/client.js`)
+      .replaceAll('@ztd-me/frontend/styles.css', `./${destination}/styles.css`)
+      .replaceAll('@ztd-me/frontend', `./${destination}/index.js`)
+    await writeFile(filename, local)
+  }
+}
+
+async function inventorySource(item) {
+  const packageInfo = JSON.parse(await readFile(path.join(consumer, 'package.json'), 'utf8'))
+  assert.equal('@ztd-me/frontend' in (packageInfo.dependencies ?? {}), false)
+  assert.equal('@ztd-me/frontend' in packageInfo.devDependencies, false)
+  return Promise.all(item.files.map(async (file) => {
+    const installed = file.target.replace('@ui/', 'components/ui/')
+    const bytes = await readFile(path.join(consumer, installed))
+    return { installed, sha256: createHash('sha256').update(bytes).digest('hex') }
+  }))
+}
+
+async function configureVerification() {
+  const eslint = (await readFile('eslint.config.js', 'utf8')).replace('tsconfig.build.json', 'tsconfig.json')
+  await writeFile(path.join(consumer, 'eslint.config.js'), eslint)
+  const css = (await readFile('css-check.config.mjs', 'utf8')).replaceAll('src/', `${destination}/`)
+  await writeFile(path.join(consumer, 'css-check.config.mjs'), css)
+  const workspacePath = path.join(consumer, 'pnpm-workspace.yaml')
+  const workspace = await readFile(workspacePath, 'utf8')
+  await writeFile(workspacePath, `${workspace}patchedDependencies:\n`
+  + `  '@radix-ui/react-select@2.3.7': ${destination}/patches/@radix-ui__react-select@2.3.7.patch\n`)
+  await run('pnpm', ['install'])
+}
+
+async function checkUnits() {
+  await mkdir(path.join(consumer, 'test'), { recursive: true })
+  for (const file of [
+    'preferences.test.mjs',
+    'footer.test.mjs',
+    'radix-types.test.mjs',
+  ]) {
+    const original = await readFile(`test/${file}`, 'utf8')
+    const base = `../dist/type-smoke/${destination}`
+    const localClient = original.replaceAll('@ztd-me/frontend/client', `${base}/client.js`)
+    const localServer = localClient.replaceAll('@ztd-me/frontend', `${base}/index.js`)
+    const test = localServer.replace('src/radix-probe.mts', `${destination}/radix-probe.mts`)
+    await writeFile(path.join(consumer, 'test', file), test)
+  }
+  await run('node', [
+    '--test',
+    'test/preferences.test.mjs',
+    'test/footer.test.mjs',
+    'test/radix-types.test.mjs',
+  ])
+}
+
+async function verifySource() {
+  await run('pnpm', ['install', '--frozen-lockfile'])
+  await run('pnpm', [
+    'exec',
+    'eslint',
+    `${destination}/**/*.{ts,tsx}`,
+    '--max-warnings',
+    '0',
+  ])
+  await run('pnpm', [
+    'exec',
+    'ztd-css',
+    'css-check.config.mjs',
+  ])
+  await run('pnpm', [
+    'exec',
+    'tsc',
+    '--noEmit',
+  ])
+  await run('pnpm', [
+    'exec',
+    'tsc',
+    '--outDir',
+    'dist/type-smoke',
+    '--declaration',
+    'false',
+  ])
+  await checkUnits()
+  await run('pnpm', [
+    'exec',
+    'vite',
+    'build',
+    '--outDir',
+    'dist/client',
+  ])
+  await run('pnpm', [
+    'exec',
+    'vite',
+    'build',
+    '--ssr',
+    'server.tsx',
+    '--outDir',
+    'dist/server',
+  ])
+}
+
+await run('pnpm', [
+  'dlx',
+  cli,
+  'build',
+  'registry.json',
+  '--output',
+  'packages/frontend/.artifacts/registry',
+], repository)
+await prepareProject()
+await run('pnpm', ['install'])
+const payload = JSON.parse(await readFile(payloadPath, 'utf8'))
+const server = createServer(async (_request, response) => {
+  response.setHeader('Content-Type', 'application/json')
+  response.end(await readFile(payloadPath))
+})
+await new Promise((resolve) => {
+  server.listen(4329, '127.0.0.1', resolve)
+})
+try {
+  await run('pnpm', [
+    'dlx',
+    cli,
+    'add',
+    '@ztd-me/ui',
+    '--dry-run',
+  ])
+  await run('pnpm', [
+    'dlx',
+    cli,
+    'add',
+    '@ztd-me/ui',
+    '--yes',
+  ])
+}
+finally {
+  server.close()
+}
+const files = await inventorySource(payload)
+await configureVerification()
+await verifySource()
+await writeFile('.artifacts/source-consumer.json', JSON.stringify({
+  consumer,
+  cli,
+  item: '@ztd-me/ui',
+  payloadSha256: createHash('sha256').update(await readFile(payloadPath)).digest('hex'),
+  dependencies: payload.dependencies,
+  files,
+  requiredFrontendPackage: false,
+  publicInstallationVerified: false,
+}, null, 2))
+await run('pnpm', [
+  'exec',
+  'playwright',
+  'test',
+], process.cwd(), { ...process.env, ZTD_FRONTEND_CONSUMER: consumer })

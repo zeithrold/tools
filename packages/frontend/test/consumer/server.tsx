@@ -35,6 +35,7 @@ const server = createServer(async (request, response) => {
     styleNonce,
     application: url.pathname === '/application',
     footer: url.searchParams.get('footer') !== 'none',
+    review: url.pathname === '/review',
   }
   const root = Object.entries(frontendRootAttributes(initialPreferences)).map(([key, value]) => `${key}="${value}"`).join(' ')
   const html = template.replace('lang="en"', root).replace('<!--content-->', renderToString(<Fixture {...props} />))

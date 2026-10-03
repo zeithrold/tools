@@ -74,7 +74,8 @@
     "test": "node --test test/*.test.mjs",
     "test:pack": "node scripts/pack-smoke.mjs",
     "test:browser": "playwright test",
-    "check": "pnpm run lint && pnpm run css && pnpm run typecheck && pnpm run build && pnpm test && pnpm run test:pack",
+    "test:source": "node scripts/source-smoke.mjs",
+    "check": "pnpm run lint && pnpm run css && pnpm run typecheck && pnpm run build && pnpm test && pnpm run test:pack && pnpm run test:source",
     "prepack": "pnpm run build",
     "prepublishOnly": "pnpm run check"
   }

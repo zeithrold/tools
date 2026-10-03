@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { assertAccessible, captureState } from '@ztd-me/frontend-checks/playwright'
-import { appbar, chooseAppearance, chooseChinese, watchErrors } from './helpers.mjs'
+import { appbar, chooseAppearance, chooseChinese, settleOverlay, watchErrors } from './helpers.mjs'
 
 const developmentKey = 'harbor.ui.v1'
 const preferences = { version: 1, mode: 'dark', palette: 'ocean', locale: 'zh-CN' }
@@ -90,14 +90,17 @@ test('all six palettes and both modes are accessible, including open appearance 
       await assertAccessible(page, info)
       await captureState(page, info, `${mode.toLowerCase()}-${palette.toLowerCase()}`)
       await appbar(page).getByRole('button', { name: 'Appearance' }).press('Enter')
+      await settleOverlay(page)
       await assertAccessible(page, info, { label: 'appearance' })
       await page.keyboard.press('Escape')
       await appbar(page).getByRole('combobox', { name: 'Language' }).press('Enter')
+      await settleOverlay(page)
       await assertAccessible(page, info, { label: 'locale' })
       await page.keyboard.press('Escape')
     }
   }
   await appbar(page).getByRole('button', { name: 'Appearance' }).press('Enter')
+  await settleOverlay(page)
   await assertAccessible(page, info)
   await captureState(page, info, 'appearance-menu')
 })

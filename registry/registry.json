@@ -1,0 +1,195 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "ztd-me",
+  "homepage": "https://github.com/zeithrold/tools",
+  "items": [
+    {
+      "name": "ui",
+      "type": "registry:item",
+      "title": "@ztd-me/ui",
+      "description": "Consumer-owned generic React shell, appearance and locale source with explicit consumer policy.",
+      "dependencies": [
+        "react@19.3.0",
+        "react-dom@19.3.0",
+        "@radix-ui/react-dropdown-menu@2.1.24",
+        "@radix-ui/react-select@2.3.7",
+        "@radix-ui/react-slot@1.3.3",
+        "get-nonce@1.0.1",
+        "lucide-react@1.49.0",
+        "@fontsource-variable/inter@5.3.0"
+      ],
+      "files": [
+        {
+          "path": "packages/frontend/src/appbar.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/appbar.tsx"
+        },
+        {
+          "path": "packages/frontend/src/appearance.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/appearance.tsx"
+        },
+        {
+          "path": "packages/frontend/src/browser-environment.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/browser-environment.ts"
+        },
+        {
+          "path": "packages/frontend/src/client.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/client.ts"
+        },
+        {
+          "path": "packages/frontend/src/context.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/context.ts"
+        },
+        {
+          "path": "packages/frontend/src/cookies.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/cookies.ts"
+        },
+        {
+          "path": "packages/frontend/src/footer.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/footer.tsx"
+        },
+        {
+          "path": "packages/frontend/src/href.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/href.ts"
+        },
+        {
+          "path": "packages/frontend/src/index.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/index.ts"
+        },
+        {
+          "path": "packages/frontend/src/link.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/link.tsx"
+        },
+        {
+          "path": "packages/frontend/src/locale-select.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/locale-select.tsx"
+        },
+        {
+          "path": "packages/frontend/src/locale.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/locale.ts"
+        },
+        {
+          "path": "packages/frontend/src/messages.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/messages.ts"
+        },
+        {
+          "path": "packages/frontend/src/policy.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/policy.ts"
+        },
+        {
+          "path": "packages/frontend/src/preferences.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/preferences.ts"
+        },
+        {
+          "path": "packages/frontend/src/provider.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/provider.tsx"
+        },
+        {
+          "path": "packages/frontend/src/shell-types.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/shell-types.ts"
+        },
+        {
+          "path": "packages/frontend/src/shell.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/shell.tsx"
+        },
+        {
+          "path": "packages/frontend/src/store-types.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/store-types.ts"
+        },
+        {
+          "path": "packages/frontend/src/store.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/store.ts"
+        },
+        {
+          "path": "packages/frontend/src/text.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/text.ts"
+        },
+        {
+          "path": "packages/frontend/src/types.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/types.ts"
+        },
+        {
+          "path": "packages/frontend/src/ui/button.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/button.tsx"
+        },
+        {
+          "path": "packages/frontend/src/ui/inert.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/inert.ts"
+        },
+        {
+          "path": "packages/frontend/src/ui/menu-choice.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/menu-choice.tsx"
+        },
+        {
+          "path": "packages/frontend/src/styles.css",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/styles.css"
+        },
+        {
+          "path": "packages/frontend/src/styles/tokens.css",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/styles/tokens.css"
+        },
+        {
+          "path": "packages/frontend/src/styles/shell.css",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/styles/shell.css"
+        },
+        {
+          "path": "packages/frontend/src/styles/motion.css",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/styles/motion.css"
+        },
+        {
+          "path": "packages/frontend/LICENSE",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/LICENSE"
+        },
+        {
+          "path": "registry/THIRD_PARTY_NOTICES.md",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/THIRD_PARTY_NOTICES.md"
+        },
+        {
+          "path": "packages/frontend/third-party/SHADCN-MIT.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/SHADCN-MIT.txt"
+        },
+        {
+          "path": "packages/frontend/patches/@radix-ui__react-select@2.3.7.patch",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/patches/@radix-ui__react-select@2.3.7.patch"
+        },
+        {
+          "path": "registry/README.md",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/README.md"
+        }
+      ]
+    }
+  ]
+}

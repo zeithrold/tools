@@ -16,8 +16,10 @@ const fonts = fontSource.split('/*').filter(part => /^ inter-latin(?:-ext)?-wght
 const fontCss = fonts.map(part => `/*${part}`).join('\n').replaceAll('./files/', './assets/')
 const tokens = await readFile('src/styles/tokens.css', 'utf8')
 const shell = await readFile('src/styles/shell.css', 'utf8')
+const motion = await readFile('src/styles/motion.css', 'utf8')
 await writeFile('dist/styles.css', `${fontCss}
 ${tokens}
-${shell}`)
+${shell}
+${motion}`)
 
 await writeFile('dist/styles.css.d.ts', 'export {}\n')

@@ -26,11 +26,11 @@ export function LocaleSelect(): React.JSX.Element {
     >
       <Select.Trigger className="ztd-control ztd-locale" aria-label={messages.language}>
         <Select.Value />
-        <Select.Icon><ChevronDown size={16} aria-hidden="true" /></Select.Icon>
+        <Select.Icon><ChevronDown size={14} aria-hidden="true" /></Select.Icon>
       </Select.Trigger>
       <Select.Portal container={state.portalContainer}>
         <Select.Content asChild position="popper" sideOffset={8} align="end">
-          <div className="ztd-overlay ztd-menu" ref={inertBackground}>
+          <div className="ztd-overlay ztd-menu ztd-locale-menu" ref={inertBackground}>
             <Select.Viewport {...(state.styleNonce === undefined ? {} : { nonce: state.styleNonce })}>
               {languages.map(language => (
                 <Select.Item key={language.id} value={language.id} className="ztd-menu-item">

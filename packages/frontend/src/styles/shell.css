@@ -61,6 +61,10 @@
   gap: 8px;
 }
 
+.ztd-actions {
+  flex-shrink: 0;
+}
+
 .ztd-control {
   display: inline-flex;
   align-items: center;
@@ -83,6 +87,35 @@
   background: var(--ztd-muted);
 }
 
+.ztd-appbar .ztd-control {
+  position: relative;
+  isolation: isolate;
+  gap: 6px;
+  padding-inline: 8px;
+  border-color: transparent;
+  background: transparent;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.ztd-appbar .ztd-control::before {
+  position: absolute;
+  z-index: -1;
+  inset: 6px 0;
+  border-radius: 6px;
+  content: "";
+}
+
+.ztd-appbar .ztd-control:hover,
+.ztd-appbar .ztd-control[data-state="open"] {
+  background: transparent;
+}
+
+.ztd-appbar .ztd-control:hover::before,
+.ztd-appbar .ztd-control[data-state="open"]::before {
+  background: var(--ztd-muted);
+}
+
 .ztd-frontend :focus-visible,
 .ztd-overlay :focus-visible {
   outline: 2px solid var(--ztd-focus);
@@ -98,6 +131,11 @@
   border: 1px solid var(--ztd-border);
   border-radius: 12px;
   background: var(--ztd-surface);
+}
+
+.ztd-locale-menu {
+  width: auto;
+  min-width: max(128px, var(--radix-select-trigger-width));
 }
 
 .ztd-menu-label {
