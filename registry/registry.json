@@ -15,8 +15,7 @@
         "@radix-ui/react-select@2.3.7",
         "@radix-ui/react-slot@1.3.3",
         "get-nonce@1.0.1",
-        "lucide-react@1.49.0",
-        "@fontsource-variable/inter@5.3.0"
+        "lucide-react@1.49.0"
       ],
       "files": [
         {
@@ -165,6 +164,11 @@
           "target": "@ui/ztd-me/styles/motion.css"
         },
         {
+          "path": "packages/frontend/src/styles/fonts.css",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/styles/fonts.css"
+        },
+        {
           "path": "packages/frontend/LICENSE",
           "type": "registry:file",
           "target": "@ui/ztd-me/LICENSE"
@@ -188,6 +192,36 @@
           "path": "registry/README.md",
           "type": "registry:file",
           "target": "@ui/ztd-me/README.md"
+        },
+        {
+          "path": "packages/frontend/third-party/NOTO-SANS-OFL.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/NOTO-SANS-OFL.txt"
+        },
+        {
+          "path": "packages/frontend/third-party/NOTO-SANS-SC-OFL.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/NOTO-SANS-SC-OFL.txt"
+        },
+        {
+          "path": "packages/frontend/third-party/NOTO-SANS-JP-OFL.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/NOTO-SANS-JP-OFL.txt"
+        },
+        {
+          "path": "packages/frontend/third-party/NOTO-SANS-KR-OFL.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/NOTO-SANS-KR-OFL.txt"
+        },
+        {
+          "path": "packages/frontend/third-party/NOTO-EMOJI-OFL.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/NOTO-EMOJI-OFL.txt"
+        },
+        {
+          "path": "packages/frontend/docs/fonts.md",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/fonts.md"
         }
       ]
     }

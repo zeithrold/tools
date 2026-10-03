@@ -1,5 +1,5 @@
 .review-document {
-  font-family: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--ztd-font-sans);
   font-size: 14px;
   line-height: 1.6;
 }

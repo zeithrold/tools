@@ -6,8 +6,9 @@ reserved npm names. The root `registry.json` is the canonical file inventory; `r
 generated, self-contained item payload. Source files currently share the legacy package's source
 directory during the reviewed transition, avoiding two separately maintained implementations.
 
-Status: local review candidate. These commands become publicly installable only after an approved
-registry revision is available in the repository. No publication or production migration has occurred.
+The owner approved the compact chrome and source delivery direction. This branch is submitted through
+a draft PR; the owner retains merge. Use an approved full source SHA and verify a fresh public install
+after merge before consumer migrations. No automatic updater or production migration is included.
 
 ## Install a pinned source revision
 
@@ -39,7 +40,7 @@ pnpm dlx shadcn@4.21.1 add 'zeithrold/tools/ui#<SOURCE_SHA>'
 The item installs under `aliases.ui` in a `ztd-me/` directory. `@ui/` target placeholders preserve the
 consumer's configured directory; they do not impose a fixed application path. All internal imports stay
 relative, and the provider, context, hook, components and styles are delivered together. Required React,
-Radix, icons, nonce and font dependencies are explicitly pinned in the item. Review dependency changes
+Radix, icon and nonce dependencies are explicitly pinned in the item. Review dependency changes
 before accepting them. No installed source imports or depends on `@ztd-me/frontend`.
 
 ## Required strict TypeScript compatibility patch
@@ -64,7 +65,10 @@ diagnostic. Review and remove the patch only when a verified upstream release fi
 For the same example layout, the server-safe entry is `components/ui/ztd-me/index.ts`, the client entry
 is `components/ui/ztd-me/client.ts`, and the stylesheet is `components/ui/ztd-me/styles.css`. Import these
 through the consumer's own aliases or relative paths. The stylesheet includes font, tokens, shell and
-motion CSS; the native bundler resolves the font dependency. Preserve the delivered license notices.
+motion CSS. Fonts load directly from the Google Fonts API, with English/CJK Noto Sans and monochrome
+Noto Emoji. There are no font binaries or Fontsource dependencies. Read the delivered `fonts.md` for
+language-specific glyphs, weights, third-party requests, CSP, privacy and remote-font mutability.
+Preserve the delivered MIT and Noto OFL notices.
 
 ```tsx
 import { createPreferencePolicy, resolveInitialPreferences } from './components/ui/ztd-me/index.js'
@@ -120,3 +124,13 @@ pnpm run test:source
 The second gate installs the local item with the real shadcn CLI in a disposable synthetic consumer,
 applies the documented pnpm patch, verifies no frontend runtime dependency, and runs native strict gates
 and the complete browser suite. Its loopback server exists only for the test; it is not registry hosting.
+
+After the owner merges the approved revision, check out that exact full SHA and run:
+
+```sh
+node scripts/source-smoke.mjs <SOURCE_SHA>
+```
+
+This mode installs from the pinned public GitHub item, compares its payload with the checked-out source,
+checks every installed file byte, and repeats the native and browser gates in a fresh consumer. Only a
+successful receipt with `publicInstallationVerified: true` satisfies the post-merge public-install gate.

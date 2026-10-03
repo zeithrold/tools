@@ -8,6 +8,9 @@ const [consumer, label] = process.argv.slice(2)
 if (!consumer || !label) {
   throw new Error('Provide a built consumer directory and evidence label')
 }
+if (process.env.ZTD_LOCAL_FONT_PREVIEW && !label.includes('local-font-preview')) {
+  throw new Error('Local-font preview captures must be explicitly labeled local-font-preview')
+}
 const directory = path.resolve('.artifacts', `visual-${label}`)
 await mkdir(directory, { recursive: true })
 const server = spawn('node', ['dist/server/server.js'], { cwd: consumer, stdio: 'inherit' })

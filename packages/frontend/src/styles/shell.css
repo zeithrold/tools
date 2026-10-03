@@ -3,7 +3,7 @@
 .ztd-overlay {
   color-scheme: var(--ztd-color-scheme);
   color: var(--ztd-foreground);
-  font-family: "Inter Variable", ui-sans-serif, system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: var(--ztd-font-sans);
   font-size: 14px;
   line-height: 20px;
   font-synthesis: none;

@@ -15,7 +15,12 @@ execFileSync('pnpm', [
 ], { stdio: 'inherit' })
 const consumer = await prepareConsumer(`file:${archive}`)
 const sha256 = createHash('sha256').update(await readFile(archive)).digest('hex')
-await writeFile('.artifacts/packed-consumer.json', JSON.stringify({ archive, consumer, sha256 }, null, 2))
+await writeFile('.artifacts/packed-consumer.json', JSON.stringify({
+  archive,
+  consumer,
+  sha256,
+  fontVerification: process.env.ZTD_LOCAL_FONT_PREVIEW ? 'local-preview-only' : 'google-fonts-api',
+}, null, 2))
 execFileSync('pnpm', [
   'exec',
   'playwright',

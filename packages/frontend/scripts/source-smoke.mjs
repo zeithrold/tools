@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { spawn } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { cp, mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
@@ -8,6 +8,17 @@ import process from 'node:process'
 
 const cli = 'shadcn@4.21.1'
 const repository = path.resolve('../..')
+const sourceSha = process.argv[2]
+if (sourceSha !== undefined) {
+  assert.equal(process.env.ZTD_LOCAL_FONT_PREVIEW, undefined, 'Public verification requires actual Google Fonts')
+  assert.match(sourceSha, /^[a-f0-9]{40}$/u, 'Use the full approved source commit SHA')
+  const head = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' })
+  assert.equal(head.status, 0)
+  assert.equal(head.stdout.trim(), sourceSha, 'Check out the pinned source commit first')
+}
+const registryUrl = sourceSha === undefined
+  ? 'http://127.0.0.1:4329/{name}.json'
+  : `https://raw.githubusercontent.com/zeithrold/tools/${sourceSha}/registry/{name}.json`
 await mkdir('.artifacts', { recursive: true })
 const consumer = await mkdtemp(path.resolve('.artifacts/source-consumer-'))
 const destination = 'components/ui/ztd-me'
@@ -62,7 +73,7 @@ async function prepareProject() {
       lib: '@/lib',
       hooks: '@/hooks',
     },
-    registries: { '@ztd-me': 'http://127.0.0.1:4329/{name}.json' },
+    registries: { '@ztd-me': registryUrl },
   }))
   for (const file of [
     'Fixture.tsx',
@@ -86,6 +97,7 @@ async function inventorySource(item) {
   return Promise.all(item.files.map(async (file) => {
     const installed = file.target.replace('@ui/', 'components/ui/')
     const bytes = await readFile(path.join(consumer, installed))
+    assert.equal(bytes.toString(), file.content, `Installed source changed: ${installed}`)
     return { installed, sha256: createHash('sha256').update(bytes).digest('hex') }
   }))
 }
@@ -181,13 +193,22 @@ await run('pnpm', [
 await prepareProject()
 await run('pnpm', ['install'])
 const payload = JSON.parse(await readFile(payloadPath, 'utf8'))
+const committedPayload = JSON.parse(await readFile(path.join(repository, 'registry/ui.json'), 'utf8'))
+assert.deepEqual(committedPayload, payload, 'Regenerate registry/ui.json before publishing this revision')
+if (sourceSha !== undefined) {
+  const response = await fetch(registryUrl.replace('{name}', 'ui'))
+  assert.equal(response.status, 200)
+  assert.deepEqual(await response.json(), payload, 'Public item differs from this source revision')
+}
 const server = createServer(async (_request, response) => {
   response.setHeader('Content-Type', 'application/json')
   response.end(await readFile(payloadPath))
 })
-await new Promise((resolve) => {
-  server.listen(4329, '127.0.0.1', resolve)
-})
+if (sourceSha === undefined) {
+  await new Promise((resolve) => {
+    server.listen(4329, '127.0.0.1', resolve)
+  })
+}
 try {
   await run('pnpm', [
     'dlx',
@@ -205,12 +226,14 @@ try {
   ])
 }
 finally {
-  server.close()
+  if (server.listening) {
+    server.close()
+  }
 }
 const files = await inventorySource(payload)
 await configureVerification()
 await verifySource()
-await writeFile('.artifacts/source-consumer.json', JSON.stringify({
+const receipt = {
   consumer,
   cli,
   item: '@ztd-me/ui',
@@ -218,10 +241,16 @@ await writeFile('.artifacts/source-consumer.json', JSON.stringify({
   dependencies: payload.dependencies,
   files,
   requiredFrontendPackage: false,
+  sourceSha,
+  registryUrl,
+  fontVerification: process.env.ZTD_LOCAL_FONT_PREVIEW ? 'local-preview-only' : 'google-fonts-api',
   publicInstallationVerified: false,
-}, null, 2))
+}
+await writeFile('.artifacts/source-consumer.json', JSON.stringify(receipt, null, 2))
 await run('pnpm', [
   'exec',
   'playwright',
   'test',
 ], process.cwd(), { ...process.env, ZTD_FRONTEND_CONSUMER: consumer })
+receipt.publicInstallationVerified = sourceSha !== undefined
+await writeFile('.artifacts/source-consumer.json', JSON.stringify(receipt, null, 2))

@@ -1,6 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { assertAccessible } from '@ztd-me/frontend-checks/playwright'
-import { appbar, chooseAppearance, chooseChinese, watchErrors } from './helpers.mjs'
+import { appbar, assertAccessible, chooseAppearance, chooseChinese, watchErrors } from './helpers.mjs'
 
 test('old keys and business data stay untouched', async ({ context, page }, info) => {
   await context.addInitScript(() => {

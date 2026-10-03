@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
-import { assertAccessible, captureState } from '@ztd-me/frontend-checks/playwright'
-import { appbar, chooseAppearance, chooseChinese, settleOverlay, watchErrors } from './helpers.mjs'
+import { captureState } from '@ztd-me/frontend-checks/playwright'
+import { appbar, assertAccessible, chooseAppearance, chooseChinese, settleOverlay, watchErrors } from './helpers.mjs'
 
 const developmentKey = 'harbor.ui.v1'
 const preferences = { version: 1, mode: 'dark', palette: 'ocean', locale: 'zh-CN' }
@@ -20,7 +20,7 @@ test('SSR cookie snapshot matches hydrated locale and theme', async ({ context, 
   await assertAccessible(page, info)
   await captureState(page, info, 'ssr-chinese-dark-ocean')
   await page.evaluate(async () => document.fonts.ready)
-  expect(await page.evaluate(() => document.fonts.check('14px "Inter Variable"', 'Appearance'))).toBe(true)
+  expect(await page.evaluate(() => document.fonts.check('14px "Noto Sans"', 'Appearance'))).toBe(true)
   expect(errors).toEqual([])
 })
 

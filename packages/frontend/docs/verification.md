@@ -1,28 +1,91 @@
 # Verification contract
 
-`pnpm install --frozen-lockfile` and `pnpm run check` run the native gates. Keep the release-age, integrity and no-downgrade policies; the approved @ztd-me/* exception changes only release age. The pinned Radix patch changes declarations only and is absent from the independent consumer.
+`pnpm install --frozen-lockfile` and `pnpm run check` run the native gates. Keep release-age, integrity,
+no-downgrade and other existing pnpm policies. The approved @ztd-me/* exception changes only release age.
+No TLS bypass, browser security exception or trust-store change is part of verification.
 
-The 0.2 cloud implementation was checked on Node 24.19.0, pnpm 11.22.0, React 19.3.0, TypeScript 6.0.3, ESLint 10.11.0, Vite 8.3.1 and Playwright 1.62.0/Chromium 151, using the published frontend-checks 0.1.1. CI repeats the complete package checks on Node 22 and 24 for the PR's source commit.
+The source harness pins pnpm 11.22.0, React 19.3.0, TypeScript 6.0.3, ESLint 10.11.0, Vite 8.3.1,
+Playwright 1.62.0 and published frontend-checks 0.1.1. CI repeats complete checks on Node 22 and 24 for
+the PR's exact source SHA. The already published frontend 0.2.0 remains unchanged and available; this
+source transition is not a new npm release.
 
-- Strict ESLint, CSS variable validation, full TypeScript declaration checking and package build pass.
-- Eleven unit cases cover normalization, enum defaults, non-sensitive schema boundaries, generic policy defaults/validation, existing explicitly configured version-1 cookies, duplicate/malformed/oversized/future cookies, weighted locale negotiation, consumer-owned footer links/URL validation and the reproduced/patched Radix declaration conflict.
-- An independent consumer installs the actual packed artifact with pnpm, installs again with a frozen lockfile, imports every export, verifies both WOFF2 files and included licenses, rejects invalid typed API usage, checks declarations with skipLibCheck=false/exactOptionalPropertyTypes=true, and builds actual React SSR and client assets. It uses unpatched registry Radix dependencies.
-- Sixteen Chromium scenarios verify SSR/hydration and loaded Inter, first paint with JavaScript blocked and CSP, system/explicit mode independence, keyboard skip/menu/Select interactions, ref/focus/inert restoration, all six palettes in both modes, Chinese controls at 320/390/768/1024/1440 widths, rejected storage, synthetic consumer domain sharing/host-only isolation, optional same-origin notifications, fullscreen portals and application slots. They also prove old keys/unrelated cookies/auth/business records remain untouched, no mirror means zero localStorage access, and a synthetic consumer supplies Codeberg/contact/copyright links. Denied cookie getters/setters are exercised on desktop/mobile and through refresh/recovery while preserving the SSR snapshot and business drafts.
-- The sampled page and both popup states produce 46 complete Axe WCAG A/AA scans with zero violations. Fifteen named captures support review; they are evidence, not approved visual baselines.
-- Repository Go tests and vet pass after the reusable Skill guidance change. No detectors or planning behavior changed.
+## Native and consumer checks
 
-Reports, screenshots, logs and the packed-consumer path/checksum receipt stay under `.artifacts/` and are retained by CI on success or failure. Browser subdomains are intercepted and served locally; no production or authenticated service is contacted. The fixture permits Radix style attributes and per-response nonce-bearing style elements while disallowing inline scripts. Consumers remain responsible for their actual CSP, framework/RSC integration, locale-sensitive caching and business content. This fixture does not certify those integrations, screen readers or every browser.
+- Strict ESLint, CSS variable validation, full TypeScript declaration checking and build.
+- Eleven unit cases covering preference boundaries, generic policy, cookie/locale validation, footer
+  URLs and the reproduced/patched Select declaration defect.
+- A fresh consumer installs the actual packed artifact using pnpm, reinstalls with a frozen lock,
+  imports all exports, validates Google Fonts CSS and five OFL/MIT notices without font binaries,
+  rejects invalid typed API usage, and builds real React SSR and client assets.
+- A separate source consumer uses the real pinned shadcn CLI to preview/install the item, compares all
+  installed file bytes, confirms no frontend runtime dependency, applies the documented declaration
+  patch and runs strict lint/CSS/types, eleven units, SSR/client build and the complete browser suite.
+  It preserves pnpm security settings and enables `skipLibCheck: false`.
 
-## After owner promotion
+The browser suite covers SSR/hydration, first paint without JavaScript, nonce-bearing CSP, independent
+mode/palette selection, all six palettes/light/dark/system, responsive Chinese controls, keyboard/focus,
+entry/exit and reduced motion, 44px touch targets, inert cleanup, fullscreen portals, storage rejection
+and application slots. It preserves unrelated auth/business records and project-owned footer/policy.
+The typography specimen adds actual English/CJK glyph usage, weight 600 and composed Noto emoji checks,
+resource evidence and Axe. Reports and captures are evidence; they are not approved visual baselines.
 
-Staging does not make the package installable. Once the owner has approved the staged version with npm 2FA, run from this source revision:
+Axe's CSSOM preloader copies CSS into a temporary document. The fixture adapter gives those analysis
+styles the existing response nonce only while the scan runs, then restores the native DOM method before
+further interaction. Application style injection remains checked normally; no CSP origin, rule, scan
+tag or browser security restriction is disabled. Reports retain incomplete results as well as violations.
+
+The package's selected Select 2.3.7/Popper 1.3.7 declarations have an upstream TS2320 conflict. The
+registry supplies the exact declaration-only patch and consumer-owned pnpm recipe. JavaScript remains
+unmodified. The old compiled API hides this declaration conflict from its packed consumer. See
+[Radix compatibility](radix-compatibility.md) and the source registry installation instructions.
+
+## Actual Google Fonts and isolated Cloud preview
+
+The default browser gate uses the real Google Fonts API and gstatic font requests under the fixture's
+CSP. There is no network stub or local-font substitution by default. The public source-install gate
+rejects local preview mode. The font identities, requests and transfers must pass in a normal browser
+environment before actual remote font loading is considered verified.
+
+This Cloud executor's Chromium rejected the API certificate with `ERR_CERT_AUTHORITY_INVALID`, while
+standard CLI TLS verification returned HTTP 200. The owner separately authorized a local Noto preview
+in the test harness. To prepare it with the executor's normal TLS/proxy and then run preview checks:
 
 ```sh
-node scripts/registry-smoke.mjs 0.2.0
+NODE_USE_ENV_PROXY=1 node scripts/prepare-font-preview.mjs
+ZTD_LOCAL_FONT_PREVIEW="$PWD/.artifacts/local-noto-preview" NODE_USE_ENV_PROXY=1 pnpm run test:pack
+ZTD_LOCAL_FONT_PREVIEW="$PWD/.artifacts/local-noto-preview" NODE_USE_ENV_PROXY=1 pnpm run test:source
 ```
 
-The script checks the exact public registry version/integrity, creates a new pnpm consumer using that exact version rather than a local file, and repeats import/types/build/browser verification. Only a successful `.artifacts/registry-0.2.0.json` receipt establishes the public installation gate. Do not substitute a registry placeholder, workflow staging receipt or local tarball for this result. This source candidate has passed local packed-consumer verification; public 0.2.0 installation remains pending owner merge, automatic staging and promotion.
+Use `NODE_USE_ENV_PROXY=1` only where an existing authorized proxy is supplied by the environment. The
+preview server serves a cached Google CSS response and lazily downloads the same official gstatic font
+files with normal Node TLS to ignored `.artifacts/`. Only the synthetic server replaces its CSS import
+with an explicitly named local-preview route. Production source/CSS and the registry payload retain
+the direct API request. Neither preview adapter, cached files nor download script is delivered in the
+registry. Preview browser artifacts are kept separately in `.artifacts/browser-local-font-preview`;
+font evidence sets `actualGoogleFontsBrowserLoad: false`. Captures require a local-font-preview label.
 
-## Published CSS helper
+Preview success establishes layout/glyph/weight/emoji behavior with equivalent Noto files; it does not
+verify actual browser Google Fonts requests, production CSP delivery, remote transfer performance or
+network availability. Default CI runs use the real API. If those cannot complete, record the exact
+blocker and arrange verification in an authorized normal/local browser; do not waive the remote gate.
+See [typography](fonts.md) for API/privacy/CSP and font mutability.
 
-Development verification now pins published frontend-checks 0.1.1. Its `ignoreAtRules: ['custom-variant']` exception is limited to Tailwind's native scoping directive; nesting, property, token and color rules remain active. No package-manager security settings or CSS standards are relaxed in this upgrade.
+## Public source acceptance
+
+After the owner merges the approved revision, check out its full source SHA and run from this directory:
+
+```sh
+node scripts/source-smoke.mjs <SOURCE_SHA>
+```
+
+The script creates a fresh consumer, reads the exact public GitHub payload, compares it with the source,
+checks installed file bytes and repeats native/browser gates. Only a successful receipt with
+`publicInstallationVerified: true` establishes this post-merge gate. Local tarballs, loopback source
+installation and preview receipts do not replace it. Consumer migration PRs must preserve local source
+edits and business policy and obtain their own native/browser and owner acceptance.
+
+Reports, screenshots, logs and receipts remain under `.artifacts/` and are retained by CI on success or
+failure. Intercepted synthetic subdomains serve local business fixtures; Google Fonts is the default
+suite's explicit external dependency. The fixture does not certify production CSP, every framework,
+locale-sensitive caching, screen readers or every browser. Go tests/vet apply to bundled Skill changes;
+no detector or planning behavior changes in this UI transition.

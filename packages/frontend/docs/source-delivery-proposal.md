@@ -1,7 +1,8 @@
 # @ztd-me/ui source delivery decision
 
-Status: direction selected by the owner; concrete local registry and chrome candidate awaiting review.
-No registry publication, updater, synchronization service or production consumer migration has occurred.
+Status: the owner approved the compact chrome and source direction and authorized branch publication
+with an English draft PR. Merge remains with the owner. A fresh public install after merge is required
+before consumer migrations. No updater, synchronization service or production migration is included.
 
 ## Selected implementation
 
@@ -11,7 +12,7 @@ context and hook together in one source item; keep each Radix root and its parts
 dependency graph. Source delivery improves visibility and local ownership, but does not automatically
 deduplicate React or Radix.
 
-The item contains the UI, provider/context/hook, required preference logic, tokens, motion, font imports
+The item contains the UI, provider/context/hook, required preference logic, tokens, motion, Google Fonts imports
 and license notices. Installed source has no `@ztd-me/frontend` dependency. No renamed npm UI binary or
 headless runtime package is proposed. The existing verification helper remains a separate npm tool.
 Existing exported symbol names remain compatible to keep the source migration bounded.
@@ -44,7 +45,7 @@ decision, not a claimed repair for a proven duplicate-instance defect.
 ## Dependency and update policy
 
 - Pin the selected shadcn CLI version, every registry item to a full commit SHA, and every cross-item
-  dependency to its own full SHA. Pin compatible React and Radix direct dependencies in the consumer's
+dependency to its own full SHA. Pin compatible React and Radix direct dependencies in the consumer's
   package manifest and commit its native pnpm lock. Verify peer ranges before installation.
 - Keep provider/context/hook atomic. Do not mix installed UI pieces with a second package's provider or
   another release's Radix root/parts. Audit `pnpm why` and resolved module identities when composition
@@ -72,10 +73,10 @@ the delivered files and dependency requirements. CLI behavior is documented in t
 
 ## Bounded migration sequence
 
-1. Review this tools candidate's source inventory, installation recipe, dependency patch and before/after
-   visuals. Validate the isolated source consumer and obtain explicit visual/interaction acceptance.
-2. After review authorizes publication, make the exact registry commit available through the existing
-   tools repository route, and verify a fresh public install with the pinned CLI and full source SHA.
+1. Submit the approved chrome and source direction, Noto typography, exact inventory, compatibility
+   patch and native/browser evidence through the authorized draft PR. The owner reviews and merges.
+2. After merge, verify a fresh public install with the pinned CLI and full approved source SHA through
+   `node scripts/source-smoke.mjs <SOURCE_SHA>` from that exact checkout.
 3. Dispatch website, showcase and memory as separate consumer changes. Replace npm UI imports, provider
    and stylesheet atomically, align dependencies and commit the lock. Preserve project-owned edits,
    branding and policy; run each consumer's native gates and obtain owner acceptance for each.

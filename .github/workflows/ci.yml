@@ -90,6 +90,7 @@ jobs:
           path: |
             packages/frontend/.artifacts/
             !packages/frontend/.artifacts/consumer-*/node_modules/**
+            !packages/frontend/.artifacts/source-consumer-*/node_modules/**
           include-hidden-files: true
           if-no-files-found: error
   eslint:

@@ -1,7 +1,7 @@
 # @ztd-me/frontend
 
 The selected successor is **`@ztd-me/ui` source delivery**, not a renamed npm UI package. See the
-[local registry candidate](../../registry/README.md). Existing npm installs remain available until their
+[source registry](../../registry/README.md). Existing npm installs remain available until their
 source replacements are reviewed and validated; installed registry source has no frontend package dependency.
 This directory temporarily hosts the canonical source and verification harness during that transition.
 
@@ -11,7 +11,10 @@ Generic shadcn new-york/Radix chrome for React 19 projects. The default is **Neu
 pnpm add @ztd-me/frontend@0.2.0
 ```
 
-Version 0.2.0 is published and verified. Requires Node >=22.14 and React/react-dom >=19.2 <20. The verified package uses React 19.3, TypeScript 6.0.3 and pnpm 11.22.0.
+Version 0.2.0 is published and verified. Its artifact remains unchanged. The current source candidate
+adds compact chrome, menu motion and Google Fonts Noto typography for registry delivery; the packed
+artifact is a verification harness, not a new npm publication. Requires Node >=22.14 and
+React/react-dom >=19.2 <20. The verified toolchain uses React 19.3, TypeScript 6.0.3 and pnpm 11.22.0.
 
 ## Exports
 
@@ -19,7 +22,7 @@ Version 0.2.0 is published and verified. Requires Node >=22.14 and React/react-d
 | --- | --- |
 | `@ztd-me/frontend` | Server-safe types, defaults, normalization, cookie policy/serialization and locale negotiation; no DOM or React runtime import |
 | `@ztd-me/frontend/client` | `FrontendProvider`, `useFrontendPreferences`, `PublicShell`, `ApplicationShell`, `Appbar`, `SiteFooter`, `AppearanceMenu`, `LocaleSelect`; preserved `use client` boundary |
-| `@ztd-me/frontend/styles.css` | Compiled namespaced CSS and bundled Inter Latin/Latin Extended variable fonts; no Tailwind scan or node_modules `@source` requirement |
+| `@ztd-me/frontend/styles.css` | Compiled namespaced CSS; current source harness uses the Google Fonts API for Noto Sans/CJK/Emoji; published 0.2.0 retains Inter |
 
 ESM only. Client callbacks, custom links, identity and portal containers belong in a client adapter, not a serialized server payload. Use one provider per document; its initial preferences and policy identify that mounted document.
 
@@ -80,7 +83,12 @@ Modes: `system`, `light`, `dark`. Palettes: `neutral`, `terracotta`, `moss`, `oc
 
 CSS uses root attributes `data-frontend-mode` and `data-frontend-palette`, with `lang`. System colors resolve through CSS media queries before hydration, without an inline prepaint script. Radix uses inline style attributes for positioning/hidden controls and injects scroll-lock style elements. A consumer CSP must account for these: the packed fixture keeps `script-src 'self'`, permits style attributes, and allows style elements only from self or a per-response nonce supplied as `styleNonce`. This does not promise compatibility with `style-src-attr 'none'`; the package does not change any consumer CSP. Client media changes update `resolvedMode`; an explicit mode stays fixed. The package does not add `.dark` or the old `data-palette` attribute. Consumers bridge their own business tokens or legacy attributes through the hook; shared root tokens are `--ztd-background`, `--ztd-foreground`, `--ztd-surface`, `--ztd-muted`, `--ztd-muted-foreground`, `--ztd-border`, `--ztd-accent`, `--ztd-focus`, `--ztd-action`, `--ztd-action-foreground`, and `--ztd-color-scheme`.
 
-Chrome is at most 1280px wide, 72px high on desktop and 64px below 1024px, with 16/24/32px gutters and 44px control targets. Body width, content, typography and layout remain project-owned. Import CSS once. Include its actual declaration file as a `tokenFiles` source in the existing CSS checker when business CSS references its tokens; do not exempt arbitrary unknown variables. Font licenses ship with the assets; CJK uses system fallbacks.
+Chrome is at most 1280px wide, 72px high on desktop and 64px below 1024px, with 16/24/32px gutters and
+44px control targets. Body width, content and layout remain project-owned. Import CSS once. Include
+its actual declaration file as a `tokenFiles` source in the existing CSS checker when business CSS
+references its tokens; do not exempt arbitrary unknown variables. The current source uses Google Fonts
+Noto Sans with Chinese/Japanese/Korean variants and monochrome Noto Emoji. Read [typography](docs/fonts.md)
+for the additional API style/font CSP origins, third-party requests and preserved OFL notices.
 
 ## Preferences and boundaries
 

@@ -2,6 +2,7 @@ import type { FrontendPreferences, PreferencePolicy, LinkProps } from '@ztd-me/f
 import { useCallback, useState } from 'react'
 import { FrontendProvider, PublicShell, ApplicationShell, useFrontendPreferences } from '@ztd-me/frontend/client'
 import { ReviewContent, ReviewNavigation } from './ReviewContent.js'
+import { FontSpecimens } from './FontSpecimens.js'
 
 export interface FixtureProps {
   initialPreferences: FrontendPreferences
@@ -10,6 +11,7 @@ export interface FixtureProps {
   styleNonce: string
   footer: boolean
   review: boolean
+  fonts: boolean
 }
 function FixtureLink(props: LinkProps): React.JSX.Element {
   return <a {...props} data-router-link="fixture" />
@@ -63,7 +65,7 @@ export function Fixture(props: FixtureProps): React.JSX.Element {
             serviceNotice={<p role="status">Synthetic service notice</p>}
           ><State persistenceErrors={persistenceErrors} /></ApplicationShell>
         ) : <PublicShell {...common}>
-          {props.review ? <ReviewContent /> : <State persistenceErrors={persistenceErrors} />}
+          {props.fonts ? <FontSpecimens /> : props.review ? <ReviewContent /> : <State persistenceErrors={persistenceErrors} />}
         </PublicShell>}
       </FrontendProvider>
     </div>

@@ -1,4 +1,31 @@
 import { expect } from '@playwright/test'
+import { assertAccessible as scan } from '@ztd-me/frontend-checks/playwright'
+
+export async function assertAccessible(page, info, options) {
+  const nonce = await page.locator('#initial').evaluate(node => JSON.parse(node.textContent).styleNonce)
+  // Axe copies CSS into a temporary document. Give only this analysis step the response's nonce.
+  // Restore the native method before further interaction; real UI injection stays independently checked.
+  const restore = await page.evaluateHandle((styleNonce) => {
+    const original = Document.prototype.createElement
+    Document.prototype.createElement = function (name, ...args) {
+      const element = original.call(this, name, ...args)
+      if (name.toLowerCase() === 'style') {
+        element.nonce = styleNonce
+      }
+      return element
+    }
+    return () => {
+      Document.prototype.createElement = original
+    }
+  }, nonce)
+  try {
+    return await scan(page, info, options)
+  }
+  finally {
+    await restore.evaluate(callback => callback())
+    await restore.dispose()
+  }
+}
 
 export const appbar = page => page.locator('.ztd-appbar')
 

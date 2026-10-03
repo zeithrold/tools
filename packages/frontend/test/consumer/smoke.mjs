@@ -17,12 +17,10 @@ const css = require.resolve('@ztd-me/frontend/styles.css')
 const source = await readFile(css, 'utf8')
 assert.ok(source.includes('.ztd-appbar'))
 const fonts = [...source.matchAll(/url\((?:['"])?\.\/([^)'"\s]+)/gu)]
-assert.equal(fonts.length, 2)
-for (const match of fonts) {
-  const asset = path.join(path.dirname(css), match[1])
-  assert.equal((await readFile(asset)).subarray(0, 4).toString(), 'wOF2')
-}
-assert.ok((await readFile(path.join(path.dirname(css), 'assets/INTER-OFL.txt'), 'utf8')).includes('OPEN FONT LICENSE'))
+assert.equal(fonts.length, 0)
+assert.ok(source.includes('https://fonts.googleapis.com/css2?family=Noto+Sans'))
+const emojiLicense = path.join(path.dirname(css), 'assets/NOTO-EMOJI-OFL.txt')
+assert.ok((await readFile(emojiLicense, 'utf8')).includes('SIL OPEN FONT LICENSE Version 1.1'))
 assert.ok((await readFile(path.join(path.dirname(css), 'assets/SHADCN-MIT.txt'), 'utf8')).includes('MIT'))
 const client = await readFile(new URL(import.meta.resolve('@ztd-me/frontend/client')), 'utf8')
 assert.ok(client.startsWith("'use client'"))

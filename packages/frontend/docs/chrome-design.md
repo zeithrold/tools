@@ -1,8 +1,9 @@
 # Chrome refinement candidate
 
-This local candidate refines the 0.2.0 shell and delivers it as the `@ztd-me/ui` source registry item.
+This source candidate refines the 0.2.0 shell and delivers it as the `@ztd-me/ui` source registry item.
 Its public symbols, preferences, persistence, consumer ownership and Radix versions stay compatible.
-It has not been published or migrated into a production consumer.
+The owner approved the compact chrome and source direction and authorized a draft PR. Merge remains
+with the owner; production consumer migrations follow fresh public source verification after merge.
 
 ## Visual decisions
 
@@ -42,7 +43,10 @@ fixture. Its measured 0.2.0 Chinese controls are 80×44 and 106×44, with 14px t
 `animation-name: none` and zero animations. This reproduces the reported absent motion independently of
 the dependency duplication hypothesis.
 
-The refined Chinese controls measure 66×44 and 90×44 with 13px text and transparent appbar borders.
+The earlier Inter preview measured refined Chinese controls at 66×44 and 90×44 with 13px text and
+transparent appbar borders. Current Noto captures record new measurements rather than assuming those
+old font metrics remain exact. Production uses the Google Fonts API; Cloud captures explicitly use the
+owner-authorized local-font preview because Cloud Chromium cannot validate the API certificate.
 Mobile appearance remains 44×44. The content uses the quieter decorative border token; this fixture
 does not establish how any consumer's hardcoded borders will render after migration.
 
