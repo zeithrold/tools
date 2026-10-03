@@ -148,18 +148,25 @@ by that project's approved deployment path. An approved separate production buil
 and replaces the artifact-download role only when its qualified production output is the real target.
 
 The boundary verifies the source/result/artifact identity and the repository's existing target,
-account and domain-ownership guards. Those guard implementations, credentials and native deploy arguments
+account and control-plane ownership guards. Those guard implementations, credentials and native deploy arguments
 remain project-owned; the shared convention does not weaken them or expand access. Deploy the
-qualified production output for the verified SHA, then verify the deployed version. The production
-verification phase retains existing active-version and required live HTML/assets checks. Those checks
-run **after deployment and version verification**, with
-deployment evidence retained. A local fixture or successful upload alone does not prove deployment.
+qualified production output for the verified SHA, then retain the existing deployed-version and traffic
+checks through the deployment provider's control plane. For Cloudflare, this means the existing
+authorized control-plane checks, with their credential scopes preserved. Retain deployment evidence;
+a local fixture or successful upload alone does not prove deployment.
+
+GitHub Actions post-deployment acceptance must not request the public production site's HTTP pages,
+routes or assets. Remove those probes and their solely owned scripts/documentation while preserving
+other callers. Do not disable WAF, bypass challenges or change security settings to make a probe pass.
+Local/CI browser and built-runtime tests, actual Google Fonts verification, build gates and actual
+deployment remain required. Public package/source installation verification also remains separate
+from protected production-site acceptance.
 
 ## Bounded local extensions and contribution validation
 
 Keep the shared roles and order while documenting native script names, workspace paths, pinned CLI
 source, runtime matrices, production build settings, services/fixtures, browser routes, coverage
-thresholds, cache keys, retention, deployment targets and post-deploy checks in the owning repository.
+thresholds, cache keys, retention, deployment targets and control-plane deployment checks in the owning repository.
 Preserve stricter local gates, branch coverage and approved security/ownership guards. Differences
 must describe a real native dependency or production requirement; they are not permission to remove
 tests, relax standards, add business logic to tools or introduce cross-project deployment dispatch.
@@ -168,4 +175,4 @@ Before submitting, check YAML and Actions expressions, local script/profile wiri
 gates. Verify the failure probe and actual artifact retention, action/toolchain compatibility and the
 Verify → Deploy dependency/trigger boundary. Record exact source SHA, command outcomes and remaining
 blocked checks in the PR. Exercise PR CI first; after owner merge verify the automatic main run and
-its separate deployment/post-deploy results. Preserve owner merge, production and release authority.
+its separate control-plane deployment results. Preserve owner merge, production and release authority.
