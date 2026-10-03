@@ -26,6 +26,9 @@ Read AGENTS.md, the project design contract, scripts, compiler config and framew
 3. Validate unknown runtime input using the existing schema mechanism. Preserve retry and input; do not expand a boundary improvement into an unrelated client/server rewrite.
 4. Normalize supported preferences and render deterministic SSR defaults. Apply [preferences and localization](references/preferences-i18n.md) to hydration, persistence, errors and dialogs.
 5. Preserve framework exports and native browser fallback. Run the compiler/build alongside strict ESLint; lint alone cannot validate routing or Worker deployment.
+   Construct GitHub Actions with the [workflow contribution contract](references/github-actions.md).
+   Keep the common Verify → Deploy order and project-owned extension points; retain required native
+   checks, the failure-evidence probe and automatic main deployment within existing authorization.
 6. Report changed decisions, affected states, exact checks and uncertainty. Visual baselines and performance budgets are deferred.
 
 ## Generic shared shell
