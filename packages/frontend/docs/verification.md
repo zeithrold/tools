@@ -27,7 +27,13 @@ mode/palette selection, all six palettes/light/dark/system, responsive Chinese c
 entry/exit and reduced motion, 44px touch targets, inert cleanup, fullscreen portals, storage rejection
 and application slots. It preserves unrelated auth/business records and project-owned footer/policy.
 The typography specimen adds actual English/CJK glyph usage, weight 600 and composed Noto emoji checks,
-resource evidence and Axe. Reports and captures are evidence; they are not approved visual baselines.
+resource evidence and Axe. Separate English and Chinese initial-page gates cap combined font/API CSS
+HTTP responses at 500,000 and 1,000,000 bytes, respectively; immediate ordinary reloads in the same
+browser context allow 10,000 bytes each. Every cold scenario starts in a fresh context. The broad
+specimen reports transfers without an ordinary-page byte cap and retains its glyph/weight/emoji/CSP
+checks and request-count guard. These owner-approved budgets apply to the representative fixtures;
+consumer page budgets remain consumer-owned. See [typography](fonts.md) for units and exclusions.
+Reports and captures are evidence; they are not approved visual baselines.
 
 Axe's CSSOM preloader copies CSS into a temporary document. The fixture adapter gives those analysis
 styles the existing response nonce only while the scan runs. Its CSSOM reader also reuses the exact
@@ -69,7 +75,8 @@ font evidence sets `actualGoogleFontsBrowserLoad: false`. Captures require a loc
 
 Preview success establishes layout/glyph/weight/emoji behavior with equivalent Noto files; it does not
 verify actual browser Google Fonts requests, production CSP delivery, remote transfer performance or
-network availability. Default CI runs use the real API. If those cannot complete, record the exact
+network availability. Preview transfer reports explicitly mark remote budgets unverified; these caps
+are enforced by default CI and public acceptance with the real API. If those cannot complete, record the exact
 blocker and arrange verification in an authorized normal/local browser; do not waive the remote gate.
 See [typography](fonts.md) for API/privacy/CSP and font mutability.
 

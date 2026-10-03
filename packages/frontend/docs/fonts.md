@@ -57,12 +57,22 @@ Test the real production headers, network availability and browser font usage be
 
 The source SHA, API query and dependency lock are pinned. Google controls the returned CSS and font
 files and may update them; remote font bytes are not made immutable by the source pin. Browser checks
-record actual font identities and resource transfers. The specimen retains a guard of fewer than
-80 font requests. Its draft 2,000,000-byte assertion currently fails on the full all-color specimen;
-this provisional threshold is under review, not an accepted product page-size requirement. Measure
-normal English/Chinese cold loads and warm cache reuse separately before selecting performance budgets.
-The harness observes actual font requests and encoded response sizes; API URLs need not end in a font
-file extension.
+record actual font identities and resource transfers. The owner-approved representative fixture caps
+include both font files and Google API CSS: **500,000 bytes for the English initial page**, **1,000,000
+bytes for the Chinese initial page**, and **10,000 bytes for each immediate warm reload**. Cold pages
+start in separate fresh browser contexts; warm pages use an ordinary reload in the same context with
+the browser's default cache enabled. These are fixture budgets, not universal consumer page limits.
+MB means 1,000,000 bytes and KB means 1,000 bytes. Chromium measures encoded HTTP response bytes,
+including headers and payload, excluding socket/TLS framing and application HTML/JS/CSS/images.
+HTTP-decoded body sizes are reported separately; warm body sizes refer to the previous cold response
+and do not represent additional network traffic. API URLs need not end in a font file extension.
+
+The full multilingual/emoji specimen retains actual glyphs, loaded weights, complete composed sequences,
+CSP, accessibility, transfer reporting and the guard of fewer than 80 font requests. It has no ordinary
+page byte cap: its deliberate multi-language coverage is not normal appbar usage. This replaces the
+earlier blanket 2,000,000-byte font-only assertion with the separately approved representative budgets.
+The authorized local preview reports transfers but cannot verify these remote budgets because its
+compression/cache headers differ. Default CI and public source acceptance require the actual API.
 
 ## Licensing and evidence
 

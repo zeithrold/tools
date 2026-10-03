@@ -48,7 +48,9 @@ uses the authorized local font preview; actual remote verification is recorded b
 The [bounded transfer diagnosis](font-transfer-report.md) records actual cold/warm Google API traffic
 after the four Lucide icon replacements. It separates English/Chinese initial pages from the broad
 multilingual/emoji specimen, font files from API CSS, and encoded HTTP bytes from decoded body sizes.
-The remaining draft 2 MB specimen assertion is under review; no performance budget was silently raised.
+The owner approved separate combined font/API CSS caps: English cold 500,000 bytes, Chinese cold
+1,000,000 bytes and each immediate warm reload 10,000 bytes. The full specimen keeps rendering checks,
+request bounds and transfer reporting without the former blanket 2 MB cap. The API query is unchanged.
 
 Default GitHub CI uses the actual Google API. At source `dc9e01b18606f84ff26ea20df47458926fcfd816`,
 Node 22 and 24 each passed 22 of 23 browser scenarios, including remote English/CJK fonts, actual weight 600,

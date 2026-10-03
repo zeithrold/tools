@@ -13,8 +13,9 @@ Results are per page and phase, not cumulative totals across languages or the te
 
 ## Response bytes and scenarios
 
-MB means 1,000,000 bytes; MiB means 1,048,576 bytes. The draft test uses a 2,000,000-byte cap on font
-responses alone. Chromium CDP reports encoded HTTP response bytes, including headers and encoded
+MB means 1,000,000 bytes; KB means 1,000 bytes; MiB means 1,048,576 bytes. The earlier draft used a
+2,000,000-byte cap on font responses alone; the approved policy below replaces it. Chromium CDP
+reports encoded HTTP response bytes, including headers and encoded
 payload but excluding socket/TLS framing. Decoded body sizes refer to HTTP decompression: WOFF2 font
 containers remain compressed. Warm decoded sizes are references to the earlier cold response body,
 not bytes transmitted again. The table excludes application HTML, JS, local CSS and images.
@@ -67,19 +68,22 @@ language-specific text and its mixed Chinese-tagged bold line; this is not norma
 - Do not remove emoji cases, subset only the test's text, substitute platform fonts, self-host binaries,
   or weaken glyph/weight/CSP checks to meet a byte threshold.
 
-## Proposed measurement policy, awaiting review
+## Owner-approved measurement policy
 
-Do not raise one full-specimen cap merely to obtain a green run. Measure normal English and Chinese
-initial pages separately, with font files and API CSS separately accounted for, and test warm cache
-reuse separately. The combined observations are approximately 0.378 MB and 0.774 MB before any
-variable-range optimization. A future representative fixture budget could be 0.5 MB / 1.0 MB combined
-cold responses, plus a 10 KB warm response allowance, with an independent CSS ceiling. These are
-proposals grounded in these fixtures, not accepted product requirements or universal page budgets.
-Recalibrate after the visual-preserving CSS optimization and consumer-owned representative pages.
+The owner explicitly approved the measured scenario policy: English cold **500,000 bytes**, Chinese
+cold **1,000,000 bytes**, and each representative warm reload **10,000 bytes**, including both font
+files and API CSS. Font/CSS breakdowns and decoded body sizes remain reported separately. Cold pages
+use isolated fresh contexts; warm phases immediately reload the same page with default browser caching.
+The pre-adjustment observations above fit these caps without changing the API query or glyph inventory.
+These are representative fixture budgets, not universal consumer page limits or an independent CSS cap.
 
-Keep the broad specimen as the full rendering/weight/sequence/CSP matrix and retain its transfer report
-and request-count guard; its size should not be presented as normal appbar cost. The draft 2 MB assertion
-currently remains unchanged and fails. At this source SHA, each Node version passes 23 of 24 browser
-cases; only that assertion fails at 2,693,326 / 2,693,398 font-response bytes in its independent specimen.
-Strict lint/CSS/types/build, eleven units, ESLint/helper-package gates and Go pass. The PR remains draft;
-budget handling, final-head checks, owner merge and fresh public full-SHA installation are still required.
+The broad specimen keeps its full rendering/weight/sequence/CSP matrix, transfer report and fewer-than-80
+font-request guard. It no longer uses the former blanket 2 MB assertion. All six composed color-emoji
+samples remain required. The optional variable-range API optimization remains unadopted and is not
+needed to implement this approved policy. Local-preview metrics do not establish remote budget success.
+
+The linked run is historical evidence before this authorized adjustment: both Node versions passed
+23 of 24 browser cases and failed only that earlier assertion at 2,693,326 / 2,693,398 font-response
+bytes. Strict lint/CSS/types/build, eleven units, ESLint/helper-package gates and Go passed there.
+PR #10 must repeat all gates on its final source commit with the actual Google API. The owner retains
+merge; fresh public full-SHA installation remains a separate post-merge acceptance gate.

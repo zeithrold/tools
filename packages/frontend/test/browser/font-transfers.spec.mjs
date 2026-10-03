@@ -3,22 +3,11 @@ import { expect } from '@playwright/test'
 import { transferProfile } from './font-transfer-profile.mjs'
 import { test, watchErrors } from './helpers.mjs'
 
+const localPreview = Boolean(process.env.ZTD_LOCAL_FONT_PREVIEW)
 const scenarios = [
-  [
-    'english-shell',
-    '/review',
-    'en',
-  ],
-  [
-    'chinese-page',
-    '/review-zh',
-    'zh-CN',
-  ],
-  [
-    'full-specimen',
-    '/fonts',
-    'en',
-  ],
+  { scenario: 'english-shell', route: '/review', locale: 'en', coldCap: 500_000 },
+  { scenario: 'chinese-page', route: '/review-zh', locale: 'zh-CN', coldCap: 1_000_000 },
+  { scenario: 'full-specimen', route: '/fonts', locale: 'en' },
 ]
 
 function summarize(resources) {
@@ -37,9 +26,8 @@ function summarize(resources) {
   return byFamily
 }
 
-test('bounded cold and warm font profiles for English, Chinese and full specimen', async ({ browser }, info) => {
-  const profiles = []
-  for (const [scenario, route, locale] of scenarios) {
+test('representative cold and warm font budgets with full specimen reporting', async ({ browser }, info) => {
+  for (const { scenario, route, locale, coldCap } of scenarios) {
     const context = await browser.newContext()
     try {
       await context.addCookies([
@@ -59,22 +47,35 @@ test('bounded cold and warm font profiles for English, Chinese and full specimen
         expect(errors).toEqual([])
         expect(resources.every(resource => resource.status === 200 || resource.status === 304)).toBe(true)
         const fonts = resources.filter(resource => resource.kind === 'font')
+        expect(fonts.length).toBeGreaterThan(0)
         expect(fonts.every(resource => resource.faces.length)).toBe(true)
+        expect(resources.some(resource => resource.kind === 'font-css')).toBe(true)
+        const httpResponseBytes = resources.reduce((total, resource) => total + resource.httpResponseBytes, 0)
+        const phaseCap = phase === 'cold' ? coldCap : 10_000
+        const cap = coldCap === undefined ? undefined : phaseCap
         const profile = {
           scenario,
           phase,
-          localPreview: Boolean(process.env.ZTD_LOCAL_FONT_PREVIEW),
+          localPreview,
+          httpResponseBytes,
+          budgetBytes: cap ?? null,
+          remoteBudgetEnforced: !localPreview && cap !== undefined,
           byFamily: summarize(resources),
           resources,
         }
-        profiles.push(profile)
-        // Bounded diagnostic evidence, not a proposed product budget or a font/network substitute.
+        await info.attach(`${scenario}-${phase}-font-profile`, {
+          body: JSON.stringify(profile),
+          contentType: 'application/json',
+        })
         process.stdout.write(`FONT_TRANSFER_PROFILE ${JSON.stringify(profile)}\n`)
+        // Local preview lacks Google's compression/cache headers and cannot verify remote budgets.
+        if (!localPreview && cap !== undefined) {
+          expect(httpResponseBytes).toBeLessThanOrEqual(cap)
+        }
       }
     }
     finally {
       await context.close()
     }
   }
-  await info.attach('cold-warm-font-profiles', { body: JSON.stringify(profiles), contentType: 'application/json' })
 })
