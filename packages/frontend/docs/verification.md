@@ -31,8 +31,8 @@ resource evidence and Axe. Reports and captures are evidence; they are not appro
 
 Axe's CSSOM preloader copies CSS into a temporary document. The fixture adapter gives those analysis
 styles the existing response nonce only while the scan runs. Its CSSOM reader also reuses the exact
-Google CSS response already loaded by the real browser, avoiding an extra analysis fetch blocked by
-the fixture's strict `connect-src`. Both native DOM and fetch methods are restored before interaction.
+Google CSS response already loaded by the real browser, avoiding an extra analysis XHR blocked by
+the fixture's strict `connect-src`. Native DOM and XHR methods are restored before interaction.
 No font file, initial stylesheet request or glyph check is mocked. Application injection and requests
 remain checked normally; no CSP origin, rule, scan tag or browser security restriction is disabled.
 Reports retain incomplete results as well as violations.

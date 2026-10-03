@@ -1,5 +1,6 @@
 import { test as baseTest, expect } from '@playwright/test'
 import { assertAccessible as scan } from '@ztd-me/frontend-checks/playwright'
+import { installAnalysisCssReader } from './analysis-css-reader.mjs'
 
 const loadedFontSheets = new WeakMap()
 
@@ -33,29 +34,7 @@ export async function assertAccessible(page, info, options) {
   ]))).filter(([, body]) => body !== null)
   // Axe copies CSS into a temporary document. Give only this analysis step the response's nonce.
   // Its CSSOM reader reuses already loaded responses; UI requests still use the browser and real CSP.
-  const restore = await page.evaluateHandle(({ styleNonce, sheets }) => {
-    const original = Document.prototype.createElement
-    const originalFetch = window.fetch
-    const snapshot = new Map(sheets)
-    Document.prototype.createElement = function (name, ...args) {
-      const element = original.call(this, name, ...args)
-      if (name.toLowerCase() === 'style') {
-        element.nonce = styleNonce
-      }
-      return element
-    }
-    window.fetch = function (input, ...args) {
-      const url = typeof input === 'string' ? input : input.url ?? String(input)
-      if (snapshot.has(url)) {
-        return Promise.resolve(new Response(snapshot.get(url), { headers: { 'Content-Type': 'text/css' } }))
-      }
-      return originalFetch.call(this, input, ...args)
-    }
-    return () => {
-      Document.prototype.createElement = original
-      window.fetch = originalFetch
-    }
-  }, { styleNonce: nonce, sheets: stylesheets })
+  const restore = await page.evaluateHandle(installAnalysisCssReader, { styleNonce: nonce, sheets: stylesheets })
   try {
     return await scan(page, info, options)
   }
