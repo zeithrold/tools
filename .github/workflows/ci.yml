@@ -94,6 +94,63 @@ jobs:
             !packages/frontend/.artifacts/source-consumer-*/node_modules/**
           include-hidden-files: true
           if-no-files-found: error
+  public-ui-source:
+    name: Public UI source from main
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/frontend
+    env:
+      # PR source is not yet merged; verify its immutable public main base instead.
+      SOURCE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.22.0
+          run_install: false
+      - name: Record public source revision
+        run: |
+          mkdir -p .artifacts
+          git rev-parse HEAD > .artifacts/SOURCE_SHA
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Install and verify immutable public registry source
+        run: node scripts/source-smoke.mjs "$SOURCE_SHA"
+      - name: Report public installation receipt
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict'
+          import { readFile } from 'node:fs/promises'
+          const receipt = JSON.parse(await readFile('.artifacts/source-consumer.json', 'utf8'))
+          assert.equal(receipt.sourceSha, process.env.SOURCE_SHA)
+          assert.equal(receipt.publicInstallationVerified, true)
+          assert.equal(receipt.fontVerification, 'google-fonts-api')
+          console.log('PUBLIC_SOURCE_VERIFIED', JSON.stringify({
+            sourceSha: receipt.sourceSha,
+            registryUrl: receipt.registryUrl,
+            payloadSha256: receipt.payloadSha256,
+            installedFiles: receipt.files.length,
+            requiredFrontendPackage: receipt.requiredFrontendPackage,
+            fontVerification: receipt.fontVerification,
+            publicInstallationVerified: receipt.publicInstallationVerified,
+          }))
+          JS
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: public-ui-source-${{ env.SOURCE_SHA }}
+          path: |
+            packages/frontend/.artifacts/
+            !packages/frontend/.artifacts/source-consumer-*/node_modules/**
+          include-hidden-files: true
+          if-no-files-found: error
   eslint:
     runs-on: ubuntu-latest
     defaults:
