@@ -58,7 +58,8 @@ test('bounded cold and warm font profiles for English, Chinese and full specimen
           : page.reload())
         expect(errors).toEqual([])
         expect(resources.every(resource => resource.status === 200 || resource.status === 304)).toBe(true)
-        expect(resources.filter(resource => resource.kind === 'font').every(resource => resource.faces.length)).toBe(true)
+        const fonts = resources.filter(resource => resource.kind === 'font')
+        expect(fonts.every(resource => resource.faces.length)).toBe(true)
         const profile = {
           scenario,
           phase,
