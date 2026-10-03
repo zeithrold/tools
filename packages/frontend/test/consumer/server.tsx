@@ -43,8 +43,9 @@ const server = createServer(async (request, response) => {
     styleNonce,
     application: url.pathname === '/application',
     footer: url.searchParams.get('footer') !== 'none',
-    review: url.pathname === '/review' || url.pathname === '/fonts',
+    review: ['/review', '/fonts', '/review-zh'].includes(url.pathname),
     fonts: url.pathname === '/fonts',
+    chinese: url.pathname === '/review-zh',
   }
   const root = Object.entries(frontendRootAttributes(initialPreferences)).map(([key, value]) => `${key}="${value}"`).join(' ')
   const html = template.replace('lang="en"', root).replace('<!--content-->', renderToString(<Fixture {...props} />))
