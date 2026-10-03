@@ -17,6 +17,8 @@ import { resolveTypeScript } from './typescript.js'
 
 export type { ConfigOptions, LocalConfig, ReactOptions, TypeScriptOptions, VueOptions } from './options.js'
 
+const typeAwareIgnores = ['**/*.md/**', '**/*.astro/*.ts']
+
 function shared(sfcFiles: string[]): LocalConfig {
   return {
     name: 'ztd/shared',
@@ -46,7 +48,7 @@ function shared(sfcFiles: string[]): LocalConfig {
   }
 }
 
-function typed(files: string[]): LocalConfig[] {
+function typed(files: string[], parserOptions: ReturnType<typeof resolveTypeScript>['parserOptions']): LocalConfig[] {
   return [
     {
       name: 'ztd/typescript-syntax',
@@ -65,7 +67,9 @@ function typed(files: string[]): LocalConfig[] {
     {
       name: 'ztd/typescript-typed',
       files,
-      ignores: ['**/*.md/**', '**/*.astro/*.ts'],
+      ignores: typeAwareIgnores,
+      // antfu applies its general parserOptions to both parsers; keep project settings in this typed scope.
+      languageOptions: { parserOptions },
       rules: {
         ...typedRules,
         'require-await': 'off',
@@ -142,6 +146,7 @@ function vitest(enabled: boolean, tsFiles: string[]): LocalConfig[] {
     configs.push({
       name: 'ztd/vitest-typed',
       files: tsFiles.flatMap(file => GLOB_TESTS.map(testFile => [file, testFile])),
+      ignores: typeAwareIgnores,
       rules: { 'ts/unbound-method': 'off', 'test/unbound-method': [
         'error',
         { ignoreStatic: false },
@@ -223,12 +228,18 @@ export async function createConfig(
     shared(sfcFiles),
     ...react(enableReact),
     ...vue(enableVue),
-    ...(typescript === false ? [] : typed(tsFiles)),
+    ...(tsOptions === false ? [] : typed(tsFiles, tsOptions.parserOptions)),
     ...vitest(test, typescript === false ? [] : tsFiles),
   ]
   return await antfu({
     ...base,
-    typescript: tsOptions === false ? false : { ...tsOptions, filesTypeAware: tsFiles },
+    typescript: tsOptions === false
+      ? false
+      : {
+          tsconfigPath: tsOptions.tsconfigPath,
+          filesTypeAware: tsFiles,
+          ignoresTypeAware: typeAwareIgnores,
+        },
     react: antfuReact(enableReact, tsFiles),
     vue: antfuVue(sfcFiles),
     test,

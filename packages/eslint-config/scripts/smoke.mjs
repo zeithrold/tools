@@ -1,8 +1,10 @@
 import { execFileSync } from 'node:child_process'
-import { mkdtemp, writeFile } from 'node:fs/promises'
+import { cp, mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import process from 'node:process'
+
+export const packageRoot = process.cwd()
 
 const runtimeSmoke = `import assert from 'node:assert/strict'
 import config, { createConfig } from '@ztd-me/eslint'
@@ -36,6 +38,7 @@ console.log('ESM and framework smoke passed')
 
 export async function consumerSmoke(spec, label) {
   const directory = await mkdtemp(join(tmpdir(), 'ztd-eslint-consumer-'))
+  const packageInfo = JSON.parse(await readFile(join(packageRoot, 'package.json'), 'utf8'))
   const env = {
     ...process.env,
     pnpm_config_store_dir: join(tmpdir(), 'ztd-eslint-smoke-store'),
@@ -45,7 +48,13 @@ export async function consumerSmoke(spec, label) {
     private: true,
     type: 'module',
     packageManager: 'pnpm@11.22.0',
-    dependencies: { '@ztd-me/eslint': spec, 'eslint': '10.11.0', 'typescript': '6.0.3' },
+    dependencies: {
+      '@ztd-me/eslint': spec,
+      'eslint': '10.11.0',
+      'typescript': '6.0.3',
+      'react': packageInfo.devDependencies.react,
+      '@types/react': packageInfo.devDependencies['@types/react'],
+    },
   }))
   await writeFile(join(directory, 'pnpm-workspace.yaml'), `packages:
   - .
@@ -61,6 +70,7 @@ trustPolicyExclude:
 `)
   execFileSync('pnpm', ['install'], { cwd: directory, stdio: 'inherit', env })
   await writeConsumerFiles(directory)
+  await checkMarkdownConsumer(directory, env)
   execFileSync('node', ['smoke.mjs'], { cwd: directory, stdio: 'inherit' })
   execFileSync('pnpm', [
     'exec',
@@ -70,6 +80,33 @@ trustPolicyExclude:
   ], { cwd: directory, stdio: 'inherit', env })
   console.log(`${label}: installation, ESM exports, types, JS/TS/React/Vue configs and lint all passed: ${directory}`)
   return directory
+}
+
+async function checkMarkdownConsumer(directory, env) {
+  const consumer = join(directory, 'markdown-consumer')
+  await mkdir(join(consumer, 'src'), { recursive: true })
+  for (const file of [
+    'README.md',
+    'eslint.config.js',
+    'tsconfig.json',
+    'src/Card.tsx',
+  ]) {
+    await cp(join(packageRoot, 'test/fixtures/markdown-consumer', file), join(consumer, file))
+  }
+  const options = { cwd: consumer, stdio: 'inherit', env: { ...env, CI: 'true', TSESTREE_SINGLE_RUN: 'true' } }
+  execFileSync('pnpm', [
+    'exec',
+    'eslint',
+    '.',
+    '--max-warnings',
+    '0',
+  ], options)
+  execFileSync('pnpm', [
+    'exec',
+    'tsc',
+    '--noEmit',
+  ], options)
+  console.log('Fresh typed app and README TSX/TS Markdown consumer passed')
 }
 
 async function writeConsumerFiles(directory) {
@@ -102,5 +139,3 @@ async function writeConsumerFiles(directory) {
   ].join('\n')}\n`)
   await writeFile(join(directory, 'smoke.mjs'), runtimeSmoke)
 }
-
-export const packageRoot = process.cwd()

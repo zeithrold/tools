@@ -152,6 +152,9 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
   eslint:
+    strategy:
+      matrix:
+        node: [22, 24]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -160,14 +163,25 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: ${{ matrix.node }}
           package-manager-cache: false
       - uses: pnpm/action-setup@v6
         with:
           version: 11.19.0
           run_install: false
+      - name: Record ESLint candidate source
+        run: |
+          mkdir -p .artifacts
+          git rev-parse HEAD > .artifacts/SOURCE_SHA
       - run: pnpm install --frozen-lockfile
       - run: pnpm run check
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: eslint-${{ github.event.pull_request.head.sha || github.sha }}-node${{ matrix.node }}
+          path: packages/eslint-config/.artifacts/
+          include-hidden-files: true
+          if-no-files-found: error
   go:
     runs-on: ubuntu-latest
     steps:

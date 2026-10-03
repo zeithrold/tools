@@ -45,6 +45,13 @@ Type-aware checking is on by default, using `tsconfig.json`. Supply an existing 
 
 The parser uses the explicit TS project, with `.vue` as an extra file extension and `vue-eslint-parser` as the SFC outer parser. Typed rules cover Vue scripts as well as TS and TSX. Vue template expressions use Vue rules and the custom array visitor; TypeScript rules do not type-check template expressions.
 
+Since 0.1.2, the explicit project settings apply only to actual type-aware source files. Markdown TS/TSX
+code fences and Astro's virtual TS snippets use the existing upstream syntax scope, without asking the
+application TS config to include generated files such as `README.md/0_0.tsx`. Markdown markup,
+TypeScript syntax, React semantics, array formatting and other applicable checks remain enabled.
+Actual application files still require the selected strict project; files outside it fail rather than
+receiving a syntax-only fallback. The same virtual-file boundary applies to typed Vitest rules.
+
 For a JavaScript-only scope, use `typescript: false`. This turns off TypeScript parsing and rules; it does not lower JS complexity, length, or correctness standards. There is no syntax-only TypeScript or `strictTypes: false` mode. Run `tsc --noEmit` as a separate compiler gate; `exactOptionalPropertyTypes`, `noPropertyAccessFromIndexSignature`, and `useUnknownInCatchVariables` are also recommended compiler settings.
 
 ## Framework options
@@ -134,6 +141,6 @@ pnpm run check
 
 The checks build JS/declarations, type-check the public API, self-lint source/tests/scripts, exercise real TS/React/Vue fixtures, check all numeric boundaries and all selected catalog options, and install/import/type-check an independently packed artifact with pnpm. Negative fixtures are checked by the test harness, not included in ordinary self-lint. The test modules have reasoned local exceptions for Node's asynchronous ESM setup and imports of the distribution being tested; safety and size limits remain active.
 
-[Publishing instructions](docs/publishing.md) describe the stage-only GitHub workflow and the user-controlled promotion. Staging is not a public release. After promotion, run `node scripts/registry-smoke.mjs 0.1.1` to install the exact public version in a fresh pnpm project and verify imports, declarations and lint behavior. Registry installation follows pnpm's supply-chain policies; a policy rejection is a blocker, not permission to disable the policy.
+[Publishing instructions](docs/publishing.md) describe the stage-only GitHub workflow and the user-controlled promotion. Staging is not a public release. After promotion, run `node scripts/registry-smoke.mjs 0.1.2` to install the exact public version in a fresh pnpm project and verify imports, declarations and lint behavior. Registry installation follows pnpm's supply-chain policies; a policy rejection is a blocker, not permission to disable the policy.
 
 The repository has not granted an open-source license; package metadata is `UNLICENSED` pending that separate decision.
