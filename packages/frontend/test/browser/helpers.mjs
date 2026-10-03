@@ -1,12 +1,42 @@
-import { expect } from '@playwright/test'
+import { test as baseTest, expect } from '@playwright/test'
 import { assertAccessible as scan } from '@ztd-me/frontend-checks/playwright'
+
+const loadedFontSheets = new WeakMap()
+
+function observeFontSheets(page) {
+  const sheets = new Map()
+  loadedFontSheets.set(page, sheets)
+  page.on('response', (response) => {
+    if (response.status() === 200 && new URL(response.url()).origin === 'https://fonts.googleapis.com') {
+      // Passive capture of the actual browser stylesheet response; never supply a font/network fixture.
+      sheets.set(response.url(), response.text().catch(() => null))
+    }
+  })
+}
+
+export const test = baseTest.extend({
+  capturedFontSheets: [
+    async ({ page }, use) => {
+      observeFontSheets(page)
+      await use(undefined)
+      loadedFontSheets.delete(page)
+    },
+    { auto: true },
+  ],
+})
 
 export async function assertAccessible(page, info, options) {
   const nonce = await page.locator('#initial').evaluate(node => JSON.parse(node.textContent).styleNonce)
+  const stylesheets = (await Promise.all(Array.from(loadedFontSheets.get(page) ?? [], async ([url, body]) => [
+    url,
+    await body,
+  ]))).filter(([, body]) => body !== null)
   // Axe copies CSS into a temporary document. Give only this analysis step the response's nonce.
-  // Restore the native method before further interaction; real UI injection stays independently checked.
-  const restore = await page.evaluateHandle((styleNonce) => {
+  // Its CSSOM reader reuses already loaded responses; UI requests still use the browser and real CSP.
+  const restore = await page.evaluateHandle(({ styleNonce, sheets }) => {
     const original = Document.prototype.createElement
+    const originalFetch = window.fetch
+    const snapshot = new Map(sheets)
     Document.prototype.createElement = function (name, ...args) {
       const element = original.call(this, name, ...args)
       if (name.toLowerCase() === 'style') {
@@ -14,10 +44,18 @@ export async function assertAccessible(page, info, options) {
       }
       return element
     }
+    window.fetch = function (input, ...args) {
+      const url = typeof input === 'string' ? input : input.url ?? String(input)
+      if (snapshot.has(url)) {
+        return Promise.resolve(new Response(snapshot.get(url), { headers: { 'Content-Type': 'text/css' } }))
+      }
+      return originalFetch.call(this, input, ...args)
+    }
     return () => {
       Document.prototype.createElement = original
+      window.fetch = originalFetch
     }
-  }, nonce)
+  }, { styleNonce: nonce, sheets: stylesheets })
   try {
     return await scan(page, info, options)
   }

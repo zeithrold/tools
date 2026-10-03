@@ -58,6 +58,7 @@ jobs:
           if-no-files-found: error
   frontend-shell:
     strategy:
+      fail-fast: false
       matrix:
         node: [22, 24]
     runs-on: ubuntu-latest

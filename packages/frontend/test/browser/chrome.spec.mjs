@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test'
-import { appbar, assertAccessible, settleOverlay, watchErrors } from './helpers.mjs'
+import { expect } from '@playwright/test'
+import { appbar, assertAccessible, settleOverlay, test, watchErrors } from './helpers.mjs'
 
 test('compact chrome preserves hit areas, focus and narrow layout', async ({ context, page }, info) => {
   await context.addCookies([

@@ -1,7 +1,7 @@
 import process from 'node:process'
-import { expect, test } from '@playwright/test'
+import { expect } from '@playwright/test'
 import { captureState } from '@ztd-me/frontend-checks/playwright'
-import { assertAccessible, watchErrors } from './helpers.mjs'
+import { assertAccessible, test, watchErrors } from './helpers.mjs'
 
 const localPreview = Boolean(process.env.ZTD_LOCAL_FONT_PREVIEW)
 
