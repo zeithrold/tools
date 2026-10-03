@@ -1,4 +1,4 @@
-import { createPreferencePolicy, frontendRootAttributes, resolveInitialPreferences } from '@ztd-me/frontend'
+import { createPreferencePolicy, frontendRootAttributes, resolveInitialPreferences } from '@ztd-me/ui'
 import { createServer } from 'node:http'
 import { randomBytes } from 'node:crypto'
 import { readFile } from 'node:fs/promises'

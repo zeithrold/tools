@@ -1,5 +1,9 @@
 # Generic API upgrade to 0.2
 
+This historical guide describes `@ztd-me/frontend@0.2.0`, which remains available on npm.
+Current UI source lives in `packages/ui`; use the [source registry recipe](../../../registry/README.md)
+and import the copied local entries when adopting `@ztd-me/ui`. The generic API contracts below still apply.
+
 Version 0.2 removes consumer-specific identity, deployment decisions and legacy mappings from the reusable package. Its version-1 preference schema, server root attributes, mode/palette/locale values, provider hooks, generic slots and CSS entry remain compatible.
 
 ## Cookie policy
@@ -41,6 +45,5 @@ Replace the removed `repositoryUrl` shell prop with optional `footer`:
 
 `FooterLink` and `SiteFooterProps` are exported as types from the root and client entries. `SiteFooter` is exported from the client entry. Both shells omit the footer when no configuration is supplied; a standalone footer accepts the same optional fields. HTTP/HTTPS and relative links are valid, with `mailto:` also supported in footer links. Consumer identity has no fixed default or repository-host restriction.
 
-Validate an exact public npm version using the registry smoke script before final consumer dependency
-locks. For the selected source delivery path, follow the [registry installation and reviewed-update
+For an existing npm consumer, retain its exact verified public version and native pnpm lock. For the selected source delivery path, follow the [registry installation and reviewed-update
 recipe](../../../registry/README.md), keeping the provider, hooks and stylesheet together.

@@ -3,8 +3,8 @@
 This is editable source delivery, not an npm UI runtime package. Namespace `@ztd-me` and item `ui`
 produce the public identity `@ztd-me/ui`. Namespace aliases are consumer configuration, not globally
 reserved npm names. The root `registry.json` is the canonical file inventory; `registry/ui.json` is its
-generated, self-contained item payload. Source files currently share the legacy package's source
-directory during the reviewed transition, avoiding two separately maintained implementations.
+generated, self-contained item payload. The canonical source and private verification harness live in
+`packages/ui`; the registry contains no separately maintained implementation and no npm UI publishing route.
 
 Use an approved full source SHA and verify a fresh public install after upstream merge before consumer
 migrations. The owner reviews upstream changes; consumers review their own source adaptations.
@@ -120,7 +120,7 @@ From the tools repository root:
 pnpm dlx shadcn@4.21.1 build registry.json --output registry
 ```
 
-From `packages/frontend`, the transitional verification harness:
+From `packages/ui`, the private verification harness:
 
 ```sh
 pnpm run check

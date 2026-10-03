@@ -4,7 +4,7 @@
 no-downgrade and other existing pnpm policies. The approved @ztd-me/* exception changes only release age.
 No TLS bypass, browser security exception or trust-store change is part of verification.
 
-The source harness pins pnpm 11.22.0, React 19.3.0, TypeScript 6.0.3, ESLint 10.11.0, Vite 8.3.1,
+The private `packages/ui` source harness pins pnpm 11.22.0, React 19.3.0, TypeScript 6.0.3, ESLint 10.11.0, Vite 8.3.1,
 Playwright 1.62.0 and published frontend-checks 0.1.1. CI repeats complete checks on Node 22 and 24 for
 the PR's exact source SHA. The already published frontend 0.2.0 remains unchanged and available; this
 source transition is not a new npm release.
@@ -18,7 +18,7 @@ source transition is not a new npm release.
   imports all exports, validates Google Fonts CSS and six complete OFL notices plus MIT without font binaries,
   rejects invalid typed API usage, and builds real React SSR and client assets.
 - A separate source consumer uses the real pinned shadcn CLI to preview/install the item, compares all
-  installed file bytes, confirms no frontend runtime dependency, applies the documented declaration
+  installed file bytes, confirms no npm UI runtime dependency, applies the documented declaration
   patch and runs strict lint/CSS/types, eleven units, SSR/client build and the complete browser suite.
   It preserves pnpm security settings and enables `skipLibCheck: false`.
 
@@ -99,6 +99,11 @@ checks installed file bytes and repeats native/browser gates. Only a successful 
 `publicInstallationVerified: true` establishes this post-merge gate. Local tarballs, loopback source
 installation and preview receipts do not replace it. Consumer migration PRs must preserve local source
 edits and business policy and obtain their own native/browser and owner acceptance.
+
+PR CI verifies both the public merged base and the pushed candidate through the registry inventory;
+only the owner-approved merged revision may replace a consumer pin. The main push repeats the public
+installation gate for that exact merged SHA. Directory resolution follows the pinned inventory, so
+older accepted revisions remain verifiable after upstream directory moves.
 
 Reports, screenshots, logs and receipts remain under `.artifacts/` and are retained by CI on success or
 failure. Intercepted synthetic subdomains serve local business fixtures; Google Fonts is the default

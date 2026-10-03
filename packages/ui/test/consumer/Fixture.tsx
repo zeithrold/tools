@@ -1,6 +1,6 @@
-import type { FrontendPreferences, PreferencePolicy, LinkProps } from '@ztd-me/frontend'
+import type { FrontendPreferences, PreferencePolicy, LinkProps } from '@ztd-me/ui'
 import { useCallback, useState } from 'react'
-import { FrontendProvider, PublicShell, ApplicationShell, useFrontendPreferences } from '@ztd-me/frontend/client'
+import { FrontendProvider, PublicShell, ApplicationShell, useFrontendPreferences } from '@ztd-me/ui/client'
 import { ReviewContent, ReviewNavigation } from './ReviewContent.js'
 import { FontSpecimens } from './FontSpecimens.js'
 import { ChineseReviewContent } from './ChineseReviewContent.js'

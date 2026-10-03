@@ -18,8 +18,9 @@ headless runtime package is proposed. The existing verification helper remains a
 Existing exported symbol names remain compatible to keep the source migration bounded.
 
 The root `registry.json` inventory and generated `registry/ui.json` implement namespace `@ztd-me`, item
-`ui`, and title `@ztd-me/ui`. The source currently uses the legacy package directory as its canonical
-upstream location during transition. Consumers receive local files under their configured `aliases.ui`;
+`ui`, and title `@ztd-me/ui`. The canonical upstream directory is `packages/ui`, with a private
+package manifest used only by the source and packed verification harness. Consumers receive local files
+under their configured `aliases.ui`;
 there is no second separately maintained source copy. See the [exact installation recipe](../../../registry/README.md).
 The namespace alias uses a pinned raw GitHub item URL; the direct GitHub address is
 `zeithrold/tools/ui#<SOURCE_SHA>`. Neither route installs an npm package named `@ztd-me/ui`.
@@ -82,9 +83,10 @@ the delivered files and dependency requirements. CLI behavior is documented in t
    branding and policy; audit action/navigation/status icons for Lucide usage, accessible names,
    decorative SVG semantics and consistent sizing. Preserve prose, mathematics, user content and
    intentional Noto Color Emoji. Run each consumer's native gates and obtain owner acceptance for each.
-4. Keep the old installed npm package available until each source replacement is validated. Retiring its
-   repository harness or applying npm deprecation is a separately reviewed operation; do not unpublish
-   or abruptly delete it. Blog and Workbench implementation waits until the four priority repositories
+4. Keep the old installed npm package available until each source replacement is validated. The old
+   repository publishing route is retired; the private `packages/ui` harness verifies source without
+   publishing it. npm deprecation remains a separately reviewed operation; do not unpublish or abruptly
+   remove the existing artifact. Blog and Workbench implementation waits until the four priority repositories
    meet the owner's acceptance criteria.
 
 Workbench remains outside this implementation: it cannot depend on `@ztd-me/frontend`, and registry

@@ -11,6 +11,10 @@ artifacts in the PR description; do not copy their output into `docs/reviews/` o
 The existing browser and source-install scripts already write to artifact directories, which CI
 uploads on success or failure.
 
+`packages/ui` owns the canonical UI source and its private verification harness. Keep
+`packages/frontend-checks` separate; it remains a published verification helper. Do not publish the UI
+harness to npm. The existing `@ztd-me/frontend@0.2.0` artifact remains available.
+
 When changing source registry documentation or files, regenerate the payload from the repository root:
 
 ```sh

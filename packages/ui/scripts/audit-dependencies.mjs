@@ -11,7 +11,7 @@ if (!consumer) {
 }
 const rootRequire = createRequire(path.join(consumer, 'package.json'))
 const frontendRoot = sourceRoot === undefined
-  ? path.dirname(rootRequire.resolve('@ztd-me/frontend/styles.css'))
+  ? path.dirname(rootRequire.resolve('@ztd-me/ui/styles.css'))
   : path.resolve(consumer, sourceRoot)
 const modules = [
   'appearance.js',

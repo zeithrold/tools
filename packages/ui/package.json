@@ -1,9 +1,9 @@
 {
-  "name": "@ztd-me/frontend",
-  "version": "0.2.0",
+  "name": "@ztd-me/ui",
+  "version": "0.0.0",
   "type": "module",
   "license": "MIT",
-  "description": "Generic accessible React shell, appearance and UI locale with consumer-owned identity and persistence policy",
+  "description": "Editable generic React UI source registry and private verification harness",
   "engines": {
     "node": ">=22.14.0"
   },
@@ -11,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zeithrold/tools.git",
-    "directory": "packages/frontend"
+    "directory": "packages/ui"
   },
   "exports": {
     ".": {
@@ -37,10 +37,6 @@
     "THIRD_PARTY_NOTICES.md",
     "docs"
   ],
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
   "peerDependencies": {
     "react": ">=19.2.0 <20",
     "react-dom": ">=19.2.0 <20"
@@ -75,7 +71,7 @@
     "test:browser": "playwright test",
     "test:source": "node scripts/source-smoke.mjs",
     "check": "pnpm run lint && pnpm run css && pnpm run typecheck && pnpm run build && pnpm test && pnpm run test:pack && pnpm run test:source",
-    "prepack": "pnpm run build",
-    "prepublishOnly": "pnpm run check"
-  }
+    "prepack": "pnpm run build"
+  },
+  "private": true
 }

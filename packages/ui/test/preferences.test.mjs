@@ -12,7 +12,7 @@ import {
   readPreferenceCookie,
   resolveInitialPreferences,
   serializePreferences,
-} from '@ztd-me/frontend'
+} from '@ztd-me/ui'
 
 const policy = createPreferencePolicy({
   name: 'atelier.ui.v1',

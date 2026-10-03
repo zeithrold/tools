@@ -1,8 +1,8 @@
-import type {} from '@ztd-me/frontend/styles.css'
-import type { FrontendPreferences, PreferencePolicy, ShellProps } from '@ztd-me/frontend'
-import { FrontendProvider, PublicShell, ApplicationShell, useFrontendPreferences } from '@ztd-me/frontend/client'
+import type {} from '@ztd-me/ui/styles.css'
+import type { FrontendPreferences, PreferencePolicy, ShellProps } from '@ztd-me/ui'
+import { FrontendProvider, PublicShell, ApplicationShell, useFrontendPreferences } from '@ztd-me/ui/client'
 // @ts-expect-error The package no longer enumerates its consuming projects.
-export type { Project } from '@ztd-me/frontend'
+export type { Project } from '@ztd-me/ui'
 
 const initialPreferences: FrontendPreferences = { version: 1, mode: 'system', palette: 'neutral', locale: 'en' }
 const policy: PreferencePolicy = { name: 'studio.preferences', secure: false, mirrorKey: 'studio.events' }

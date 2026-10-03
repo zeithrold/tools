@@ -15,7 +15,7 @@ export async function prepareConsumer(packageSpecifier) {
     'vite',
   ].includes(name)))
   const dependencies = {
-    '@ztd-me/frontend': packageSpecifier,
+    '@ztd-me/ui': packageSpecifier,
     'lucide-react': packageInfo.dependencies['lucide-react'],
     'react': packageInfo.devDependencies.react,
     'react-dom': packageInfo.devDependencies['react-dom'],

@@ -1,7 +1,7 @@
 import type { FixtureProps } from './Fixture.js'
 import { hydrateRoot } from 'react-dom/client'
 import { Fixture } from './Fixture.js'
-import '@ztd-me/frontend/styles.css'
+import '@ztd-me/ui/styles.css'
 import './fixture.css'
 import './review.css'
 
