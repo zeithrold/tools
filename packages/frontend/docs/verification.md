@@ -22,6 +22,12 @@ source transition is not a new npm release.
   patch and runs strict lint/CSS/types, eleven units, SSR/client build and the complete browser suite.
   It preserves pnpm security settings and enables `skipLibCheck: false`.
 
+The disposable source consumer initially installs the registry dependencies, then adds the delivered
+Select patch to its own workspace. That deliberate patch change updates its generated lock once with
+`pnpm install --no-frozen-lockfile`, including in CI where installs otherwise default to frozen.
+The next verification step requires `pnpm install --frozen-lockfile`; checked-in package locks and
+release-age, trust and integrity policies remain enforced.
+
 The browser suite covers SSR/hydration, first paint without JavaScript, nonce-bearing CSP, independent
 mode/palette selection, all six palettes/light/dark/system, responsive Chinese controls, keyboard/focus,
 entry/exit and reduced motion, 44px touch targets, inert cleanup, fullscreen portals, storage rejection

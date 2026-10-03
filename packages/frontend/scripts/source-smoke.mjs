@@ -111,7 +111,8 @@ async function configureVerification() {
   const workspace = await readFile(workspacePath, 'utf8')
   await writeFile(workspacePath, `${workspace}patchedDependencies:\n`
   + `  '@radix-ui/react-select@2.3.7': ${destination}/patches/@radix-ui__react-select@2.3.7.patch\n`)
-  await run('pnpm', ['install'])
+  // This disposable lock must first record the newly installed patch; verifySource then freezes it.
+  await run('pnpm', ['install', '--no-frozen-lockfile'])
 }
 
 async function checkUnits() {
