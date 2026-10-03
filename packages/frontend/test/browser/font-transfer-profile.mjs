@@ -25,6 +25,7 @@ export async function transferProfile(page) {
   await session.send('Network.enable')
   let active
   const families = new Map()
+  const decoded = new Map()
   session.on('Network.requestServedFromCache', ({ requestId }) => active?.cached.add(requestId))
   session.on('Network.responseReceived', ({ requestId, type, response }) => {
     if (!active || (type !== 'Font' && !isFontCss(response.url))) {
@@ -45,19 +46,20 @@ export async function transferProfile(page) {
     }
   })
   page.on('response', (response) => {
-    if (!active || (response.request().resourceType() !== 'font' && !isFontCss(response.url()))) {
+    if (!active || active.phase !== 'cold'
+      || (response.request().resourceType() !== 'font' && !isFontCss(response.url()))) {
       return
     }
     const phase = active
     phase.bodies.push(response.body().then((bytes) => {
-      phase.decoded.set(response.url(), bytes.length)
+      decoded.set(response.url(), bytes.length)
       if (isFontCss(response.url())) {
         readFamilies(bytes.toString(), response.url(), families)
       }
     }))
   })
   return async (phase, navigate) => {
-    active = { phase, responses: new Map(), cached: new Set(), bodies: [], decoded: new Map() }
+    active = { phase, responses: new Map(), cached: new Set(), bodies: [] }
     await navigate()
     await page.evaluate(async () => document.fonts.ready)
     await Promise.all(active.bodies)
@@ -66,7 +68,8 @@ export async function transferProfile(page) {
     ].map(([id, response]) => ({
       ...response,
       cached: response.cached || active.cached.has(id),
-      httpDecodedBodyBytes: active.decoded.get(response.url),
+      httpDecodedBodyBytes: decoded.get(response.url),
+      decodedBodySource: phase === 'cold' ? 'current-response' : 'previous-cold-response-body',
       faces: families.get(response.url) ?? [],
     }))
   }

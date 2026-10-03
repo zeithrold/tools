@@ -79,7 +79,9 @@ the delivered files and dependency requirements. CLI behavior is documented in t
    `node scripts/source-smoke.mjs <SOURCE_SHA>` from that exact checkout.
 3. Dispatch website, showcase and memory as separate consumer changes. Replace npm UI imports, provider
    and stylesheet atomically, align dependencies and commit the lock. Preserve project-owned edits,
-   branding and policy; run each consumer's native gates and obtain owner acceptance for each.
+   branding and policy; audit action/navigation/status icons for Lucide usage, accessible names,
+   decorative SVG semantics and consistent sizing. Preserve prose, mathematics, user content and
+   intentional Noto Color Emoji. Run each consumer's native gates and obtain owner acceptance for each.
 4. Keep the old installed npm package available until each source replacement is validated. Retiring its
    repository harness or applying npm deprecation is a separately reviewed operation; do not unpublish
    or abruptly delete it. Blog and Workbench implementation waits until the four priority repositories

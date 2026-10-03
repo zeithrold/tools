@@ -15,6 +15,13 @@ from it, without loading both by default. Verify rendered
 glyphs and multi-codepoint emoji with the intended Noto fonts. Keep emoji consistently color rather
 than using a monochrome-first stack, and record this choice in the local design contract.
 
+Use Lucide components for action, navigation and status iconography. Unicode arrows, symbols and
+emoji are not substitutes for interface icons. Use consistent size, stroke and alignment for each
+role; give icon-only controls an accessible name and hide decorative SVGs from assistive technology
+with `aria-hidden="true"`. Preserve genuine prose, mathematics, user content and intentional emoji;
+intentional emoji use Noto Color Emoji. Check consumer-owned icons during source migrations without
+moving product navigation or content into tools runtime.
+
 For each changed flow, review the user's goal, primary and secondary actions, information that must remain visible, and the recovery path. Inspect loading, empty, populated, error, disabled, and success states. Check labels, focus order, keyboard use, accessible names, and error association. At narrow viewports, large text, long translations, and reduced motion, preserve important content and reachable actions.
 
 Use the project's stack-specific UI skill for implementation details. Record what was observed in real runtime or device captures, what automated checks established, and what still needs human visual judgment. A design document, build, or screenshot alone does not prove the interface works.

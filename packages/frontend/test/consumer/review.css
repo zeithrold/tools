@@ -49,6 +49,9 @@
 }
 
 .review-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   color: var(--ztd-muted-foreground);
   font-size: 11px;
   letter-spacing: 0.04em;
@@ -135,6 +138,8 @@
 
 .review-open {
   display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin-top: 16px;
   font-size: 12px;
 }
@@ -142,7 +147,8 @@
 .review-arrow {
   justify-self: end;
   color: var(--ztd-accent);
-  font-size: 24px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .review-caption {

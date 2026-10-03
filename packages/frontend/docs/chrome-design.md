@@ -19,6 +19,10 @@ with the owner; production consumer migrations follow fresh public source verifi
 - Menus use a subtle semantic shadow. Entry fades and scales from 95%, with a 4px side-aware translation
   over 150ms; exit reverses over 100ms. Reduced motion removes these animations. Coarse-pointer choices
   have a 44px minimum height.
+- UI action/navigation/status icons use Lucide components, rather than Unicode or emoji substitutes.
+  Decorative SVGs are hidden from assistive technology; icon-only controls retain accessible names.
+  Sizes and strokes follow semantic roles. Genuine prose, mathematics, user content and intentional
+  Noto Color Emoji are preserved. This rule also applies to consumer-owned UI during migration.
 
 The motion follows the CSS state, side and transform-origin approach in the official
 [shadcn DropdownMenu](https://ui.shadcn.com/docs/components/radix/dropdown-menu) and

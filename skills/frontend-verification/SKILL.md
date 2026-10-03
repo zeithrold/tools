@@ -14,6 +14,11 @@ Read js-ts-testing, the design contract and native scripts. Select ui-foundation
 5. Retain reports, CSS findings, failure logs, traces and named captures under the artifact root. Upload on CI success/failure; unretained /tmp captures do not fulfill this contract.
 6. Report revision, tool/package versions, commands, scope, results, artifact paths and blocked/manual work. Visual baseline management and performance budgets are deferred.
 
+Verify action/navigation/status icons use Lucide components rather than Unicode/emoji substitutes.
+Check accessible names on icon-only controls, `aria-hidden="true"` on decorative SVGs, and consistent
+size/stroke/alignment by role. Preserve prose, mathematics, user content and intentional Noto Color
+Emoji; keep composed emoji specimens in the rendering gate. Include this audit in consumer migrations.
+
 ## Generic shared shell
 
 The `@ztd-me/ui` source item provides reusable chrome, validated non-sensitive appearance/UI locale and explicit persistence mechanisms. Its defaults are Neutral + System and six palettes. Consumers supply their own brand, footer/repository/contact content, cookie name/domain/Secure choice, optional storage notification key and business slots. Tools must not select policy through project names or hostnames, enforce a repository-host allowlist, or carry legacy storage mappings. Remove rejected legacy mappings entirely rather than moving them into consumers; old business/auth storage stays untouched. Shared domain cookies are untrusted UI input. Consumers own development/preview isolation, deployment, authentication, account state and business navigation. Generic shell guidance grants no sync ownership over project components or production files. Preserve native strict gates and upstream licenses. The owner reviews and merges upstream changes. Final source integration requires a full approved source SHA and fresh public installation before consumer acceptance; local source/packed evidence or a local-font Cloud preview does not verify actual Google Fonts loading. Consumers own installed source and reviewed updates; no automatic overwrite or new synchronization service is provided.

@@ -70,6 +70,10 @@ Emoji for all emoji. There are no font binaries or Fontsource dependencies. Read
 language-specific glyphs, weights, third-party requests, CSP, privacy and remote-font mutability.
 Preserve the delivered MIT and Noto OFL notices.
 
+Use the installed Lucide components for action, navigation and status icons, with consistent size,
+stroke and alignment by role. Give icon-only controls an accessible name; decorative SVGs use
+`aria-hidden="true"`. Preserve prose, mathematics, user content and intentional Noto Color Emoji.
+
 ```tsx
 import { createPreferencePolicy, resolveInitialPreferences } from './components/ui/ztd-me/index.js'
 import { FrontendProvider, PublicShell } from './components/ui/ztd-me/client.js'
@@ -105,6 +109,8 @@ service is provided, and existing Skill synchronization does not own these files
 Run native lint, CSS, strict types, unit, build and browser checks, including SSR/theme first paint,
 keyboard/focus/inert, reduced motion, narrow reflow and Axe. Test the rendered diff and obtain owner
 visual/interaction acceptance. Source copying alone does not establish compatible Radix instances.
+Audit consumer-owned action/navigation/status iconography: replace Unicode/emoji icon substitutes with
+Lucide, preserve meaningful content and intentional emoji, and recheck names, alignment and glyph use.
 
 ## Local maintenance and validation
 

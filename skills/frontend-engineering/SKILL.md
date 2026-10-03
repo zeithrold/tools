@@ -18,6 +18,11 @@ Read AGENTS.md, the project design contract, scripts, compiler config and framew
    browser rather than relying on a CSS family name or platform
    fallback. Keep emoji consistently color; do not use a monochrome-first stack. Record this choice
    in the local design contract.
+   Use Lucide components from the project's framework package for action, navigation and status
+   icons, rather than Unicode or emoji glyph substitutes. Keep size, stroke and alignment consistent
+   for each semantic role. Give icon-only controls an accessible name and mark decorative SVG icons
+   `aria-hidden="true"`. Preserve genuine prose, mathematics, user content and intentional emoji;
+   intentional emoji use Noto Color Emoji. Audit these distinctions during consumer source migrations.
 3. Validate unknown runtime input using the existing schema mechanism. Preserve retry and input; do not expand a boundary improvement into an unrelated client/server rewrite.
 4. Normalize supported preferences and render deterministic SSR defaults. Apply [preferences and localization](references/preferences-i18n.md) to hydration, persistence, errors and dialogs.
 5. Preserve framework exports and native browser fallback. Run the compiler/build alongside strict ESLint; lint alone cannot validate routing or Worker deployment.
