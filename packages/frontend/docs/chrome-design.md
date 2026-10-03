@@ -1,9 +1,8 @@
-# Chrome refinement candidate
+# Chrome design contract
 
-This source candidate refines the 0.2.0 shell and delivers it as the `@ztd-me/ui` source registry item.
-Its public symbols, preferences, persistence, consumer ownership and Radix versions stay compatible.
-The owner approved the compact chrome and source direction and authorized a draft PR. Merge remains
-with the owner; production consumer migrations follow fresh public source verification after merge.
+The `@ztd-me/ui` source registry delivers compact chrome and menu motion for the generic React shell.
+Its public symbols, preferences, persistence and consumer ownership remain compatible with the 0.2 API.
+Production consumer migrations require fresh public source verification and consumer-owned acceptance.
 
 ## Visual decisions
 
@@ -34,38 +33,24 @@ Radix owns these runtime custom properties, explicitly inventoried by the CSS ga
 `--radix-dropdown-menu-content-transform-origin`, `--radix-select-content-transform-origin`, and
 `--radix-select-trigger-width`. The inventory does not exempt other undefined variables.
 
-## Evidence and limits
+## Verification and evidence
 
-The attached Ocean/light Chinese screenshot was inspected directly. The Library transfer failed twice
-with `library file transfer failed: download failed`; no local original screenshot bytes were available.
-The review fixture is an English synthetic consumer with its own navigation, content and footer, not a
-reproduction or modification of a production project. The approximately matching content viewport is
-1500×860; additional captures use 390×844 and 1920×1080.
+The browser suite checks compact controls, retained hit areas, entry/exit motion, keyboard selection,
+focus restoration, reduced motion, inert cleanup, coarse-pointer targets and narrow reflow. It also
+covers all palettes, light/dark/system, SSR hydration, fullscreen, storage rejection and Axe.
+Consumers must verify their own business surfaces and obtain visual/interaction acceptance.
 
-`scripts/capture-review.mjs` captures the unchanged package and candidate using the same built consumer
-fixture. Its measured 0.2.0 Chinese controls are 80×44 and 106×44, with 14px text. Its menu has computed
-`animation-name: none` and zero animations. This reproduces the reported absent motion independently of
-the dependency duplication hypothesis.
+The shared decorative border token affects consumer surfaces that use it; hardcoded consumer borders
+require their own reviewed change. Font metrics vary with the requested Noto family and glyphs.
+Follow the [typography contract](fonts.md) and verify actual rendered glyphs and native weights.
 
-The earlier Inter preview measured refined Chinese controls at 66×44 and 90×44 with 13px text and
-transparent appbar borders. Current Noto captures record new measurements rather than assuming those
-old font metrics remain exact. Production uses the Google Fonts API; Cloud captures explicitly use the
-owner-authorized local-font preview because Cloud Chromium cannot validate the API certificate.
-Mobile appearance remains 44×44. The content uses the quieter decorative border token; this fixture
-does not establish how any consumer's hardcoded borders will render after migration.
+Source installation checks the selected Radix declarations with strict library checking. Preserve the
+[declaration-only compatibility patch](radix-compatibility.md); it does not alter interaction runtime.
+When dependencies change, inspect the consumer's resolved React/Radix graph and keep provider/context/
+hooks on the same compatible source revision.
 
-`scripts/audit-dependencies.mjs` audits the freshly installed published 0.2.0 consumer. The package is
-compiled with TypeScript, not bundled: the artifact retains external Radix imports. Root and radio item
-resolve the same DropdownMenu module; components resolve the consumer's React; provider and hook resolve
-one preferences context and its object identity matches. The isolated dependency graph has one installed
-version of each Radix package. These findings do not prove that production consumers cannot contain
-incompatible versions or duplicate peer graphs. No production dependency audit was performed here.
-
-Source installation directly imports Radix declarations and therefore exposes the upstream Select
-2.3.7/Popper 1.3.7 TS2320 that the old compiled public API hides from a consumer. The registry includes
-the already tested declaration-only patch and an explicit pnpm configuration recipe. Strict library
-checking stays enabled. This declaration defect is separate from missing motion or duplicate instances.
-
-Browser checks cover entry/exit, focus restoration, keyboard selection, reduced motion, inert cleanup,
-coarse-pointer hit areas and reflow. Existing checks cover all palettes, light/dark/system, SSR hydration,
-fullscreen, storage rejection and Axe. Automated success does not replace owner visual review.
+`scripts/capture-review.mjs` can capture a built synthetic consumer for a PR. It writes screenshots,
+video and measurements to `.artifacts/visual-<label>/`; local font previews require an explicit preview
+label. Browser gates retain reports and captures under `.artifacts/` for CI upload. Keep those disposable
+outputs outside source documentation. See [verification](verification.md) for native commands, public
+installation acceptance and the distinction between real Google delivery and local preview evidence.
