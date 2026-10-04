@@ -16,7 +16,7 @@ pnpm install --frozen-lockfile
 pnpm exec playwright install chromium
 ```
 
-CI tarballs, source SHAs and checksums are release review evidence. Consumers use the pinned registry package rather than vendoring those artifacts. The user authorizes tools verification and the three consumer projects to exempt `@ztd-me/*` from release age because these packages are being updated frequently. Merge this entry into the existing workspace policy:
+CI tarballs, source SHAs and checksums are release review evidence. Consumers use the pinned registry package rather than vendoring those artifacts. The tools verification workspaces maintain their own `@ztd-me/*` release-age exception. Consumers own approval of any equivalent exception in their own workspace policy; the following optional entry does not authorize a consumer policy change:
 
 ```yaml
 minimumReleaseAge: 1440
@@ -67,19 +67,21 @@ zt check --module web --profile frontend --root . --json
 
 `inspect`, `plan`, and `sync --plan` do not execute or write. `sync` only changes selected managed Skill directories and its lock, refusing conflicting local edits. `check` validates the complete profile, creates a unique directory below `.zt/artifacts`, then executes in order. Profile entries default to required. `expect` can explicitly declare required/warn/off; it applies only to selected entries. Required failed/blocked commands stop the profile; subsequent checks are `not_run`. Warning failures continue and remain recorded. Overall failure exits 1. Zero native exit codes do not certify inferred test coverage.
 
-`--timeout 10m` is the default per-command limit; `--artifacts DIR` changes the artifact parent. Context cancellation/timeouts kill the process group on Unix. Other platforms terminate the immediate process; native test runners must clean up child servers. The planner adds `--config.verify-deps-before-run=error` to pnpm argv and the runner sets the equivalent environment override for nested pnpm scripts, preventing pnpm 11 from auto-installing stale/missing dependencies before scripts. Install explicitly beforehand. This per-run setting does not weaken release-age/trust/build policy or alter persistent configuration. The CLI never explicitly installs or deploys; reviewed native scripts retain their own semantics.
+`--timeout 10m` is the default per-command limit; `--artifacts DIR` changes the artifact parent. Context cancellation/timeouts kill the process group on Unix. Other platforms terminate the immediate process; native test runners must clean up child servers. The planner adds `--config.verify-deps-before-run=error` to pnpm argv and the runner sets the equivalent environment override for nested pnpm scripts, preventing pnpm 11 from auto-installing stale/missing dependencies before scripts. Configuration rejects dependency-readiness overrides, including pnpm's camelCase alias; use the explicit `=error` form if declaring the option. Install explicitly beforehand. This per-run setting does not weaken release-age/trust/build policy or alter persistent configuration. The CLI never explicitly installs or deploys; reviewed native scripts retain their own semantics.
+
+Go unit planning uses discovered integration-test evidence from any `integration` directory. When integration tests exist or discovery cannot rule them out, only an explicit `commands.unit` scope or a reviewed `test-unit` recipe can establish a unit plan; a generic `test` recipe or `go test ./...` is insufficient. Consumer-owned command schemas are not parsed implicitly. Declare business-specific native commands through `zt.json`.
 
 ## Native helper and retained evidence
 
 Add `"lint:css": "ztd-css ./css-check.config.mjs"` to native scripts. Follow the [helper README](../packages/frontend-checks/README.md) for cross-file token sources and Playwright helpers. Keep `test:a11y` focused on meaningful real states, not an empty placeholder. Existing browser suites may include those checks; declare the command mapping/coverage explicitly without rerunning an identical suite merely to satisfy a name.
 
-Under `zt check`, `ZT_ARTIFACTS_DIR` points to the unique run directory. Playwright's shared artifact settings and CSS CLI write there. For existing outputs elsewhere, declare module `artifacts` paths such as `["playwright-report", "test-results"]`; these are copied under `collected/` after execution, including failures. Missing paths, symlinks, non-regular files and oversized collections fail rather than silently dropping evidence. Keep paths within the module and keep outputs from older runs separate.
+Under `zt check`, `ZT_ARTIFACTS_DIR` points to the unique run directory. Playwright's shared artifact settings and CSS CLI write there. For existing outputs elsewhere, declare module `artifacts` paths such as `["playwright-report", "test-results"]`; these are copied under `collected/` after execution, including failures. Missing paths, symlinks, non-regular files and oversized collections fail rather than silently dropping evidence. Caller-selected project/output base aliases are canonicalized; symlinks below those bases remain prohibited. Keep paths within the module and keep outputs from older runs separate.
 
 Upload the complete `.zt/artifacts` root on both success and failure:
 
 ```yaml
 - run: zt check --module web --profile frontend
-- uses: actions/upload-artifact@v7
+- uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
   if: always()
   with:
     name: frontend-evidence

@@ -76,7 +76,7 @@ preview server serves a cached Google CSS response and lazily downloads the same
 files with normal Node TLS to ignored `.artifacts/`. Only the synthetic server replaces its CSS import
 with an explicitly named local-preview route. Production source/CSS and the registry payload retain
 the direct API request. Neither preview adapter, cached files nor download script is delivered in the
-registry. Preview browser artifacts are kept separately in `.artifacts/browser-local-font-preview`;
+registry. Preview browser artifacts are kept separately in `.artifacts/browser-local-font-preview/<mode>`;
 font evidence sets `actualGoogleFontsBrowserLoad: false`. Captures require a local-font-preview label.
 
 Preview success establishes layout/glyph/weight/emoji behavior with equivalent Noto files; it does not
@@ -106,7 +106,12 @@ installation gate for that exact merged SHA. Directory resolution follows the pi
 older accepted revisions remain verifiable after upstream directory moves.
 
 Reports, screenshots, logs and receipts remain under `.artifacts/` and are retained by CI on success or
-failure. Intercepted synthetic subdomains serve local business fixtures; Google Fonts is the default
+failure. Pack, local source and public source browser gates use separate `pack`, `source` and
+`public-source` directories beneath `.artifacts/browser/`; manually supplied consumers use `manual`.
+Each consumer receipt identifies its browser artifact root, and each report records the consumer,
+delivery mode and font verification mode. The final `test:evidence` gate verifies both pack/source
+JSON reports, HTML reports and result directories against the current receipts. A missing report or
+one belonging to another consumer fails the native check. Intercepted synthetic subdomains serve local business fixtures; Google Fonts is the default
 suite's explicit external dependency. The fixture does not certify production CSP, every framework,
 locale-sensitive caching, screen readers or every browser. Go tests/vet apply to bundled Skill changes;
 no detector or planning behavior changes in this UI transition.

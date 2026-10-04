@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto'
 import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
+import { browserArtifactRoot } from './browser-artifacts.mjs'
 import { prepareConsumer } from './prepare-consumer.mjs'
 
 await mkdir('.artifacts', { recursive: true })
@@ -19,10 +20,11 @@ await writeFile('.artifacts/packed-consumer.json', JSON.stringify({
   archive,
   consumer,
   sha256,
+  browserArtifacts: browserArtifactRoot('pack', Boolean(process.env.ZTD_LOCAL_FONT_PREVIEW)),
   fontVerification: process.env.ZTD_LOCAL_FONT_PREVIEW ? 'local-preview-only' : 'google-fonts-api',
 }, null, 2))
 execFileSync('pnpm', [
   'exec',
   'playwright',
   'test',
-], { stdio: 'inherit', env: { ...process.env, ZTD_UI_CONSUMER: consumer } })
+], { stdio: 'inherit', env: { ...process.env, ZTD_UI_CONSUMER: consumer, ZTD_UI_VERIFICATION_MODE: 'pack' } })

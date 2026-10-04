@@ -113,8 +113,10 @@ func (c Config) Validate(root string) error {
 				if strings.ContainsRune(arg, 0) {
 					return fmt.Errorf("command contains NUL")
 				}
-				if strings.HasPrefix(arg, "--config.verify-deps-before-run") && arg != "--config.verify-deps-before-run=error" {
-					return fmt.Errorf("native checks must not override pnpm dependency readiness with %q", arg)
+				key, value, hasValue := strings.Cut(arg, "=")
+				key = strings.ToLower(strings.NewReplacer("-", "", "_", "").Replace(key))
+				if strings.HasPrefix(arg, "--") && key == "config.verifydepsbeforerun" && (!hasValue || value != "error") {
+					return fmt.Errorf("native checks must not override pnpm dependency readiness with %q; use --config.verify-deps-before-run=error", arg)
 				}
 			}
 		}

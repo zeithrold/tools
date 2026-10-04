@@ -3,6 +3,7 @@ package check
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -126,6 +127,57 @@ func TestArtifactSymlinksAndMissingSourcesFail(t *testing.T) {
 	options.Output = filepath.Join(root, "linked", "output")
 	if _, err := Run(context.Background(), options); err == nil {
 		t.Fatal("wrote through symlink")
+	}
+}
+
+func TestSelectedBaseAliasesPreserveArtifactCollection(t *testing.T) {
+	root, options := fixture(t, map[string]string{"lint": "pass", "css": "pass", "a11y": "artifact"}, nil, []string{"browser-results"})
+	rootAlias := filepath.Join(t.TempDir(), "selected-project")
+	if err := os.Symlink(root, rootAlias); err != nil {
+		t.Skip(err)
+	}
+	options.Root = rootAlias
+	for _, externalOutput := range []bool{false, true} {
+		t.Run(fmt.Sprint(externalOutput), func(t *testing.T) {
+			if externalOutput {
+				outputAlias := filepath.Join(t.TempDir(), "selected-output")
+				if err := os.Symlink(t.TempDir(), outputAlias); err != nil {
+					t.Fatal(err)
+				}
+				options.Output = filepath.Join(outputAlias, "new", "checks")
+			}
+			report, err := Run(context.Background(), options)
+			if err != nil || report.Status != "passed" {
+				t.Fatalf("selected base alias rejected: %+v %v", report, err)
+			}
+			if _, err := os.ReadFile(filepath.Join(report.ArtifactDir, "collected/browser-results/evidence.json")); err != nil {
+				t.Fatalf("artifact collection through root alias failed: %v", err)
+			}
+		})
+	}
+}
+
+func TestDependencyReadinessAliasesAreRejectedBeforeExecution(t *testing.T) {
+	for _, arg := range []string{"--config.verify-deps-before-run=install", "--config.verifyDepsBeforeRun=install", "--config.verifyDepsBeforeRun=false"} {
+		t.Run(arg, func(t *testing.T) {
+			root := t.TempDir()
+			config := project.Config{SchemaVersion: 1, Modules: []project.Module{{ID: "web", Path: ".", Stack: "js-ts", Commands: map[string][]string{"lint": {"pnpm", arg, "run", "lint"}}, Profiles: map[string][]string{"native": {"lint"}}}}}
+			data, err := json.Marshal(config)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(root, "zt.json"), data, 0644); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := Run(context.Background(), Options{Root: root, Module: "web", Profile: "native", Timeout: time.Second}); err == nil || !strings.Contains(err.Error(), "dependency readiness") {
+				t.Fatalf("accepted readiness override: %v", err)
+			}
+			for _, name := range []string{".zt", "node_modules", "pnpm-lock.yaml"} {
+				if _, err := os.Stat(filepath.Join(root, name)); !os.IsNotExist(err) {
+					t.Fatalf("check wrote %s before rejecting configuration: %v", name, err)
+				}
+			}
+		})
 	}
 }
 
