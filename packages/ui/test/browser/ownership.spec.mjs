@@ -1,13 +1,13 @@
 import { expect } from '@playwright/test'
 import { appbar, assertAccessible, chooseAppearance, chooseChinese, test, watchErrors } from './helpers.mjs'
 
-test('old keys and business data stay untouched', async ({ context, page }, info) => {
+test('unowned consumer storage and business data stay untouched', async ({ context, page }, info) => {
   await context.addInitScript(() => {
     const old = { theme: 'dark', palette: 'moss', locale: 'zh-CN', workspace: 'private', auth: 'opaque' }
     for (const key of [
-      'ztd.home.v1',
-      'showcase.clock.v1',
-      'auth.session',
+      'consumer.preferences.v0',
+      'consumer.clock.v0',
+      'consumer.auth.session',
     ]) {
       localStorage.setItem(key, JSON.stringify(old))
     }
@@ -36,15 +36,21 @@ test('old keys and business data stay untouched', async ({ context, page }, info
   const values = await page.evaluate(() => ({
     reads: window.storageReads,
     removals: window.storageRemovals,
-    old: JSON.parse(window.readStored('showcase.clock.v1')),
-    home: JSON.parse(window.readStored('ztd.home.v1')),
-    auth: JSON.parse(window.readStored('auth.session')),
+    clock: JSON.parse(window.readStored('consumer.clock.v0')),
+    preferences: JSON.parse(window.readStored('consumer.preferences.v0')),
+    auth: JSON.parse(window.readStored('consumer.auth.session')),
   }))
   expect(values.reads).toEqual([])
   expect(values.removals).toEqual([])
-  expect(values.old).toEqual(values.home)
-  expect(values.auth).toEqual(values.old)
-  expect(values.old).toEqual({ theme: 'dark', palette: 'moss', locale: 'zh-CN', workspace: 'private', auth: 'opaque' })
+  expect(values.clock).toEqual(values.preferences)
+  expect(values.auth).toEqual(values.clock)
+  expect(values.clock).toEqual({
+    theme: 'dark',
+    palette: 'moss',
+    locale: 'zh-CN',
+    workspace: 'private',
+    auth: 'opaque',
+  })
   const cookies = await context.cookies()
   expect(cookies.find(cookie => cookie.name === 'locale').value).toBe('zh-CN')
   expect(cookies.find(cookie => cookie.name === 'business.session').value).toBe('opaque')

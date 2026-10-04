@@ -1,10 +1,10 @@
 # Radix Select declaration compatibility
 
-The runtime retains shadcn's new-york/Radix composition and the intended Select keyboard interaction. It uses exact individual Radix primitives: dropdown-menu 2.1.24, select 2.3.7 and slot 1.3.3. These are the same primitive versions contained in the consumers' radix-ui 1.6.7 umbrella; direct imports avoid loading unrelated primitives and do not replace Radix.
+The runtime retains shadcn's new-york/Radix composition and the intended Select keyboard interaction. It uses exact individual Radix primitives: dropdown-menu 2.1.24, select 2.3.7 and slot 1.3.3. Direct imports avoid loading unrelated primitives and do not replace Radix. Consumers audit their own resolved versions before composing primitives from different packages.
 
-The existing Memory, Website and Showcase snapshots use TypeScript 6.0.3, @types/react 19.3.0, `strict: true`, `skipLibCheck: true`, and do not set `exactOptionalPropertyTypes`. Memory/Showcase use the same Select declaration path, but their current compiler settings do not check this conflict. The private UI source harness keeps `exactOptionalPropertyTypes: true` and `skipLibCheck: false`.
+Compiler options affect whether the upstream declaration conflict is checked. The private UI source harness keeps `strict: true`, `exactOptionalPropertyTypes: true` and `skipLibCheck: false`; consumer compiler settings and dependency versions remain consumer-owned.
 
-A minimal probe against that exact existing installation produced:
+The pinned Select declaration regression covers these compiler settings:
 
 | exactOptionalPropertyTypes | skipLibCheck | Result |
 | --- | --- | --- |

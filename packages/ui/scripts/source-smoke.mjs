@@ -5,6 +5,7 @@ import { cp, mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import path from 'node:path'
 import process from 'node:process'
+import { browserArtifactRoot } from './browser-artifacts.mjs'
 
 const cli = 'shadcn@4.21.1'
 const repository = path.resolve('../..')
@@ -236,6 +237,7 @@ finally {
 const files = await inventorySource(payload)
 await configureVerification()
 await verifySource()
+const deliveryMode = sourceSha ? 'public-source' : 'source'
 const receipt = {
   consumer,
   cli,
@@ -246,6 +248,7 @@ const receipt = {
   requiredUiPackage: false,
   sourceSha,
   registryUrl,
+  browserArtifacts: browserArtifactRoot(deliveryMode, Boolean(process.env.ZTD_LOCAL_FONT_PREVIEW)),
   fontVerification: process.env.ZTD_LOCAL_FONT_PREVIEW ? 'local-preview-only' : 'google-fonts-api',
   publicInstallationVerified: false,
 }
@@ -254,6 +257,6 @@ await run('pnpm', [
   'exec',
   'playwright',
   'test',
-], process.cwd(), { ...process.env, ZTD_UI_CONSUMER: consumer })
+], process.cwd(), { ...process.env, ZTD_UI_CONSUMER: consumer, ZTD_UI_VERIFICATION_MODE: deliveryMode })
 receipt.publicInstallationVerified = sourceSha !== undefined
 await writeFile('.artifacts/source-consumer.json', JSON.stringify(receipt, null, 2))

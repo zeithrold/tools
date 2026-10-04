@@ -173,7 +173,7 @@ func (c *collector) inspectGo() {
 			}
 			name := fn.Name.Name
 			if strings.HasPrefix(name, "Test") && selector.Sel.Name == "T" {
-				if strings.HasPrefix(relative, "tests/integration/") || strings.Contains(relative, "/integration/") {
+				if strings.Contains("/"+relative, "/integration/") {
 					c.add("integration", relative+":"+name)
 				} else {
 					c.add("unit", relative+":"+name)
@@ -183,7 +183,6 @@ func (c *collector) inspectGo() {
 			}
 		}
 	})
-	c.inspectDeclaredCommands("governance.json")
 	if regular(filepath.Join(c.root, ".golangci.yml")) || regular(filepath.Join(c.root, ".golangci.yaml")) {
 		c.add("lint", ".golangci.yml/.yaml")
 	}
@@ -306,26 +305,6 @@ func (c *collector) inspectJVM() {
 		}
 		if strings.Contains(lower, "pitest") {
 			c.add("mutation", name+": pitest declaration")
-		}
-	}
-}
-
-func (c *collector) inspectDeclaredCommands(name string) {
-	data, err := os.ReadFile(filepath.Join(c.root, name))
-	if err != nil {
-		return
-	}
-	var config struct {
-		Commands map[string]json.RawMessage `json:"commands"`
-	}
-	if err := json.Unmarshal(data, &config); err != nil {
-		c.warnings = append(c.warnings, "cannot parse "+name+": "+err.Error())
-		return
-	}
-	for command := range config.Commands {
-		lower := strings.ToLower(command)
-		if strings.Contains(lower, "mutation") || strings.Contains(lower, "mutant") {
-			c.add("mutation", name+":commands."+command)
 		}
 	}
 }

@@ -70,7 +70,8 @@
     "test:pack": "node scripts/pack-smoke.mjs",
     "test:browser": "playwright test",
     "test:source": "node scripts/source-smoke.mjs",
-    "check": "pnpm run lint && pnpm run css && pnpm run typecheck && pnpm run build && pnpm test && pnpm run test:pack && pnpm run test:source",
+    "test:evidence": "node scripts/verify-browser-evidence.mjs",
+    "check": "pnpm run lint && pnpm run css && pnpm run typecheck && pnpm run build && pnpm test && pnpm run test:pack && pnpm run test:source && pnpm run test:evidence",
     "prepack": "pnpm run build"
   },
   "private": true

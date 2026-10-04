@@ -76,7 +76,7 @@ func Build(root, moduleID, capability string) (Result, error) {
 	}
 	switch module.Stack {
 	case "go":
-		result.planGo(moduleRoot, capability, *found)
+		result.planGo(moduleRoot, capability, *found, module.Capabilities)
 	case "js-ts":
 		result.planJSTS(moduleRoot, capability)
 	default:
@@ -88,7 +88,7 @@ func Build(root, moduleID, capability string) (Result, error) {
 	return result, nil
 }
 
-func (r *Result) planGo(root, capability string, found inspect.Capability) {
+func (r *Result) planGo(root, capability string, found inspect.Capability, capabilities []inspect.Capability) {
 	addJust := func(recipe string) bool {
 		if !hasRecipe(filepath.Join(root, "justfile"), recipe) {
 			return false
@@ -98,12 +98,17 @@ func (r *Result) planGo(root, capability string, found inspect.Capability) {
 	}
 	switch capability {
 	case "unit":
-		if !addJust("test-unit") && !addJust("test") {
-			if info, err := os.Stat(filepath.Join(root, "tests", "integration")); err == nil && info.IsDir() {
-				r.Warnings = append(r.Warnings, "integration tests exist and no unit-only recipe was identified; choose package scope manually")
-			} else {
-				r.Steps = append(r.Steps, Step{Argv: []string{"go", "test", "./..."}, Dir: root, Reason: "standard Go test command; inspect environment requirements"})
+		if addJust("test-unit") {
+			return
+		}
+		for _, item := range capabilities {
+			if item.Name == "integration" && item.Detection != "not_detected" {
+				r.Warnings = append(r.Warnings, "integration tests exist or could not be ruled out; configure commands.unit in zt.json or provide a test-unit recipe with a reviewed package scope")
+				return
 			}
+		}
+		if !addJust("test") {
+			r.Steps = append(r.Steps, Step{Argv: []string{"go", "test", "./..."}, Dir: root, Reason: "standard Go test command; inspect environment requirements"})
 		}
 	case "integration":
 		if !addJust("test-integration") {
@@ -130,7 +135,7 @@ func (r *Result) planGo(root, capability string, found inspect.Capability) {
 			})
 		}
 	case "mutation":
-		for _, recipe := range []string{"mutation-accounting", "mutation", "mutants"} {
+		for _, recipe := range []string{"mutation", "mutants"} {
 			if addJust(recipe) {
 				r.Warnings = append(r.Warnings, "mutation testing may be expensive; inspect the existing recipe's scope and time budget")
 				return

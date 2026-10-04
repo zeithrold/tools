@@ -34,7 +34,7 @@ func TestGoInspectKeepsTestKindsAndExecutionSeparate(t *testing.T) {
 	write(t, root, "go.mod", "module example.test/demo\n\ngo 1.24\n")
 	write(t, root, "internal/x/x_test.go", "package x\nimport \"testing\"\nfunc TestUnit(t *testing.T) {}\nfunc FuzzInput(f *testing.F) {}\n")
 	write(t, root, "tests/integration/db_test.go", "package integration\nimport \"testing\"\nfunc TestDatabase(t *testing.T) {}\n")
-	write(t, root, "governance.json", `{"commands":{"mutation-accounting":{}}}`)
+	write(t, root, "zt.json", `{"schemaVersion":1,"modules":[{"id":"api","path":".","stack":"go","commands":{"mutation":["native-mutator","--scope","domain"]}}]}`)
 	report, err := Run(root)
 	if err != nil {
 		t.Fatal(err)
@@ -44,6 +44,29 @@ func TestGoInspectKeepsTestKindsAndExecutionSeparate(t *testing.T) {
 		if item.Detection != "discovered" || item.LastRun != "not_run" || len(item.Evidence) != 1 {
 			t.Fatalf("%s: unexpected report %+v", name, item)
 		}
+	}
+}
+
+func TestGoInspectUsesOnlyExplicitConsumerCommandConfiguration(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "go.mod", "module example.test/demo\n\ngo 1.24\n")
+	write(t, root, "consumer-policy.json", `{"commands":{"mutation-special-scope":{}}}`)
+	write(t, root, "justfile", "mutation-special-scope:\n    touch must-not-exist\n")
+	report, err := Run(root)
+	if err != nil || capability(t, report, "mutation").Detection != "not_detected" {
+		t.Fatalf("inferred consumer policy: %+v %v", report, err)
+	}
+	write(t, root, "zt.json", `{"schemaVersion":1,"modules":[{"id":"api","path":".","stack":"go","commands":{"mutation":["just","mutation-special-scope"]}}]}`)
+	report, err = Run(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	item := capability(t, report, "mutation")
+	if item.Detection != "discovered" || strings.Join(item.Evidence, "|") != "zt.json:commands.mutation" || item.Environment != "not_checked" || item.LastRun != "not_run" {
+		t.Fatalf("explicit command was not kept separate from execution: %+v", item)
+	}
+	if _, err := os.Stat(filepath.Join(root, "must-not-exist")); !os.IsNotExist(err) {
+		t.Fatal("inspection executed the consumer recipe")
 	}
 }
 

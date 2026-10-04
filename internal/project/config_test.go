@@ -40,6 +40,10 @@ func TestProfilesCommandsAndArtifactsRejectInvalidConfiguration(t *testing.T) {
 		`"profiles":{"frontend":["csss"]}`,
 		`"commands":{"css":[]}`,
 		`"commands":{"css":["pnpm","--config.verify-deps-before-run=install","lint"]}`,
+		`"commands":{"css":["pnpm","--config.verifyDepsBeforeRun=install","lint"]}`,
+		`"commands":{"css":["pnpm","--config.verifyDepsBeforeRun=false","lint"]}`,
+		`"commands":{"css":["pnpm","--config.verifyDepsBeforeRun","install","lint"]}`,
+		`"commands":{"css":["pnpm","--config.verify-deps-before-run","error","lint"]}`,
 		`"commands":{"css":["runner","\u0000"]}`,
 		`"artifacts":["../outside"]`,
 		`"artifacts":["."]`,
@@ -51,6 +55,16 @@ func TestProfilesCommandsAndArtifactsRejectInvalidConfiguration(t *testing.T) {
 		}
 		if _, err := Load(root); err == nil {
 			t.Fatalf("accepted %s", fields)
+		}
+	}
+}
+
+func TestDependencyReadinessErrorAliasesAreAllowed(t *testing.T) {
+	root := t.TempDir()
+	for _, arg := range []string{"--config.verify-deps-before-run=error", "--config.verifyDepsBeforeRun=error"} {
+		config := Config{SchemaVersion: 1, Modules: []Module{{ID: "web", Path: ".", Stack: "js-ts", Commands: map[string][]string{"lint": {"pnpm", arg, "lint"}}}}}
+		if err := config.Validate(root); err != nil {
+			t.Fatalf("rejected safe argument %q: %v", arg, err)
 		}
 	}
 }

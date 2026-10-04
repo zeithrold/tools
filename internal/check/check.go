@@ -60,6 +60,12 @@ func Run(ctx context.Context, options Options) (Report, error) {
 	if err != nil {
 		return Report{}, err
 	}
+	// The caller selects the project root; resolve its aliases before validating
+	// project-owned artifact descendants (including macOS /tmp and /var aliases).
+	root, err = filepath.EvalSymlinks(root)
+	if err != nil {
+		return Report{}, err
+	}
 	config, err := project.Load(root)
 	if err != nil {
 		return Report{}, err
@@ -104,7 +110,8 @@ func Run(ctx context.Context, options Options) (Report, error) {
 	if err != nil {
 		return Report{}, err
 	}
-	if err := noSymlinks(output); err != nil {
+	output, err = artifactOutput(root, output)
+	if err != nil {
 		return Report{}, err
 	}
 	if err := os.MkdirAll(output, 0755); err != nil {
@@ -242,7 +249,49 @@ func execute(ctx context.Context, planned plan.Step, timeout time.Duration, dire
 	return step
 }
 
-func noSymlinks(path string) error {
+// artifactOutput resolves aliases of the caller-selected base while refusing
+// symlinks below the project root or the selected external output base.
+func artifactOutput(root, output string) (string, error) {
+	anchor := ""
+	for current := output; ; current = filepath.Dir(current) {
+		if resolved, err := filepath.EvalSymlinks(current); err == nil && resolved == root {
+			anchor = current
+		}
+		if filepath.Dir(current) == current {
+			break
+		}
+	}
+	if anchor != "" {
+		relative, err := filepath.Rel(anchor, output)
+		if err != nil {
+			return "", err
+		}
+		output = filepath.Join(root, relative)
+		return output, noSymlinks(output, root)
+	}
+	// An explicitly selected output outside the project has its own trusted base.
+	// Keep the leaf and any new descendants subject to the symlink check.
+	for base := filepath.Dir(output); ; base = filepath.Dir(base) {
+		resolved, err := filepath.EvalSymlinks(base)
+		if err == nil {
+			relative, err := filepath.Rel(base, output)
+			if err != nil {
+				return "", err
+			}
+			output = filepath.Join(resolved, relative)
+			return output, noSymlinks(output, resolved)
+		}
+		if !os.IsNotExist(err) || filepath.Dir(base) == base {
+			return "", err
+		}
+	}
+}
+
+func noSymlinks(path, boundary string) error {
+	relative, err := filepath.Rel(boundary, path)
+	if err != nil || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
+		return fmt.Errorf("artifact path escapes selected base: %s", path)
+	}
 	for current := path; ; current = filepath.Dir(current) {
 		info, err := os.Lstat(current)
 		if err == nil && info.Mode()&os.ModeSymlink != 0 {
@@ -251,15 +300,19 @@ func noSymlinks(path string) error {
 		if err != nil && !os.IsNotExist(err) {
 			return err
 		}
-		if filepath.Dir(current) == current {
+		if current == boundary {
 			return nil
 		}
 	}
 }
 
 func collect(root, output, relative string) ([]string, error) {
+	root, err := filepath.EvalSymlinks(root)
+	if err != nil {
+		return nil, err
+	}
 	source := filepath.Join(root, filepath.FromSlash(relative))
-	if err := noSymlinks(source); err != nil {
+	if err := noSymlinks(source, root); err != nil {
 		return nil, err
 	}
 	if _, err := os.Lstat(source); os.IsNotExist(err) {

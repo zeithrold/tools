@@ -72,13 +72,13 @@ each must be pinned. The [item schema](https://ui.shadcn.com/docs/registry/regis
 the delivered files and dependency requirements. CLI behavior is documented in the
 [official reference](https://ui.shadcn.com/docs/cli).
 
-## Bounded migration sequence
+## Consumer adoption sequence
 
-1. Submit the approved chrome and source direction, Noto typography, exact inventory, compatibility
-   patch and native/browser evidence through the authorized draft PR. The owner reviews and merges.
-2. After merge, verify a fresh public install with the pinned CLI and full approved source SHA through
+1. Select source delivery in the consumer repository, record its ownership and dependency requirements,
+   and review the upstream inventory, compatibility patch and native/browser evidence.
+2. Verify a fresh public install with the pinned CLI and full approved source SHA through
    `node scripts/source-smoke.mjs <SOURCE_SHA>` from that exact checkout.
-3. Dispatch website, showcase and memory as separate consumer changes. Replace npm UI imports, provider
+3. Apply each consumer's adoption as its own reviewed change. Replace npm UI imports, provider
    and stylesheet atomically, align dependencies and commit the lock. Preserve project-owned edits,
    branding and policy; audit action/navigation/status icons for Lucide usage, accessible names,
    decorative SVG semantics and consistent sizing. Preserve prose, mathematics, user content and
@@ -86,10 +86,9 @@ the delivered files and dependency requirements. CLI behavior is documented in t
 4. Keep the old installed npm package available until each source replacement is validated. The old
    repository publishing route is retired; the private `packages/ui` harness verifies source without
    publishing it. npm deprecation remains a separately reviewed operation; do not unpublish or abruptly
-   remove the existing artifact. Blog and Workbench implementation waits until the four priority repositories
-   meet the owner's acceptance criteria.
+   remove the existing artifact. Rollout order, acceptance criteria and dependency restrictions remain
+   in each consumer's documentation.
 
-Workbench remains outside this implementation: it cannot depend on `@ztd-me/frontend`, and registry
-adoption there has not been approved. Do not include it automatically in these rollouts. The
-documented GitHub registry integration does not support GitHub Enterprise hosts; any approved enterprise
-source/vendor delivery route requires its own decision, dependency audit and native verification.
+The documented GitHub registry integration does not support GitHub Enterprise hosts; an alternate
+source/vendor delivery route remains a consumer-owned decision with its own dependency audit and
+native verification.
