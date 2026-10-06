@@ -4,6 +4,7 @@ import { mkdtemp, readFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
+import { assertPackedLicense } from '../../../scripts/license-coverage.mjs'
 import { consumerSmoke } from './consumer-smoke.mjs'
 
 const directory = await mkdtemp(path.join(os.tmpdir(), 'ztd-frontend-pack-'))
@@ -14,6 +15,7 @@ execFileSync('pnpm', [
   directory,
 ], { stdio: 'inherit' })
 const archive = path.join(directory, `ztd-me-frontend-checks-${version}.tgz`)
+await assertPackedLicense(archive, process.cwd())
 const sha256 = createHash('sha256').update(await readFile(archive)).digest('hex')
 const consumer = await consumerSmoke(`file:${archive}`, 'Packed')
 process.stdout.write(`${JSON.stringify({ archive, consumer, sha256 })}\n`)

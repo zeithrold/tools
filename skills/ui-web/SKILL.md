@@ -1,6 +1,7 @@
 ---
 name: ui-web
 description: Apply shared UI principles to browser interfaces using semantic HTML, responsive CSS, and browser accessibility evidence.
+license: MIT
 ---
 
 # Web UI review

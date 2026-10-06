@@ -10,6 +10,11 @@ Use an approved full source SHA and verify a fresh public install after upstream
 migrations. The owner reviews upstream changes; consumers review their own source adaptations.
 No automatic updater or production migration is included.
 
+First-party source and documentation are MIT licensed (`meta.license: MIT`). Keep the delivered
+`LICENSE` and `THIRD_PARTY_NOTICES.md` with copied source and adaptations. shadcn and the Radix patch
+retain their original MIT notices in `third-party/`; Noto fonts retain OFL-1.1. Installed dependencies
+keep their upstream licenses. An MIT item license does not relicense those third-party materials.
+
 ## Install a pinned source revision
 
 Use the full approved 40-character source commit, replacing `<SOURCE_SHA>` below. In the consumer's

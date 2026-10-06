@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict'
 import { spawn, spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { cp, mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import path from 'node:path'
 import process from 'node:process'
+import { assertSourceLicense } from '../../../scripts/license-coverage.mjs'
 import { browserArtifactRoot } from './browser-artifacts.mjs'
+import { copyConsumerFixture, retainConsumerLicenses } from './consumer-licenses.mjs'
 
 const cli = 'shadcn@4.21.1'
 const repository = path.resolve('../..')
@@ -41,10 +43,11 @@ async function run(command, args, cwd = consumer, env = process.env) {
 }
 
 async function prepareProject() {
-  await cp('test/consumer', consumer, { recursive: true })
+  await copyConsumerFixture(consumer)
   const packageInfo = JSON.parse(await readFile('package.json', 'utf8'))
   await writeFile(path.join(consumer, 'package.json'), JSON.stringify({
     private: true,
+    license: 'MIT',
     type: 'module',
     packageManager: 'pnpm@11.22.0',
     devDependencies: packageInfo.devDependencies,
@@ -184,6 +187,7 @@ async function verifySource() {
     '--outDir',
     'dist/server',
   ])
+  await retainConsumerLicenses(consumer)
 }
 
 await run('pnpm', [
@@ -199,6 +203,7 @@ await run('pnpm', ['install'])
 const payload = JSON.parse(await readFile(payloadPath, 'utf8'))
 const committedPayload = JSON.parse(await readFile(path.join(repository, 'registry/ui.json'), 'utf8'))
 assert.deepEqual(committedPayload, payload, 'Regenerate registry/ui.json before publishing this revision')
+await assertSourceLicense(payload, repository)
 if (sourceSha !== undefined) {
   const response = await fetch(registryUrl.replace('{name}', 'ui'))
   assert.equal(response.status, 200)

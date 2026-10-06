@@ -143,4 +143,4 @@ The checks build JS/declarations, type-check the public API, self-lint source/te
 
 [Publishing instructions](docs/publishing.md) describe the stage-only GitHub workflow and the user-controlled promotion. Staging is not a public release. After promotion, run `node scripts/registry-smoke.mjs 0.1.2` to install the exact public version in a fresh pnpm project and verify imports, declarations and lint behavior. Registry installation follows pnpm's supply-chain policies; a policy rejection is a blocker, not permission to disable the policy.
 
-The repository has not granted an open-source license; package metadata is `UNLICENSED` pending that separate decision.
+First-party code and documentation are [MIT licensed](LICENSE). Installed ESLint, antfu and plugin dependencies retain their own licenses and notices; the package does not relicense them. Existing published versions keep their original artifacts and metadata.

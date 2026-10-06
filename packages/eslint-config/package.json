@@ -3,7 +3,7 @@
   "version": "0.1.2",
   "type": "module",
   "description": "Strict typed ESLint flat configs for TypeScript, React and Vue, built on antfu",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zeithrold/tools.git",
@@ -21,7 +21,8 @@
   "files": [
     "dist",
     "docs",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "publishConfig": {
     "access": "public",

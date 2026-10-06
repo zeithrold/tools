@@ -1,6 +1,7 @@
 ---
 name: ui-flutter
 description: Apply shared UI principles to Flutter widgets, text scaling, focus, semantics, and native-device verification.
+license: MIT
 ---
 
 # Flutter UI review

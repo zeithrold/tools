@@ -1,6 +1,7 @@
 ---
 name: ui-foundation
 description: Apply cross-frontend principles for information hierarchy, accessible interaction, responsive content, and visual evidence.
+license: MIT
 ---
 
 # UI foundation

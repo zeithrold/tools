@@ -1,13 +1,55 @@
 package skills
 
 import (
+	"bytes"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	tools "github.com/zeithrold/tools"
 	"github.com/zeithrold/tools/internal/project"
 )
+
+func TestEverySyncedSkillRetainsMITLicense(t *testing.T) {
+	entries, err := fs.ReadDir(tools.SkillFiles, "skills")
+	if err != nil {
+		t.Fatal(err)
+	}
+	license, err := tools.LicenseFiles.ReadFile("LICENSE")
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	config := &project.Config{SchemaVersion: 1}
+	for _, entry := range entries {
+		if entry.IsDir() {
+			config.Skills = append(config.Skills, entry.Name())
+		}
+	}
+	if len(config.Skills) == 0 {
+		t.Fatal("no bundled Skills checked")
+	}
+	if _, err := Apply(root, config); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range config.Skills {
+		data, err := os.ReadFile(filepath.Join(root, ".agents", "skills", name, "LICENSE"))
+		if err != nil || !bytes.Equal(data, license) {
+			t.Fatalf("Skill %s lost the complete MIT notice: %v", name, err)
+		}
+	}
+	plan, err := Plan(root, config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, action := range plan.Actions {
+		if action.Action != "unchanged" {
+			t.Fatalf("licensed Skill sync is not idempotent: %+v", action)
+		}
+	}
+}
 
 func TestSyncInstallsCompleteDirectoryAndPreservesProjectEdits(t *testing.T) {
 	root := t.TempDir()
