@@ -3,6 +3,8 @@ import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 await mkdir('dist/assets', { recursive: true })
 const fonts = await readFile('src/styles/fonts.css', 'utf8')
 await copyFile('third-party/SHADCN-MIT.txt', 'dist/assets/SHADCN-MIT.txt')
+await copyFile('third-party/RADIX-MIT.txt', 'dist/assets/RADIX-MIT.txt')
+await copyFile('third-party/REACT-REMOVE-SCROLL-BAR-MIT.txt', 'dist/assets/REACT-REMOVE-SCROLL-BAR-MIT.txt')
 for (const family of [
   'SANS',
   'SANS-SC',

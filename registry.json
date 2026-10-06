@@ -184,6 +184,16 @@
           "target": "@ui/ztd-me/third-party/SHADCN-MIT.txt"
         },
         {
+          "path": "packages/ui/third-party/RADIX-MIT.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/RADIX-MIT.txt"
+        },
+        {
+          "path": "packages/ui/third-party/REACT-REMOVE-SCROLL-BAR-MIT.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/REACT-REMOVE-SCROLL-BAR-MIT.txt"
+        },
+        {
           "path": "packages/ui/patches/@radix-ui__react-select@2.3.7.patch",
           "type": "registry:file",
           "target": "@ui/ztd-me/patches/@radix-ui__react-select@2.3.7.patch"
@@ -228,7 +238,10 @@
           "type": "registry:file",
           "target": "@ui/ztd-me/fonts.md"
         }
-      ]
+      ],
+      "meta": {
+        "license": "MIT"
+      }
     }
   ]
 }

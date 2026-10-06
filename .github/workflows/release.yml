@@ -44,9 +44,9 @@ jobs:
               -ldflags "-s -w -X github.com/zeithrold/tools.releaseVersion=$TAG" \
               -o "build/$name/$binary" ./cmd/zt
             if [[ "$goos" == windows ]]; then
-              (cd "build/$name" && zip -q "../../dist/$name.zip" "$binary")
+              bash scripts/package-cli.sh "build/$name" "dist/$name.zip"
             else
-              tar -C "build/$name" -czf "dist/$name.tar.gz" "$binary"
+              bash scripts/package-cli.sh "build/$name" "dist/$name.tar.gz"
             fi
           done
           (cd dist && sha256sum zt_* > SHA256SUMS)

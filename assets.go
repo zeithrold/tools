@@ -23,3 +23,8 @@ func Version() string {
 //
 //go:embed skills
 var SkillFiles embed.FS
+
+// LicenseFiles retains first-party and Go runtime notices in standalone binaries.
+//
+//go:embed LICENSE third-party/GO-BSD.txt
+var LicenseFiles embed.FS
