@@ -19,11 +19,11 @@ First-package staging creates a public `0.0.0-stage` placeholder so package sett
 
 ## Exact registry verification
 
-From the reviewed source checkout, download the automatic release run's exact `frontend-package-<SHA>` artifact and verify `SHA256SUMS` and `source-commit.txt`. Once the owner has promoted `0.1.0`, run:
+From the reviewed source checkout, download the automatic release run's exact `frontend-package-<SHA>` artifact and verify `SHA256SUMS` and `source-commit.txt`. Once the owner has promoted `0.1.2`, run:
 
 ```sh
 pnpm exec playwright install chromium
-pnpm run test:registry 0.1.0 /path/to/verified/package.tgz
+pnpm run test:registry 0.1.2 /path/to/verified/package.tgz
 ```
 
 The script checks the exact public package/version and registry SHA-512 integrity against the reviewed tarball, then creates a fresh pnpm consumer. It installs the exact registry version, reruns frozen installation, imports both `/css` and `/playwright`, invokes `ztd-css`, checks TypeScript declarations with strict settings and executes a deliberately failing browser Axe scan that must retain the violation evidence. Browser infrastructure errors cannot satisfy that assertion.
@@ -31,7 +31,7 @@ The script checks the exact public package/version and registry SHA-512 integrit
 The user authorizes `minimumReleaseAgeExclude: ['@ztd-me/*']` in tools verification and the three consumer projects. The consumer retains `minimumReleaseAge: 1440`, `minimumReleaseAgeStrict: true`, pruning and `trustPolicy: no-downgrade`. Other packages still wait 24 hours. Scope packages keep integrity/trust checks; no scope-wide trust exclusion is authorized. Preserve the existing exact `semver@6.3.1` trust exception wherever the ESLint graph needs it. Pin the verified registry version:
 
 ```sh
-pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.0 @playwright/test@1.62.0
+pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.2 @playwright/test@1.62.0
 pnpm install --frozen-lockfile
 ```
 
