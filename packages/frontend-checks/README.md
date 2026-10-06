@@ -1,11 +1,11 @@
 # @ztd-me/frontend-checks
 
-Native CSS and Playwright accessibility checks. Requires Node >=22.14 and Playwright Test ^1.62.0. Version `0.1.1` is the patch candidate for Tailwind block custom variants; it requires automatic staging, owner 2FA promotion and fresh registry verification before consumers install it. See [publishing](docs/publishing.md) and [CLI integration](https://github.com/zeithrold/tools/blob/main/docs/frontend-tooling.md). Consumers retain `@ztd-me/eslint@0.1.1` and its strict standards.
+Native CSS and Playwright accessibility checks. Requires Node >=22.14 and Playwright Test ^1.62.0. Version `0.1.2` prepares the MIT metadata and full license notice for a new npm release, retaining the Tailwind block custom variant fix from `0.1.1`. It requires automatic staging, owner 2FA promotion and fresh registry verification before consumers install it. See [publishing](docs/publishing.md) and [CLI integration](https://github.com/zeithrold/tools/blob/main/docs/frontend-tooling.md). Consumers retain `@ztd-me/eslint@0.1.1` and its strict standards.
 
 After promotion and verified public installation:
 
 ```sh
-pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.1 @playwright/test@1.62.0
+pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.2 @playwright/test@1.62.0
 pnpm exec playwright install chromium
 ```
 
