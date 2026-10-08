@@ -19,3 +19,24 @@ The fix keeps `nesting-selector-no-missing-scoping-root` enabled and uses its su
 The CSS API/config shape and Playwright exports are unchanged. Keep release-age, integrity, no-downgrade and existing build restrictions. This fix requires a new 0.1.1 release; changing tools source cannot repair consumers locked to published 0.1.0. The owner merges, the existing automatic workflow stages the candidate, and the owner approves it with npm 2FA. Verify the promoted exact version against its reviewed tarball using `scripts/registry-smoke.mjs` before updating final consumer locks. Staging alone is insufficient.
 
 Reference: [Stylelint's native ignoreAtRules option](https://stylelint.io/user-guide/rules/nesting-selector-no-missing-scoping-root/#ignoreatrules).
+
+## CSS-first source candidate
+
+The local candidate additionally supports nested `@utility`, native `--text-name--line-height`,
+`--letter-spacing` and `--font-weight` theme metadata, and canonical string import notation. String
+imports are required by Tailwind's native stylesheet loader; remote Google Fonts imports use the same
+notation. Import-notation stays enabled, as do all property, nesting, color and token checks.
+Stylelint treats unknown block at-rules as descriptor scopes and omits property-no-unknown there;
+the adapter rechecks utility/variant declarations through the native property rule with exact original
+source locations. It does not ignore unknown properties or non-Tailwind root nesting.
+
+`classFiles` optionally names explicit JS/TS/JSX/TSX paths or globs. The native TypeScript AST checks
+static string/template class fragments for palette colors, arbitrary literal colors and undefined
+custom properties. Dynamic expressions remain outside this static proof; it does not claim complete
+Tailwind compilation or runtime-cascade validation. Keep consumer tokens in the CSS inventory and
+external runtime properties explicit. Comment text and ordinary layout utility strings are ignored.
+
+Published 0.1.1 does not contain these adaptations. Keep consumer published dependencies portable;
+local candidate verification may run this checkout's `src/css-cli.mjs` against the consumer's config
+from that consumer's cwd. Retain both the native published-checker result and candidate result until
+the owner separately reviews and promotes a checker release. No publish or stage operation is implied.

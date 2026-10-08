@@ -4,7 +4,9 @@ import process from 'node:process'
 import glob from 'fast-glob'
 import postcss from 'postcss'
 import stylelint from 'stylelint'
+import { classWarnings } from './css-classes.mjs'
 import { cssConfig } from './css-config.mjs'
+import { tailwindPropertyWarnings } from './css-tailwind.mjs'
 import { tokenWarnings } from './css-tokens.mjs'
 
 async function sources(patterns, cwd) {
@@ -44,6 +46,11 @@ export async function checkCss(options) {
     text: warning.text,
   })))
   warnings.push(...tokenWarnings(roots, definitions, options))
+  warnings.push(...await tailwindPropertyWarnings(roots))
+  warnings.push(...await classWarnings(options, [
+    ...roots,
+    ...definitions,
+  ], cwd))
   return {
     schemaVersion: 1,
     status: lint.errored || warnings.length ? 'failed' : 'passed',

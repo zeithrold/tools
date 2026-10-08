@@ -1,6 +1,6 @@
 import type { Page, TestInfo, PlaywrightTestConfig } from '@playwright/test'
 import type { AxeBuilder } from '@axe-core/playwright'
-export interface AccessibilityOptions {
+export type AccessibilityOptions = {
   label?: string
   /** Restricts the scan; full-page scans remain necessary for page-level checks. */
   include?: string

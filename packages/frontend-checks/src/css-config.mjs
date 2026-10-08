@@ -8,6 +8,7 @@ export const cssConfig = {
   extends: require.resolve('stylelint-config-standard'),
   rules: {
     ...standard.rules,
+    'import-notation': 'string',
     'at-rule-no-unknown': [
       true,
       {
@@ -26,7 +27,10 @@ export const cssConfig = {
     ],
     'nesting-selector-no-missing-scoping-root': [
       true,
-      { ignoreAtRules: ['custom-variant'] },
+      { ignoreAtRules: ['custom-variant', 'utility'] },
+    ],
+    'custom-property-pattern': [
+      '^(?:[a-z][a-z0-9]*(?:-[a-z0-9]+)*|text-[a-z][a-z0-9-]*--(?:line-height|letter-spacing|font-weight))$',
     ],
     'function-no-unknown': [
       true,

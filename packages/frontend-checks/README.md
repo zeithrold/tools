@@ -17,6 +17,8 @@ Tools verification and the three consumer projects have user approval for `minim
 // css-check.config.mjs
 export default {
   files: ['src/**/*.css'],
+  // Optional in the local CSS-first candidate: static utility colors/tokens in source.
+  classFiles: ['src/**/*.{ts,tsx}'],
   tokenFiles: ['node_modules/tailwindcss/theme.css'],
   externalCustomProperties: [],
 }
@@ -28,9 +30,21 @@ pnpm exec ztd-css ./css-check.config.mjs
 
 The config module is reviewed project code and executes during import. `checkCss(options)` is also exported from `@ztd-me/frontend-checks/css`. Every supplied glob must match; missing files and syntax/configuration errors fail. JSON findings print to stdout; a nonzero exit fails the gate. Under `zt check`, the CLI also writes `css.json` to `ZT_ARTIFACTS_DIR`.
 
-Stylelint 17.15 / standard 40 provide native CSS validation; only documented Tailwind directives and `--alpha`/`--spacing` functions receive syntax allowances. The nesting-scoping rule remains enabled, with an exact `custom-variant` at-rule allowance for Tailwind-provided utility roots. Root/media nesting outside that directive still fails. See [variant compatibility](docs/tailwind-variants.md). Undefined `var()` references fail across the supplied files/declaration sources, even with fallbacks. Exact runtime-generated variables can be declared in `externalCustomProperties`; document their owner in the project contract. Imports are not resolved automatically. Neither Sass/Less nor embedded Vue styles are parsed by this CSS-only entrypoint.
+Stylelint 17.15 / standard 40 provide native CSS validation; only documented Tailwind directives and `--alpha`/`--spacing` functions receive syntax allowances. The nesting-scoping rule remains enabled, with precise Tailwind-provided roots. The local CSS-first
+candidate additionally rechecks `@utility` and variant declarations with native property rules,
+supports exact text-role metadata and canonical string import notation. Root/media nesting outside that directive still fails. See [variant compatibility](docs/tailwind-variants.md). Undefined `var()` references fail across the supplied files/declaration sources, even with fallbacks. Exact runtime-generated variables can be declared in `externalCustomProperties`; document their owner in the project contract. Imports are not resolved automatically. Neither Sass/Less nor embedded Vue styles are parsed by this CSS-only entrypoint.
 
-Hex, named and CSS color-function paint literals outside custom-property definitions fail. Token definitions retain each project's values. `transparent`, `currentColor`, inheritance and URLs are allowed. This check covers declarations, not Tailwind arbitrary-value classes, inline JS styles or every possible CSS color expression. An inventory definition is not proof of cascade/theme availability; render the relevant states. No autofix rewrites token values.
+Hex, named and CSS color-function paint literals outside custom-property definitions fail. Token definitions retain each project's values. `transparent`, `currentColor`, inheritance and URLs are allowed. The published declaration gate does not cover inline JS styles or every CSS color expression.
+The local CSS-first candidate additionally checks static string/template utility fragments when
+`classFiles` is configured, including palette colors, arbitrary paint literals and undefined custom
+properties. Native TypeScript AST parsing preserves comment and expression boundaries; dynamic
+expressions and runtime cascade remain outside this static proof. An inventory definition is not proof of cascade/theme availability; render the relevant states. No autofix rewrites token values.
+
+Published 0.1.1 does not contain these CSS-first adaptations. The [reviewed local compatibility
+patch](docs/css-first-patch.md) keeps exact public dependencies and the consumer’s native CSS
+command portable; `pnpm run test:patch` verifies the actual public package with that patch.
+Direct local CLI execution remains supplemental candidate evidence. No dependency promotion,
+staging, publishing or source acceptance is implied.
 
 ## Playwright
 

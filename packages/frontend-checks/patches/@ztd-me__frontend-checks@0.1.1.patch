@@ -1,0 +1,272 @@
+diff --git a/src/css-classes.mjs b/src/css-classes.mjs
+new file mode 100644
+index 0000000..540522e
+--- /dev/null
++++ b/src/css-classes.mjs
+@@ -0,0 +1,114 @@
++import { readFile } from 'node:fs/promises'
++import glob from 'fast-glob'
++import ts from 'typescript'
++import { hasLiteralColor, references } from './css-tokens.mjs'
++
++const colors = new RegExp([
++  '^(?:bg|text|border(?:-[xysetbrl])?|outline|ring|fill|stroke|',
++  'decoration|shadow|accent|caret|from|via|to)-(.+)$',
++].join(''), 'u')
++const palette = new RegExp([
++  '^(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|',
++  'sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|[1-9]00|950)(?:/\\d+)?$',
++].join(''), 'u')
++
++function utility(token) {
++  let start = 0
++  let depth = 0
++  for (let index = 0; index < token.length; index++) {
++    if (token[index] === '[' || token[index] === '(') {
++      depth++
++    }
++    if (token[index] === ']' || token[index] === ')') {
++      depth--
++    }
++    if (token[index] === ':' && depth === 0) {
++      start = index + 1
++    }
++  }
++  return token.slice(start).replace(/^!|!$/gu, '')
++}
++function customProperties(roots, external) {
++  const known = new Set(external ?? [])
++  for (const root of roots) {
++    root.walkDecls(declaration => known.add(declaration.prop))
++    root.walkAtRules('property', rule => known.add(rule.params.trim()))
++  }
++  return known
++}
++function arbitraryValue(value) {
++  if (value.startsWith('(')) {
++    return `var(${value.slice(1, value.lastIndexOf(')'))})`
++  }
++  if (value.startsWith('[')) {
++    return value.slice(1, value.lastIndexOf(']')).replaceAll('_', ' ')
++  }
++  return value
++}
++function literalColor(value) {
++  return palette.test(value) || ['white', 'black'].includes(value)
++    || (value.startsWith('[') && hasLiteralColor(arbitraryValue(value)))
++}
++function staticLiteral(node) {
++  return ts.isStringLiteralLike(node) || ts.isTemplateHead(node)
++    || ts.isTemplateMiddle(node) || ts.isTemplateTail(node)
++}
++function tokenIssues(token, known) {
++  const match = colors.exec(utility(token))
++  if (!match) {
++    return []
++  }
++  const value = match[1]
++  const issues = []
++  if (literalColor(value)) {
++    issues.push([
++      'ztd/semantic-class-color',
++      `Use a semantic Tailwind color token instead of ${token}`,
++    ])
++  }
++  for (const name of references(arbitraryValue(value))) {
++    if (!known.has(name)) {
++      issues.push([
++        'ztd/defined-class-custom-property',
++        `Undefined custom property ${name} in ${token}`,
++      ])
++    }
++  }
++  return issues
++}
++function inspect(file, code, known) {
++  const source = ts.createSourceFile(file, code, ts.ScriptTarget.Latest, true)
++  const warnings = []
++  function visit(node) {
++    if (staticLiteral(node)) {
++      const location = source.getLineAndCharacterOfPosition(node.getStart(source))
++      for (const token of node.text.split(/\s+/u)) {
++        warnings.push(...tokenIssues(token, known).map(([rule, text]) => ({
++          file,
++          line: location.line + 1,
++          column: location.character + 1,
++          rule,
++          text,
++        })))
++      }
++    }
++    ts.forEachChild(node, visit)
++  }
++  visit(source)
++  return warnings
++}
++export async function classWarnings(options, roots, cwd) {
++  const groups = await Promise.all((options.classFiles ?? []).map(async (pattern) => {
++    const selected = await glob(pattern, { cwd, absolute: true, onlyFiles: true, followSymbolicLinks: false })
++    if (!selected.length) {
++      throw new Error(`Class pattern matched no files: ${pattern}`)
++    }
++    return selected
++  }))
++  const known = customProperties(roots, options.externalCustomProperties)
++  const results = await Promise.all([
++    ...new Set(groups.flat()),
++  ].sort().map(async file =>
++    inspect(file, await readFile(file, 'utf8'), known)))
++  return results.flat()
++}
+diff --git a/src/css-config.mjs b/src/css-config.mjs
+index f2eb5f0..cf66aee 100644
+--- a/src/css-config.mjs
++++ b/src/css-config.mjs
+@@ -8,6 +8,7 @@ export const cssConfig = {
+   extends: require.resolve('stylelint-config-standard'),
+   rules: {
+     ...standard.rules,
++    'import-notation': 'string',
+     'at-rule-no-unknown': [
+       true,
+       {
+@@ -26,7 +27,10 @@ export const cssConfig = {
+     ],
+     'nesting-selector-no-missing-scoping-root': [
+       true,
+-      { ignoreAtRules: ['custom-variant'] },
++      { ignoreAtRules: ['custom-variant', 'utility'] },
++    ],
++    'custom-property-pattern': [
++      '^(?:[a-z][a-z0-9]*(?:-[a-z0-9]+)*|text-[a-z][a-z0-9-]*--(?:line-height|letter-spacing|font-weight))$',
+     ],
+     'function-no-unknown': [
+       true,
+diff --git a/src/css-tailwind.mjs b/src/css-tailwind.mjs
+new file mode 100644
+index 0000000..1e041d7
+--- /dev/null
++++ b/src/css-tailwind.mjs
+@@ -0,0 +1,45 @@
++import postcss from 'postcss'
++import stylelint from 'stylelint'
++
++// Stylelint treats unknown block at-rules as descriptor scopes, skipping property validation.
++// Recheck these native Tailwind declaration scopes as ordinary rules with the same source locations.
++export async function tailwindPropertyWarnings(roots) {
++  const reports = await Promise.all(roots.map(async (root) => {
++    const declarations = []
++    root.walkAtRules(/^(?:utility|custom-variant|variant)$/u, (rule) => {
++      rule.walkDecls(declaration => declarations.push(declaration))
++    })
++    if (!declarations.length) {
++      return []
++    }
++    const probe = postcss.root()
++    const originals = new Map()
++    declarations.forEach((declaration, index) => {
++      const selector = `.ztd-tailwind-probe-${index}`
++      probe.append(postcss.rule({ selector, nodes: [
++        declaration.clone(),
++      ] }))
++      originals.set(selector, declaration)
++    })
++    const code = probe.toString()
++    const locations = new Map()
++    postcss.parse(code).walkDecls(declaration =>
++      locations.set(declaration.source.start.line, originals.get(declaration.parent.selector)))
++    const lint = await stylelint.lint({
++      code,
++      codeFilename: root.source.input.file,
++      config: { rules: { 'property-no-unknown': true } },
++    })
++    return lint.results.flatMap(result => result.warnings.map((warning) => {
++      const declaration = locations.get(warning.line)
++      return {
++        file: root.source.input.file,
++        line: declaration?.source.start.line ?? warning.line,
++        column: declaration?.source.start.column ?? warning.column,
++        rule: warning.rule,
++        text: warning.text,
++      }
++    }))
++  }))
++  return reports.flat()
++}
+diff --git a/src/css-tokens.mjs b/src/css-tokens.mjs
+index fe72de8..5b38ffe 100644
+--- a/src/css-tokens.mjs
++++ b/src/css-tokens.mjs
+@@ -4,7 +4,7 @@ import valueParser from 'postcss-value-parser'
+ const colorFunctions = /^(?:rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color)$/i
+ const colorProperties = /^color$|color$|^background(?:$|-)|^border(?:$|-)|^outline(?:$|-)|shadow$|^fill$|^stroke$/i
+ 
+-function references(value) {
++export function references(value) {
+   const names = []
+   valueParser(value).walk((node) => {
+     if (node.type !== 'function' || node.value !== 'var') {
+@@ -18,7 +18,7 @@ function references(value) {
+   return names
+ }
+ 
+-function hasLiteralColor(value) {
++export function hasLiteralColor(value) {
+   let found = false
+   valueParser(value).walk((node) => {
+     if (node.type === 'function' && node.value === 'url') {
+diff --git a/src/css.d.ts b/src/css.d.ts
+index 3c53472..301c9ed 100644
+--- a/src/css.d.ts
++++ b/src/css.d.ts
+@@ -1,19 +1,21 @@
+-export interface CssOptions {
++export type CssOptions = {
+   files: string[]
+   cwd?: string
++  /** Explicit JS/TS/JSX/TSX files whose static Tailwind class literals are checked. */
++  classFiles?: string[]
+   /** External CSS declaration sources. Imports are not resolved implicitly. */
+   tokenFiles?: string[]
+   /** Exact runtime-provided names, reviewed in the project design contract. */
+   externalCustomProperties?: string[]
+ }
+-export interface CssWarning {
++export type CssWarning = {
+   file: string
+   line: number
+   column: number
+   rule: string
+   text: string
+ }
+-export interface CssReport {
++export type CssReport = {
+   schemaVersion: 1
+   status: 'passed' | 'failed'
+   files: string[]
+diff --git a/src/css.mjs b/src/css.mjs
+index 158c9c1..aa688f5 100644
+--- a/src/css.mjs
++++ b/src/css.mjs
+@@ -4,7 +4,9 @@ import process from 'node:process'
+ import glob from 'fast-glob'
+ import postcss from 'postcss'
+ import stylelint from 'stylelint'
++import { classWarnings } from './css-classes.mjs'
+ import { cssConfig } from './css-config.mjs'
++import { tailwindPropertyWarnings } from './css-tailwind.mjs'
+ import { tokenWarnings } from './css-tokens.mjs'
+ 
+ async function sources(patterns, cwd) {
+@@ -44,6 +46,11 @@ export async function checkCss(options) {
+     text: warning.text,
+   })))
+   warnings.push(...tokenWarnings(roots, definitions, options))
++  warnings.push(...await tailwindPropertyWarnings(roots))
++  warnings.push(...await classWarnings(options, [
++    ...roots,
++    ...definitions,
++  ], cwd))
+   return {
+     schemaVersion: 1,
+     status: lint.errored || warnings.length ? 'failed' : 'passed',

@@ -5,9 +5,10 @@ import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 
-export async function consumerSmoke(spec, label) {
+export async function consumerSmoke(spec, label, options = {}) {
   const consumer = await mkdtemp(path.join(os.tmpdir(), 'ztd-frontend-consumer-'))
   await writeConsumerFiles(consumer, spec)
+  await options.beforeInstall?.(consumer)
   execFileSync('pnpm', ['install'], { cwd: consumer, stdio: 'inherit' })
   execFileSync('pnpm', ['install', '--frozen-lockfile'], { cwd: consumer, stdio: 'inherit' })
   execFileSync('node', ['smoke.mjs'], { cwd: consumer, stdio: 'inherit' })

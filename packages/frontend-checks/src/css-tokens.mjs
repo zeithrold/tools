@@ -4,7 +4,7 @@ import valueParser from 'postcss-value-parser'
 const colorFunctions = /^(?:rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color)$/i
 const colorProperties = /^color$|color$|^background(?:$|-)|^border(?:$|-)|^outline(?:$|-)|shadow$|^fill$|^stroke$/i
 
-function references(value) {
+export function references(value) {
   const names = []
   valueParser(value).walk((node) => {
     if (node.type !== 'function' || node.value !== 'var') {
@@ -18,7 +18,7 @@ function references(value) {
   return names
 }
 
-function hasLiteralColor(value) {
+export function hasLiteralColor(value) {
   let found = false
   valueParser(value).walk((node) => {
     if (node.type === 'function' && node.value === 'url') {

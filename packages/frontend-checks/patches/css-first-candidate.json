@@ -1,0 +1,20 @@
+{
+  "package": "@ztd-me/frontend-checks",
+  "version": "0.1.1",
+  "patchSha256": "1a1659072b6019012d9a1601f790f7aad0ae828153bc9d93cba0e81f17ef47d2",
+  "packageExtensions": {
+    "@ztd-me/frontend-checks@0.1.1": {
+      "dependencies": {
+        "typescript": "6.0.3"
+      }
+    }
+  },
+  "files": {
+    "src/css-classes.mjs": "89dd881f64c4b91a24bc6adba40d966f073b26064ebdbcbf79b4b7d567ce34bd",
+    "src/css-config.mjs": "f5765f165107ee557d51ca5580806d528b79846200f83fcd06a8a5677992d0b1",
+    "src/css-tailwind.mjs": "20030ad806649c26285b1a323d79167df00f286a20cc7922efc940cfcee7d478",
+    "src/css-tokens.mjs": "00d599ba96ad217cdf04692a8c9daa503b960b5fca35fdc70083a2de2609a38e",
+    "src/css.d.ts": "bb1254c1e7ce184ee0814770ea84a6227e9b47968b49b7e8633d9f75e761de50",
+    "src/css.mjs": "1e9fecb4fd5330280c5e4d00a2b491ba1ac1bba08a7798ea2add577ea8814950"
+  }
+}

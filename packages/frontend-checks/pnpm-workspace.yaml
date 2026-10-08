@@ -1,5 +1,6 @@
 packages:
   - .
+verifyDepsBeforeRun: error
 minimumReleaseAge: 1440
 minimumReleaseAgeExcludePrune: true
 shellEmulator: true
