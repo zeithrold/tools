@@ -121,8 +121,8 @@ Checks retain strict ESLint, CSS, full TypeScript declaration checking, unit bou
 The Select declaration compatibility patch is documented in [Radix compatibility](docs/radix-compatibility.md). The package retains the original Radix Select interaction and unmodified runtime. The public primitive exports now reach Select declarations; strict consumers retain the documented declaration-only patch.
 
 All CSS gates invoke the installed official `@ztd-me/frontend-checks@0.1.3` CLI. The harness also pins
-`@ztd-me/eslint@0.1.4` for the strict type-alias policy. Both versions require owner promotion and
-fresh registry verification before installation and frozen-lock updates; older published checker
+`@ztd-me/eslint@0.1.5` for the strict type-alias policy and native JavaScript value-reference checks.
+Both versions require owner promotion and fresh registry verification before installation and frozen-lock updates; older published checker
 versions lack the Tailwind utility and text-role metadata contract. Do not patch the checker, replace
 its CLI with sibling source, or add package extensions to provide its runtime dependencies. A
 disposable packed consumer verifies the private compiled exports; the registry consumer verifies the delivered source,
