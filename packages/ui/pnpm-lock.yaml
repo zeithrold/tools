@@ -80,11 +80,11 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.14)
       '@ztd-me/eslint':
-        specifier: 0.1.1
-        version: 0.1.1(@typescript-eslint/typescript-estree@8.71.0(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/utils@8.71.0(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@vue/compiler-sfc@3.5.43)(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(globals@17.13.0)(supports-color@10.2.2)(typescript@6.0.3)
+        specifier: 0.1.4
+        version: 0.1.4(@typescript-eslint/typescript-estree@8.71.0(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/utils@8.71.0(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@vue/compiler-sfc@3.5.43)(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(globals@17.13.0)(supports-color@10.2.2)(typescript@6.0.3)
       '@ztd-me/frontend-checks':
-        specifier: 0.1.1
-        version: 0.1.1(@playwright/test@1.62.0)(playwright-core@1.62.0)(supports-color@10.2.2)(typescript@6.0.3)
+        specifier: 0.1.3
+        version: 0.1.3(@playwright/test@1.62.0)(playwright-core@1.62.0)(supports-color@10.2.2)
       eslint:
         specifier: 10.11.0
         version: 10.11.0(jiti@2.7.0)(supports-color@10.2.2)
@@ -1309,15 +1309,15 @@ packages:
   '@vue/shared@3.5.43':
     resolution: {integrity: sha512-uksS7YGMR5NZyr4JNq0Rp+QyLns0ueaz20KwzIPW9R0LH1Vnt4E+XUM29PNseEbf1www2gOuhuDi5AKOIXag9Q==}
 
-  '@ztd-me/eslint@0.1.1':
-    resolution: {integrity: sha512-ty5OjgNw3N3yAyYSLV8c8OJZPQd/q7y4QRLZuN+j86bhwgNDNHJOykiAjkQJOyiy5C4bNpzDPB9g0qQRi4ASyw==}
+  '@ztd-me/eslint@0.1.4':
+    resolution: {integrity: sha512-wAhKkN6lfUEmUFj6UBjwbCmqOtnYzIpHUexXMcxQlZasuo8xCp0d8UA5BXVlg5N2yES7wJY7DxGTAwxUrvKoSg==}
     engines: {node: '>=22.14.0'}
     peerDependencies:
       eslint: ^10.11.0
       typescript: '>=5.4.0 <6.1.0'
 
-  '@ztd-me/frontend-checks@0.1.1':
-    resolution: {integrity: sha512-R0Xk4nTpHvd+8Z/N2qu/TeOZ+OLdwy+L67JyNk5/+Aa1GRUm08pydHUffvebEKvGPQjpEhiY3yRMN3I9ZO5dWg==}
+  '@ztd-me/frontend-checks@0.1.3':
+    resolution: {integrity: sha512-chTZQVN0XeUxAoPIAj9Kh5L1yUxzfdzE5A3bMwxLnmbUqBJXg9SUsdq9G/uEwv73xEhcwB0fOFxZQfqAjjTwcg==}
     engines: {node: '>=22.14.0'}
     hasBin: true
     peerDependencies:
@@ -4356,7 +4356,7 @@ snapshots:
 
   '@vue/shared@3.5.43': {}
 
-  '@ztd-me/eslint@0.1.1(@typescript-eslint/typescript-estree@8.71.0(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/utils@8.71.0(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@vue/compiler-sfc@3.5.43)(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(globals@17.13.0)(supports-color@10.2.2)(typescript@6.0.3)':
+  '@ztd-me/eslint@0.1.4(@typescript-eslint/typescript-estree@8.71.0(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/utils@8.71.0(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@vue/compiler-sfc@3.5.43)(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(globals@17.13.0)(supports-color@10.2.2)(typescript@6.0.3)':
     dependencies:
       '@antfu/eslint-config': 9.5.1(@eslint-react/eslint-plugin@5.23.3(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/typescript-estree@8.71.0(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/utils@8.71.0(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@vue/compiler-sfc@3.5.43)(eslint-plugin-react-refresh@0.5.7(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2)))(eslint-plugin-sonarjs@4.2.2(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2)))(eslint-plugin-vuejs-accessibility@2.6.0(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(globals@17.13.0)(supports-color@10.2.2))(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
       '@eslint-react/eslint-plugin': 5.23.3(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
@@ -4394,7 +4394,7 @@ snapshots:
       - ts-declaration-location
       - vitest
 
-  '@ztd-me/frontend-checks@0.1.1(@playwright/test@1.62.0)(playwright-core@1.62.0)(supports-color@10.2.2)(typescript@6.0.3)':
+  '@ztd-me/frontend-checks@0.1.3(@playwright/test@1.62.0)(playwright-core@1.62.0)(supports-color@10.2.2)':
     dependencies:
       '@axe-core/playwright': 4.13.0(playwright-core@1.62.0)
       '@playwright/test': 1.62.0
@@ -4404,10 +4404,10 @@ snapshots:
       postcss-value-parser: 4.2.0
       stylelint: 17.15.0(supports-color@10.2.2)(typescript@6.0.3)
       stylelint-config-standard: 40.0.0(stylelint@17.15.0(supports-color@10.2.2)(typescript@6.0.3))
+      typescript: 6.0.3
     transitivePeerDependencies:
       - playwright-core
       - supports-color
-      - typescript
 
   acorn-jsx@5.3.2(acorn@8.18.0):
     dependencies:

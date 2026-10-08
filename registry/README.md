@@ -157,11 +157,12 @@ This mode installs from the pinned public GitHub item, compares its payload with
 checks every installed file byte, and repeats the native and browser gates in a fresh consumer. Only a
 successful receipt with `publicInstallationVerified: true` satisfies the post-merge public-install gate.
 
-The local candidate CSS gate uses the sibling frontend-checks source CLI. Published checker versions
-through 0.1.2 lack the required metadata, string-import and utility checks; official version 0.1.3
-prepares that contract. Owner promotion and fresh registry verification are required before upgrading
-consumer pins. Do not patch the checker, replace its CLI with a local checkout, or add package
-extensions to supply runtime dependencies. A local checker pass is not public release approval.
+All CSS gates use the installed official `@ztd-me/frontend-checks@0.1.3` CLI, and the harness pins
+`@ztd-me/eslint@0.1.4` for its strict type-alias policy. Both npm versions require owner promotion and
+fresh registry verification before installation and frozen-lock updates. Older checker versions lack
+the required metadata, string-import and utility checks. Do not patch the checker, replace its CLI
+with a local checkout, or add package extensions to supply runtime dependencies. A local source
+installation pass is not public release approval.
 
 The delivered `foundation.md` describes generic primitives and the host-injected i18n adapter. Configure
 application `@/*` aliases against its declared source root (normally `src`), and match compiler/bundler/

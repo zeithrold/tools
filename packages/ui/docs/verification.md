@@ -4,22 +4,26 @@
 no-downgrade and other existing pnpm policies. The approved @ztd-me/* exception changes only release age.
 No TLS bypass, browser security exception or trust-store change is part of verification.
 
-The private `packages/ui` source harness pins pnpm 11.22.0, React 19.3.0, TypeScript 6.0.3, ESLint 10.11.0, Vite 8.3.1,
-Playwright 1.62.0 and published frontend-checks 0.1.1. CI repeats complete checks on Node 22 and 24 for
-the PR's exact source SHA. The already published frontend 0.2.0 remains unchanged and available; this
-source transition is not a new npm release.
+The private `packages/ui` source harness pins pnpm 11.22.0, React 19.3.0, TypeScript 6.0.3, ESLint 10.11.0,
+Vite 8.3.1, Playwright 1.62.0, `@ztd-me/eslint` 0.1.4 and `@ztd-me/frontend-checks` 0.1.3. These npm
+versions require owner promotion and fresh registry verification before installation and frozen-lock
+updates. The harness CSS gate and both local and public source consumers invoke the installed official
+`ztd-css` CLI; no sibling source CLI or checker patch is used. CI repeats
+complete checks on Node 22 and 24 for the PR's exact source SHA. The already published frontend 0.2.0
+remains unchanged and available; this source transition is not a new npm UI release.
 
 ## Native and consumer checks
 
 - Strict ESLint, CSS variable validation, full TypeScript declaration checking and build.
-- Eleven unit cases covering preference boundaries, generic policy, cookie/locale validation, footer
-  URLs and the reproduced/patched Select declaration defect.
+- Nineteen unit cases covering preference boundaries, generic policy, cookie/locale validation, typed
+  i18n boundaries, footer URLs and the reproduced/patched Select declaration defect.
 - A fresh consumer installs the actual packed artifact using pnpm, reinstalls with a frozen lock,
   imports all exports, validates Google Fonts CSS and six complete OFL notices plus MIT without font binaries,
   rejects invalid typed API usage, and builds real React SSR and client assets.
 - A separate source consumer uses the real pinned shadcn CLI to preview/install the item, compares all
   installed file bytes, confirms no npm UI runtime dependency, applies the documented declaration
-  patch and runs strict lint/CSS/types, eleven units, SSR/client build and the complete browser suite.
+  patch and runs strict lint/CSS/types, fourteen consumer units, SSR/client build and the complete 32-case browser
+  suite.
   It preserves pnpm security settings and enables `skipLibCheck: false`.
 
 The disposable source consumer initially installs the registry dependencies, then adds the delivered
@@ -28,7 +32,7 @@ Select patch to its own workspace. That deliberate patch change updates its gene
 The next verification step requires `pnpm install --frozen-lockfile`; checked-in package locks and
 release-age, trust and integrity policies remain enforced.
 
-The browser suite covers SSR/hydration, first paint without JavaScript, nonce-bearing CSP, independent
+The 32-case browser suite covers SSR/hydration, first paint without JavaScript, nonce-bearing CSP, independent
 mode/palette selection, all six palettes/light/dark/system, responsive Chinese controls, keyboard/focus,
 entry/exit and reduced motion, 44px touch targets, inert cleanup, fullscreen portals, storage rejection
 and application slots. It preserves unrelated auth/business records and project-owned footer/policy.

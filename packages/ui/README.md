@@ -120,12 +120,12 @@ Checks retain strict ESLint, CSS, full TypeScript declaration checking, unit bou
 
 The Select declaration compatibility patch is documented in [Radix compatibility](docs/radix-compatibility.md). The package retains the original Radix Select interaction and unmodified runtime. The public primitive exports now reach Select declarations; strict consumers retain the documented declaration-only patch.
 
-The CSS gate for this local candidate uses the sibling frontend-checks source CLI. Published
-checker versions through 0.1.2 do not understand the native Tailwind utility and text-role metadata
-contract. Version 0.1.3 prepares that behavior in the official npm package; owner promotion and fresh
-registry verification are required before upgrading consumer pins. Do not patch the checker or add
-package extensions to provide its runtime dependencies. A disposable packed
-consumer verifies the private compiled exports; the registry consumer verifies the delivered source,
+All CSS gates invoke the installed official `@ztd-me/frontend-checks@0.1.3` CLI. The harness also pins
+`@ztd-me/eslint@0.1.4` for the strict type-alias policy. Both versions require owner promotion and
+fresh registry verification before installation and frozen-lock updates; older published checker
+versions lack the Tailwind utility and text-role metadata contract. Do not patch the checker, replace
+its CLI with sibling source, or add package extensions to provide its runtime dependencies. A
+disposable packed consumer verifies the private compiled exports; the registry consumer verifies the delivered source,
 including its strict declaration patch. After owner merge, verify the exact full public source SHA with
 `node scripts/source-smoke.mjs <SOURCE_SHA>` before changing consumer pins. CI verifies both the merged
 base and pushed PR candidate and repeats the gate on main. A candidate receipt is review evidence;

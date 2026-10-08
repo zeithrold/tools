@@ -160,19 +160,11 @@ async function verifySource() {
     '--max-warnings',
     '0',
   ])
-  if (sourceSha === undefined) {
-    await run('node', [
-      path.resolve('../frontend-checks/src/css-cli.mjs'),
-      'css-check.config.mjs',
-    ])
-  }
-  else {
-    await run('pnpm', [
-      'exec',
-      'ztd-css',
-      'css-check.config.mjs',
-    ])
-  }
+  await run('pnpm', [
+    'exec',
+    'ztd-css',
+    'css-check.config.mjs',
+  ])
   await run('pnpm', [
     'exec',
     'tsc',
@@ -271,7 +263,7 @@ const receipt = {
   registryUrl,
   browserArtifacts: browserArtifactRoot(deliveryMode, Boolean(process.env.ZTD_LOCAL_FONT_PREVIEW)),
   fontVerification: process.env.ZTD_LOCAL_FONT_PREVIEW ? 'local-preview-only' : 'google-fonts-api',
-  cssVerification: sourceSha === undefined ? 'local-candidate-checker' : 'published-checker',
+  cssVerification: 'published-checker',
   publicInstallationVerified: false,
 }
 await writeFile('.artifacts/source-consumer.json', JSON.stringify(receipt, null, 2))
