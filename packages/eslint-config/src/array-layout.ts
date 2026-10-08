@@ -16,7 +16,7 @@ function fitsLine(source: SourceCode, node: Node, text: string, tokens: Tokens):
   return Array.from(`${prefix}${text}${suffix}`.replaceAll('\t', '  ')).length <= 120
 }
 
-interface TemplateServices {
+type TemplateServices = {
   getTemplateBodyTokenStore: () => Tokens
   defineTemplateBodyVisitor: (template: Rule.RuleListener, script: Rule.RuleListener) => Rule.RuleListener
 }

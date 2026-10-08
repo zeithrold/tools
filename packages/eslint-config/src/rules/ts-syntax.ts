@@ -1,6 +1,7 @@
 import type { Linter } from 'eslint'
 
 export const tsSyntaxRules: Linter.RulesRecord = {
+  'ts/consistent-type-definitions': ['error', 'type'],
   'ts/no-explicit-any': [
     'error',
     {

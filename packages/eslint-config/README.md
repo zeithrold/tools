@@ -41,6 +41,12 @@ Framework dependencies used by this package are included: enabling a supported p
 
 ## TypeScript
 
+Object definitions use `type` aliases; `ts/consistent-type-definitions` is explicitly `['error', 'type']`,
+overriding the inherited interface preference. Compose aliases with intersections/unions and preserve
+consistent type-only imports. This concerns TypeScript declarations, separately from the application's
+source import/path alias. Do not alter upstream declarations to normalize your own contracts.
+
+
 Type-aware checking is on by default, using `tsconfig.json`. Supply an existing project config with `strict: true` (including `strictNullChecks`) and `noUncheckedIndexedAccess: true`. Inherited compiler options are resolved; missing configs and unsafe compiler options fail explicitly. The selected TS config must include every linted TS/TSX file, including handwritten configuration and test files. For solution-style project references, point to the actual linted project's config.
 
 The parser uses the explicit TS project, with `.vue` as an extra file extension and `vue-eslint-parser` as the SFC outer parser. Typed rules cover Vue scripts as well as TS and TSX. Vue template expressions use Vue rules and the custom array visitor; TypeScript rules do not type-check template expressions.

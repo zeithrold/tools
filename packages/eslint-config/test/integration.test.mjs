@@ -20,6 +20,21 @@ test('real TypeScript, React TSX and typed Vue fixtures pass', async () => {
   }
 })
 
+test('explicit type-alias policy overrides inherited interfaces and keeps typed imports', async () => {
+  const file = resolve(fixtureRoot, 'safe.ts')
+  const effective = await eslint.calculateConfigForFile(file)
+  assert.deepEqual(effective.rules['ts/consistent-type-definitions'], [2, 'type'])
+  assert.equal(effective.rules['ts/consistent-type-imports'][0], 2)
+  const source = 'export type Base = { id: string }\nexport interface RecordType extends Base { title: string }\n'
+  assert.equal(messagesFor(await lintText(eslint, source, file), 'ts/consistent-type-definitions').length, 1)
+  const fixer = await makeESLint(options, { fix: true })
+  const fixed = await lintText(fixer, source, file)
+  assert.equal(fixed.errorCount, 0)
+  assert.match(fixed.output, /export type RecordType =/u)
+  assert.match(fixed.output, /& Base/u)
+  assert.equal((await lintText(eslint, fixed.output, file)).errorCount, 0)
+})
+
 test('typed safety restores explicit any, unsafe access, promises, booleans and numeric sort', async () => {
   const [result] = await eslint.lintFiles(resolve(fixtureRoot, 'unsafe.ts'))
   for (const rule of [

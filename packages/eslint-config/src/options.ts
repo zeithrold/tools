@@ -1,14 +1,14 @@
 import type { OptionsConfig, StylisticConfig, TypedFlatConfigItem } from '@antfu/eslint-config'
 import type { Linter } from 'eslint'
 
-export interface TypeScriptOptions {
+export type TypeScriptOptions = {
   /** Default: tsconfig.json. Its resolved compiler options must enable strict and noUncheckedIndexedAccess. */
   tsconfigPath?: string
   /** Absolute project root; defaults to process.cwd(). */
   tsconfigRootDir?: string
 }
 
-export interface ReactOptions {
+export type ReactOptions = {
   /** Scope both antfu and strict React rules; defaults to JS/TS source extensions. */
   files?: string[]
   /** Additional official React Compiler checks. */
@@ -21,7 +21,7 @@ export interface ReactOptions {
   appDir?: string
 }
 
-export interface VueOptions {
+export type VueOptions = {
   /** Vue 3 SFCs. Default: **\/*.vue. */
   files?: string[]
 }
@@ -39,7 +39,7 @@ type RemovedOptions
 
 type BaseOptions = Omit<OptionsConfig, RemovedOptions>
 
-export interface ConfigOptions extends BaseOptions {
+export type ConfigOptions = {
   /** Stable formatting remains active because line limits and array policy require it. */
   stylistic?: true | Omit<StylisticConfig, 'experimental'>
   /** Typed checking is enabled by default. Set false only for a JavaScript-only scope. */
@@ -52,6 +52,6 @@ export interface ConfigOptions extends BaseOptions {
   test?: boolean
   /** Final, explicit project rule overrides. */
   rules?: Linter.RulesRecord
-}
+} & BaseOptions
 
 export type LocalConfig = TypedFlatConfigItem | Linter.Config

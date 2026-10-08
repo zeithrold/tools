@@ -23,6 +23,12 @@ The implementation does not claim a Vue index-key check: current stable Vue rule
 
 Version 0.1.1 adds a scoped App Router adapter for the inherited Fast Refresh export rule without changing the 198-entry catalog. [Framework compatibility](framework-compatibility.md) explains the explicit API, scope, upstream contracts and runtime evidence. Antfu also inherits package-manager policy checks outside the research catalog; [pnpm policy](pnpm-policy.md) describes their effects and version requirements.
 
+The frontend foundation policy additionally sets `ts/consistent-type-definitions: ['error', 'type']`
+explicitly, replacing the inherited interface preference without changing the historical 198-entry
+research inventory. Object contracts compose with type intersections/unions; consistent type-only
+imports and all existing typed safety remain active. Import/path aliases are a separate application
+source-layout concern.
+
 ## shared
 
 | Rule | Exact researched value | Disposition |

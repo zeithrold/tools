@@ -3,7 +3,7 @@ import type { JSX, ReactNode } from 'react'
 export const metadata = { title: 'Strict layout' }
 export const viewport = { width: 'device-width', initialScale: 1 }
 
-interface LayoutProps {
+type LayoutProps = {
   children: ReactNode
 }
 
