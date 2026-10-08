@@ -7,8 +7,9 @@ description: Use when implementing or reviewing frontend architecture, component
 
 Read AGENTS.md, the project design contract, scripts, compiler config and framework entry points. Use ui-foundation/ui-web for design and frontend-verification for execution evidence. Select Skills explicitly in zt.json; sync does not resolve their dependencies.
 
-1. Map the feature from route/server boundary through validation, state owner and components. Follow [boundaries](references/boundaries.md); keep business/deployment assumptions local.
-2. Reuse semantic tokens, typography and component variants. Define missing semantic roles, including destructive actions, in the project contract without copying another product's values.
+1. Map the feature from route/server boundary through validation, state owner and components. Follow [boundaries](references/boundaries.md) and [source structure](references/source-structure.md); keep business/deployment assumptions local.
+2. Reuse semantic tokens, typography and component variants. Use configurable body/control/help size roles
+   (18/16/14px baseline), rather than shrinking whole forms or scattering literal sizes. Define missing semantic roles, including destructive actions, in the project contract without copying another product's values.
    Fonts must use Noto Sans or Noto Serif families, including appropriate CJK variants, and Noto Color
    Emoji for all emoji. Support at least English and Chinese/Japanese/Korean glyphs. Use Noto Sans for ordinary
    UI; choose Noto Serif only where the content benefits from serif typography. The Google Fonts
@@ -34,6 +35,10 @@ Read AGENTS.md, the project design contract, scripts, compiler config and framew
 ## Generic shared shell
 
 The `@ztd-me/ui` source item provides reusable chrome, validated non-sensitive appearance/UI locale and explicit persistence mechanisms. Its defaults are Neutral + System and six palettes. Consumers supply their own brand, footer/repository/contact content, cookie name/domain/Secure choice, optional storage notification key and business slots. Tools must not select policy through project names or hostnames, enforce a repository-host allowlist, or carry legacy storage mappings. Remove rejected legacy mappings entirely rather than moving them into consumers; old business/auth storage stays untouched. Shared domain cookies are untrusted UI input. Consumers own development/preview isolation, deployment, authentication, account state and business navigation. Generic shell guidance grants no sync ownership over project components or production files. Preserve native strict gates and upstream licenses. The owner reviews and merges upstream changes. Final source integration requires a full approved source SHA and fresh public installation before consumer acceptance; local source/packed evidence or a local-font Cloud preview does not verify actual Google Fonts loading. Consumers own installed source and reviewed updates; no automatic overwrite or new synchronization service is provided.
+
+For shared primitives, native scrolling, overlay semantics and explicit adapter injection, read
+[shared primitive integration](references/shared-primitives.md). Do not construct a hidden
+translation engine inside a component or library.
 
 The upstream canonical source and private verification harness are in `tools/packages/ui`;
 `@ztd-me/ui` is the source registry item, with no npm UI binary.
