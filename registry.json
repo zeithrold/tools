@@ -7,15 +7,26 @@
       "name": "ui",
       "type": "registry:item",
       "title": "@ztd-me/ui",
-      "description": "Consumer-owned generic React shell, appearance and locale source with explicit consumer policy.",
+      "description": "Consumer-owned React shell, accessible Radix primitives, typography and injected localization.",
       "dependencies": [
         "react@19.3.0",
         "react-dom@19.3.0",
+        "@radix-ui/react-accordion@1.2.20",
+        "@radix-ui/react-alert-dialog@1.1.23",
+        "@radix-ui/react-checkbox@1.3.11",
+        "@radix-ui/react-collapsible@1.1.20",
+        "@radix-ui/react-dialog@1.1.23",
         "@radix-ui/react-dropdown-menu@2.1.24",
+        "@radix-ui/react-scroll-area@1.2.18",
         "@radix-ui/react-select@2.3.7",
         "@radix-ui/react-slot@1.3.3",
+        "@radix-ui/react-tabs@1.1.21",
+        "@radix-ui/react-tooltip@1.2.16",
         "get-nonce@1.0.1",
-        "lucide-react@1.49.0"
+        "lucide-react@1.49.0",
+        "vaul@1.1.2",
+        "tailwind-merge@3.7.0",
+        "@radix-ui/react-switch@1.3.7"
       ],
       "files": [
         {
@@ -129,6 +140,11 @@
           "target": "@ui/ztd-me/types.ts"
         },
         {
+          "path": "packages/ui/src/ui/button-variants.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/button-variants.ts"
+        },
+        {
           "path": "packages/ui/src/ui/button.tsx",
           "type": "registry:file",
           "target": "@ui/ztd-me/ui/button.tsx"
@@ -227,7 +243,176 @@
           "path": "packages/ui/docs/fonts.md",
           "type": "registry:file",
           "target": "@ui/ztd-me/fonts.md"
+        },
+        {
+          "path": "packages/ui/src/i18n.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/i18n.ts"
+        },
+        {
+          "path": "packages/ui/src/styles/primitives.css",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/styles/primitives.css"
+        },
+        {
+          "path": "packages/ui/src/ui/accordion.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/accordion.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/alert-dialog.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/alert-dialog.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/card.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/card.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/checkbox.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/checkbox.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/collapsible.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/collapsible.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/dialog.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/dialog.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/fields.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/fields.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/portal.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/portal.ts"
+        },
+        {
+          "path": "packages/ui/src/ui/scroll-area.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/scroll-area.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/select.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/select.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/sheet.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/sheet.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/tabs.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/tabs.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/tooltip.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/tooltip.tsx"
+        },
+        {
+          "path": "packages/ui/src/use-i18n.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/use-i18n.ts"
+        },
+        {
+          "path": "packages/ui/docs/foundation.md",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/foundation.md"
+        },
+        {
+          "path": "packages/ui/third-party/RADIX-MIT.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/RADIX-MIT.txt"
+        },
+        {
+          "path": "packages/ui/src/tailwind.css",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/tailwind.css"
+        },
+        {
+          "path": "packages/ui/src/ui/classes.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/classes.ts"
+        },
+        {
+          "path": "packages/ui/src/ui/cn.ts",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/cn.ts"
+        },
+        {
+          "path": "packages/ui/src/ui/drawer.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/drawer.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/color-grid.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/color-grid.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/setting-section.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/setting-section.tsx"
+        },
+        {
+          "path": "packages/ui/src/ui/switch.tsx",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/ui/switch.tsx"
+        },
+        {
+          "path": "packages/ui/src/styles/fonts-serif.css",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/styles/fonts-serif.css"
+        },
+        {
+          "path": "packages/ui/src/styles/drawer.css",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/styles/drawer.css"
+        },
+        {
+          "path": "packages/ui/patches/vaul@1.1.2.patch",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/patches/vaul@1.1.2.patch"
+        },
+        {
+          "path": "packages/ui/third-party/VAUL-MIT.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/VAUL-MIT.txt"
+        },
+        {
+          "path": "packages/ui/third-party/NOTO-SERIF-OFL.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/NOTO-SERIF-OFL.txt"
+        },
+        {
+          "path": "packages/ui/third-party/NOTO-SERIF-SC-OFL.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/NOTO-SERIF-SC-OFL.txt"
+        },
+        {
+          "path": "packages/ui/third-party/NOTO-SERIF-JP-OFL.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/NOTO-SERIF-JP-OFL.txt"
+        },
+        {
+          "path": "packages/ui/third-party/NOTO-SERIF-KR-OFL.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/NOTO-SERIF-KR-OFL.txt"
         }
+      ],
+      "devDependencies": [
+        "tailwindcss@4.3.3",
+        "@tailwindcss/vite@4.3.3"
       ]
     }
   ]

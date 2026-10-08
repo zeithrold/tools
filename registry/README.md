@@ -53,6 +53,7 @@ existing `pnpm-workspace.yaml`, preserving its security policies and unrelated p
 ```yaml
 patchedDependencies:
   '@radix-ui/react-select@2.3.7': components/ui/ztd-me/patches/@radix-ui__react-select@2.3.7.patch
+  'vaul@1.1.2': components/ui/ztd-me/patches/vaul@1.1.2.patch
 ```
 
 Adjust the patch path to the actual configured `ui` directory, then run `pnpm install` and commit the
@@ -63,9 +64,19 @@ diagnostic. Review and remove the patch only when a verified upstream release fi
 ## Consume and own the source
 
 For the same example layout, the server-safe entry is `components/ui/ztd-me/index.ts`, the client entry
-is `components/ui/ztd-me/client.ts`, and the stylesheet is `components/ui/ztd-me/styles.css`. Import these
-through the consumer's own aliases or relative paths. The stylesheet includes font, tokens, shell and
-motion CSS. Fonts load directly from the Google Fonts API, with English/CJK Noto Sans and Noto Color
+is `components/ui/ztd-me/client.ts`, and the CSS-first entry is `components/ui/ztd-me/tailwind.css`. Import these
+through the consumer's own aliases or relative paths. Import Tailwind first, then this entry, and include the installed directory in source detection:
+
+```css
+@import "tailwindcss";
+@import "./components/ui/ztd-me/tailwind.css";
+@source "./components/ui/ztd-me";
+```
+
+Use exact `tailwindcss@4.3.3` and `@tailwindcss/vite@4.3.3` with the native Vite plugin (or the host
+framework’s native Tailwind integration). The entry includes fonts, runtime tokens and native motion;
+layout is compiled from delivered TSX. Optional Serif is `styles/fonts-serif.css`. Vaul’s documented
+patch prevents module-load style injection; its static behavior CSS is already included. Fonts load directly from the Google Fonts API, with English/CJK Noto Sans and Noto Color
 Emoji for all emoji. There are no font binaries or Fontsource dependencies. Read the delivered `fonts.md` for
 language-specific glyphs, weights, third-party requests, CSP, privacy and remote-font mutability.
 Preserve the delivered MIT and Noto OFL notices.
@@ -77,12 +88,12 @@ stroke and alignment by role. Give icon-only controls an accessible name; decora
 ```tsx
 import { createPreferencePolicy, resolveInitialPreferences } from './components/ui/ztd-me/index.js'
 import { FrontendProvider, PublicShell } from './components/ui/ztd-me/client.js'
-import './components/ui/ztd-me/styles.css'
+// Shared Tailwind imports belong in the host stylesheet.
 
 const policy = createPreferencePolicy({ name: 'consumer.ui.v1', secure: true })
 const initialPreferences = resolveInitialPreferences({ policy })
 
-export function Example() {
+export function Example(): React.JSX.Element {
   return (
     <FrontendProvider initialPreferences={initialPreferences} policy={policy}>
       <PublicShell brand={{ label: 'Consumer', homeHref: '/' }}>
@@ -128,7 +139,7 @@ pnpm run test:source
 ```
 
 The second gate installs the local item with the real shadcn CLI in a disposable synthetic consumer,
-applies the documented pnpm patch, verifies no frontend runtime dependency, and runs native strict gates
+applies the documented pnpm patches, verifies no frontend runtime dependency, and runs native strict gates
 and the complete browser suite. Its loopback server exists only for the test; it is not registry hosting.
 
 After the owner merges the approved revision, check out that exact full SHA and run:
@@ -140,3 +151,13 @@ node scripts/source-smoke.mjs <SOURCE_SHA>
 This mode installs from the pinned public GitHub item, compares its payload with the checked-out source,
 checks every installed file byte, and repeats the native and browser gates in a fresh consumer. Only a
 successful receipt with `publicInstallationVerified: true` satisfies the post-merge public-install gate.
+
+The local candidate CSS gate uses the sibling frontend-checks source CLI; its updated metadata,
+string-import and utility checks are not yet in published 0.1.1. Keep portable published consumer pins
+and record candidate verification separately; a local checker pass is not public release approval.
+
+The delivered `foundation.md` describes generic primitives and the host-injected i18n adapter. Configure
+application `@/*` aliases against its declared source root (normally `src`), and match compiler/bundler/
+test/registry mappings. Shared source keeps its portable relative ESM graph. New primitives preserve
+provider portal/nonce ownership and native scrolling. Body/control/help sizes use configurable
+18/16/14px semantic roles. This candidate does not change the requirement for reviewed public source.

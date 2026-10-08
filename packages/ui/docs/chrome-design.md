@@ -6,7 +6,7 @@ Production consumer migrations require fresh public source verification and cons
 
 ## Visual decisions
 
-- Appbar controls use 13px text, a 16px appearance icon and a 14px locale chevron. They have no boxed
+- Appbar controls use the configurable 16px control role, a 16px appearance icon and a 14px locale chevron. They have no boxed
   border at rest. Hover and open states use a 32px visual surface within the retained 44px hit area.
 - The 2px accent focus outline remains visible around the full hit area. Compact appearance text still
   hides below 640px; the locale label stays visible. Consumer navigation remains a consumer slot.
@@ -14,6 +14,9 @@ Production consumer migrations require fresh public source verification and cons
   palettes. It must not be the sole signal for a control, focus, selection or error. Foreground, muted
   text, accent and focus colors remain unchanged. Consumer surfaces that use this token also soften;
   consumer-authored hardcoded borders require a separate consumer change.
+- Button hover uses semantic surfaces per variant: muted for outline/ghost, an 88% action or
+  destructive mix for filled variants. A brightness filter is not used because it leaves transparent
+  variants unchanged and darkens light filled buttons in dark mode.
 - Appearance content retains its 220px width. Locale content uses its trigger width with a 128px minimum.
 - Menus use a subtle semantic shadow. Entry fades and scales from 95%, with a 4px side-aware translation
   over 150ms; exit reverses over 100ms. Reduced motion removes these animations. Coarse-pointer choices
@@ -31,7 +34,7 @@ content during CSS exit animation. No animation dependency is needed.
 
 Radix owns these runtime custom properties, explicitly inventoried by the CSS gate:
 `--radix-dropdown-menu-content-transform-origin`, `--radix-select-content-transform-origin`, and
-`--radix-select-trigger-width`. The inventory does not exempt other undefined variables.
+`--radix-select-trigger-width` and `--radix-select-content-available-height`. The inventory does not exempt other undefined variables.
 
 ## Verification and evidence
 

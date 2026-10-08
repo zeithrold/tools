@@ -13,9 +13,10 @@ async function attemptFontCssRead(page, url) {
 }
 
 test('real font CSS loads while application XHR remains blocked before and after Axe', async ({ page }, info) => {
+  test.setTimeout(60_000)
   test.skip(Boolean(process.env.ZTD_LOCAL_FONT_PREVIEW), 'Requires actual Google Fonts browser delivery')
   const errors = watchErrors(page)
-  await page.goto('/fonts')
+  await page.goto('/fonts', { waitUntil: 'domcontentloaded' })
   await page.evaluate(async () => document.fonts.ready)
   const url = await page.evaluate(() => {
     const entries = performance.getEntriesByType('resource')

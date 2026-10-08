@@ -2,6 +2,24 @@ import { execFileSync } from 'node:child_process'
 import { cp, mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
+async function configureTailwind(consumer) {
+  await writeFile(path.join(consumer, 'vite.config.ts'), 'import { defineConfig } from \'vite\';\n'
+  + 'import tailwind from \'@tailwindcss/vite\';\n'
+  + 'export default defineConfig({ plugins: [tailwind()] });\n')
+  const fixture = path.join(consumer, 'fixture.css')
+  await writeFile(fixture, `@import \"tailwindcss\";\n${await readFile(fixture, 'utf8')}`)
+}
+
+async function configureTypes(consumer) {
+  const config = JSON.parse(await readFile('tsconfig.build.json', 'utf8'))
+  config.compilerOptions.noEmit = true
+  config.compilerOptions.types.push('vite/client')
+  delete config.compilerOptions.rootDir
+  delete config.compilerOptions.outDir
+  config.include = ['*.tsx']
+  await writeFile(path.join(consumer, 'tsconfig.json'), JSON.stringify(config))
+}
+
 export async function prepareConsumer(packageSpecifier) {
   await mkdir('.artifacts', { recursive: true })
   const consumer = await mkdtemp(path.resolve('.artifacts/consumer-'))
@@ -11,6 +29,8 @@ export async function prepareConsumer(packageSpecifier) {
     '@types/react',
     '@types/react-dom',
     '@types/node',
+    'tailwindcss',
+    '@tailwindcss/vite',
     'typescript',
     'vite',
   ].includes(name)))
@@ -28,15 +48,10 @@ export async function prepareConsumer(packageSpecifier) {
     devDependencies,
   }))
   const workspace = await readFile('pnpm-workspace.yaml', 'utf8')
-  const unpatchedPolicy = workspace.split('patchedDependencies:')[0]
-  await writeFile(path.join(consumer, 'pnpm-workspace.yaml'), unpatchedPolicy)
-  const config = JSON.parse(await readFile('tsconfig.build.json', 'utf8'))
-  config.compilerOptions.noEmit = true
-  config.compilerOptions.types.push('vite/client')
-  delete config.compilerOptions.rootDir
-  delete config.compilerOptions.outDir
-  config.include = ['*.tsx']
-  await writeFile(path.join(consumer, 'tsconfig.json'), JSON.stringify(config))
+  await cp('patches', path.join(consumer, 'patches'), { recursive: true })
+  await writeFile(path.join(consumer, 'pnpm-workspace.yaml'), workspace)
+  await configureTailwind(consumer)
+  await configureTypes(consumer)
   const run = args => execFileSync('pnpm', args, { cwd: consumer, stdio: 'inherit' })
   run(['install'])
   run(['install', '--frozen-lockfile'])

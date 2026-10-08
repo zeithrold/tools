@@ -78,6 +78,7 @@ async function prepareProject() {
   }))
   for (const file of [
     'Fixture.tsx',
+    'PrimitiveFixture.tsx',
     'api.tsx',
     'client.tsx',
     'server.tsx',
@@ -113,7 +114,15 @@ async function configureVerification() {
   const workspacePath = path.join(consumer, 'pnpm-workspace.yaml')
   const workspace = await readFile(workspacePath, 'utf8')
   await writeFile(workspacePath, `${workspace}patchedDependencies:\n`
-  + `  '@radix-ui/react-select@2.3.7': ${destination}/patches/@radix-ui__react-select@2.3.7.patch\n`)
+  + `  '@radix-ui/react-select@2.3.7': ${destination}/patches/@radix-ui__react-select@2.3.7.patch\n`
+  + `  'vaul@1.1.2': ${destination}/patches/vaul@1.1.2.patch\n`)
+  await writeFile(path.join(consumer, 'vite.config.ts'), 'import { defineConfig } from \'vite\';\n'
+  + 'import tailwind from \'@tailwindcss/vite\';\n'
+  + 'export default defineConfig({ plugins: [tailwind()] });\n')
+  const fixture = path.join(consumer, 'fixture.css')
+  const cssEntry = `@import "tailwindcss";\n@import "./${destination}/tailwind.css";\n`
+    + `@source "./${destination}";\n`
+  await writeFile(fixture, cssEntry + await readFile(fixture, 'utf8'))
   // This disposable lock must first record the newly installed patch; verifySource then freezes it.
   await run('pnpm', ['install', '--no-frozen-lockfile'])
 }
@@ -122,6 +131,7 @@ async function checkUnits() {
   await mkdir(path.join(consumer, 'test'), { recursive: true })
   for (const file of [
     'preferences.test.mjs',
+    'i18n.test.mjs',
     'footer.test.mjs',
     'radix-types.test.mjs',
   ]) {
@@ -135,6 +145,7 @@ async function checkUnits() {
   await run('node', [
     '--test',
     'test/preferences.test.mjs',
+    'test/i18n.test.mjs',
     'test/footer.test.mjs',
     'test/radix-types.test.mjs',
   ])
@@ -149,11 +160,19 @@ async function verifySource() {
     '--max-warnings',
     '0',
   ])
-  await run('pnpm', [
-    'exec',
-    'ztd-css',
-    'css-check.config.mjs',
-  ])
+  if (sourceSha === undefined) {
+    await run('node', [
+      path.resolve('../frontend-checks/src/css-cli.mjs'),
+      'css-check.config.mjs',
+    ])
+  }
+  else {
+    await run('pnpm', [
+      'exec',
+      'ztd-css',
+      'css-check.config.mjs',
+    ])
+  }
   await run('pnpm', [
     'exec',
     'tsc',
@@ -250,6 +269,7 @@ const receipt = {
   registryUrl,
   browserArtifacts: browserArtifactRoot(deliveryMode, Boolean(process.env.ZTD_LOCAL_FONT_PREVIEW)),
   fontVerification: process.env.ZTD_LOCAL_FONT_PREVIEW ? 'local-preview-only' : 'google-fonts-api',
+  cssVerification: sourceSha === undefined ? 'local-candidate-checker' : 'published-checker',
   publicInstallationVerified: false,
 }
 await writeFile('.artifacts/source-consumer.json', JSON.stringify(receipt, null, 2))

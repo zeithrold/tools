@@ -3,9 +3,10 @@ import { useCallback, useState } from 'react'
 import { FrontendProvider, PublicShell, ApplicationShell, useFrontendPreferences } from '@ztd-me/ui/client'
 import { ReviewContent, ReviewNavigation } from './ReviewContent.js'
 import { FontSpecimens } from './FontSpecimens.js'
+import { PrimitiveFixture } from './PrimitiveFixture.js'
 import { ChineseReviewContent } from './ChineseReviewContent.js'
 
-export interface FixtureProps {
+export type FixtureProps = {
   initialPreferences: FrontendPreferences
   policy: PreferencePolicy
   application: boolean
@@ -14,6 +15,7 @@ export interface FixtureProps {
   review: boolean
   fonts: boolean
   chinese?: boolean
+  primitives?: boolean
 }
 function FixtureLink(props: LinkProps): React.JSX.Element {
   return <a {...props} data-router-link="fixture" />
@@ -67,8 +69,10 @@ export function Fixture(props: FixtureProps): React.JSX.Element {
             serviceNotice={<p role="status">Synthetic service notice</p>}
           ><State persistenceErrors={persistenceErrors} /></ApplicationShell>
         ) : <PublicShell {...common}>
-          {props.fonts
-            ? <FontSpecimens />
+          {props.primitives
+            ? <PrimitiveFixture />
+            : props.fonts
+              ? <FontSpecimens />
             : props.chinese
               ? <ChineseReviewContent />
               : props.review

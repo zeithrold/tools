@@ -1,6 +1,6 @@
 # Radix Select declaration compatibility
 
-The runtime retains shadcn's new-york/Radix composition and the intended Select keyboard interaction. It uses exact individual Radix primitives: dropdown-menu 2.1.24, select 2.3.7 and slot 1.3.3. Direct imports avoid loading unrelated primitives and do not replace Radix. Consumers audit their own resolved versions before composing primitives from different packages.
+The runtime retains shadcn's new-york/Radix composition and the intended Select keyboard interaction. Its exact individual primitives are inventoried below; the manifest, registry and lock retain these pins. Direct imports avoid loading unrelated primitives and do not replace Radix. Consumers audit their own resolved versions before composing primitives from different packages.
 
 Compiler options affect whether the upstream declaration conflict is checked. The private UI source harness keeps `strict: true`, `exactOptionalPropertyTypes: true` and `skipLibCheck: false`; consumer compiler settings and dependency versions remain consumer-owned.
 
@@ -26,6 +26,30 @@ interface SelectPopperPositionProps extends
 
 No JavaScript, exported public Select props, casts, compiler flags, security policies or upstream licenses change. `pnpm-workspace.yaml` and the lockfile pin the patch hash. The regression test reconstructs the original declaration and requires TS2320, then requires the patched dependency to compile with strict library checking.
 
-The private harness's compiled declarations use explicit React/own types and do not expose Select's internal declarations. An independent packed consumer uses normal, unpatched registry dependencies and full declaration checking, and verifies actual Select behavior, focus/inert restoration and keyboard navigation.
+The public primitive exports now reach Radix Select declarations. Both the independent packed consumer
+and source consumer install this same documented pnpm patch and retain full declaration checking.
+The patch is included with the source/private artifact; preserve it when consuming the enhanced Select
+API under these strict compiler settings. Native Select remains available for standard select/option forms.
 
 Remove the patch when a stable Select release has the corrected inheritance and passes the same regression, source build and unpatched packed-consumer checks. Update the exact dependency and patch lock together; do not suppress the failing declaration or switch controls to conceal it.
+
+## Primitive dependency inventory
+
+| @radix-ui/react- package | Version |
+| --- | --- |
+| accordion | 1.2.20 |
+| alert-dialog | 1.1.23 |
+| checkbox | 1.3.11 |
+| collapsible | 1.1.20 |
+| dialog | 1.1.23 |
+| dropdown-menu | 2.1.24 |
+| scroll-area | 1.2.18 |
+| select | 2.3.7 (declaration-only patch) |
+| slot | 1.3.3 |
+| tabs | 1.1.21 |
+| tooltip | 1.2.16 |
+
+All retain upstream MIT licensing; preserve WorkOS's full RADIX-MIT.txt notice and installed dependency
+notices. The selection respects the existing release-age/trust policy; no new exception is required.
+The private identity audit compares the resolved React, preference context and shared Radix modules in
+its actual disposable consumer. Its result does not certify an uninspected production dependency graph.

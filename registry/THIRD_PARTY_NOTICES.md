@@ -13,3 +13,18 @@ The delivered self-owned source is MIT licensed; see `LICENSE`. This does not re
 
 Sources: [shadcn/ui](https://github.com/shadcn-ui/ui), [Noto Sans](https://github.com/notofonts/latin-greek-cyrillic),
 [Noto CJK](https://github.com/notofonts/noto-cjk), and [Noto Emoji](https://github.com/googlefonts/noto-emoji).
+
+The primitive foundation also preserves Radix's MIT notice (`third-party/RADIX-MIT.txt`, copyright 2022 WorkOS).
+Individual Radix packages remain separately installed dependencies; preserve their upstream notices.
+
+## Tailwind component foundation
+
+Tailwind CSS and tailwind-merge are MIT licensed. The source item requires Tailwind CSS 4.3.3
+compilation and pins tailwind-merge 3.7.0. Vaul 1.1.2 (MIT, Emil Kowalski) supplies Drawer gestures;
+VAUL-MIT.txt retains its notice. The included exact patch removes runtime stylesheet injection only;
+reviewed static behavioral CSS retains the native presence, drag and snap-point selectors under
+components layer. It fixes the upstream invalid hitarea selector, removes a duplicate selector and
+uses semantic handle color and scoped keyframe names. No CSP policy is weakened.
+
+Noto Serif, Noto Serif SC, Noto Serif JP and Noto Serif KR are opt-in Google Fonts families, each with
+its upstream SIL OFL 1.1 notice retained. UI defaults remain Noto Sans with CJK and Color Emoji.

@@ -1,3 +1,4 @@
+import { createI18nAdapter } from '@ztd-me/ui'
 import type {} from '@ztd-me/ui/styles.css'
 import type { FrontendPreferences, PreferencePolicy, ShellProps } from '@ztd-me/ui'
 import { FrontendProvider, PublicShell, ApplicationShell, useFrontendPreferences } from '@ztd-me/ui/client'
@@ -32,3 +33,14 @@ export function setters(): void {
   // @ts-expect-error Only supported locales are accepted.
   state.setLocale('zh-TW')
 }
+
+const catalog = { common: { retry: 'Retry' }, editor: { save: 'Save' } }
+const adapter = createI18nAdapter({
+  resources: { en: catalog, 'zh-CN': catalog },
+  instance: { translate: request => request.key },
+})
+adapter.t('en', 'editor', 'save')
+// @ts-expect-error Unknown namespaces must be rejected by the injected typed adapter.
+adapter.t('en', 'absent', 'save')
+// @ts-expect-error Keys belong to their declared namespace rather than a global string dictionary.
+adapter.t('en', 'common', 'save')

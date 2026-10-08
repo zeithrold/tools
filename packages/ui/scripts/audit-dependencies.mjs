@@ -19,6 +19,23 @@ const modules = [
   'locale-select.js',
   'provider.js',
   'context.js',
+  'use-i18n.js',
+  'ui/button.js',
+  'ui/accordion.js',
+  'ui/checkbox.js',
+  'ui/dialog.js',
+  'ui/alert-dialog.js',
+  'ui/sheet.js',
+  'ui/select.js',
+  'ui/scroll-area.js',
+  'ui/tabs.js',
+  'ui/tooltip.js',
+  'ui/portal.js',
+  'ui/drawer.js',
+  'ui/switch.js',
+  'ui/color-grid.js',
+  'ui/setting-section.js',
+  'ui/collapsible.js',
 ]
 const origins = Object.fromEntries(modules.map(file => [
   file,
@@ -30,6 +47,11 @@ const choiceDropdown = await resolve('ui/menu-choice.js', '@radix-ui/react-dropd
 const select = await resolve('locale-select.js', '@radix-ui/react-select')
 const react = await realpath(rootRequire.resolve('react'))
 assert.equal(dropdown, choiceDropdown)
+const drawer = await resolve('ui/drawer.js', 'vaul')
+const drawerRequire = createRequire(drawer)
+const drawerDialog = await realpath(drawerRequire.resolve('@radix-ui/react-dialog'))
+assert.equal(drawerDialog, await resolve('ui/dialog.js', '@radix-ui/react-dialog'))
+assert.equal(await realpath(drawerRequire.resolve('react')), react)
 const menuRequire = createRequire(createRequire(dropdown).resolve('@radix-ui/react-menu'))
 const selectRequire = createRequire(select)
 const sharedRadix = await Promise.all([
@@ -44,6 +66,18 @@ const sharedRadix = await Promise.all([
   const menuPath = await realpath(menuRequire.resolve(dependency))
   const selectPath = await realpath(selectRequire.resolve(dependency))
   assert.equal(menuPath, selectPath)
+  for (const [component, primitive] of [
+    ['ui/dialog.js', 'dialog'],
+    ['ui/select.js', 'select'],
+    ['ui/tooltip.js', 'tooltip'],
+  ]) {
+    if ((primitive === 'tooltip' && name === 'react-focus-scope')
+      || (primitive === 'dialog' && name === 'react-popper')) {
+      continue
+    }
+    const module = await resolve(component, `@radix-ui/react-${primitive}`)
+    assert.equal(await realpath(createRequire(module).resolve(dependency)), menuPath)
+  }
   return { dependency, resolved: menuPath, shared: true }
 }))
 for (const origin of modules) {
@@ -53,10 +87,12 @@ const contexts = await Promise.all([
   'provider.js',
   'appearance.js',
   'locale-select.js',
+  'use-i18n.js',
 ].map(origin =>
   realpath(origins[origin].resolve('./context.js')),
 ))
 assert.equal(new Set(contexts).size, 1)
+assert.equal(await resolve('ui/portal.js', '../context.js'), contexts[0])
 const providerContext = await import(pathToFileURL(contexts[0]).href)
 const hookContext = await import(pathToFileURL(contexts[1]).href)
 assert.equal(providerContext.PreferenceContext, hookContext.PreferenceContext)
@@ -74,6 +110,8 @@ const evidence = {
   select,
   react,
   contexts,
+  drawer,
+  sharedDrawerDialogIdentity: true,
   sharedDropdownIdentity: true,
   sharedReactIdentity: true,
   sharedPreferenceContextIdentity: true,

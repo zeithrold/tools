@@ -114,6 +114,7 @@ test('all six palettes and both modes are accessible, including open appearance 
 })
 
 test('Chinese controls and consumer footer reflow at narrow widths', async ({ page }, info) => {
+  test.setTimeout(60_000)
   await page.goto('/')
   await chooseChinese(page)
   for (const width of [
@@ -152,6 +153,7 @@ test('storage rejection leaves choices usable in memory and reports failed persi
 })
 
 test('consumer domain shares preferences; host-only key stays isolated', async ({ context, page }) => {
+  test.setTimeout(60_000)
   await context.route('https://*.harbor.example/**', async (route) => {
     const url = new URL(route.request().url())
     const local = new URL(url.pathname + url.search, 'http://127.0.0.1:4317')

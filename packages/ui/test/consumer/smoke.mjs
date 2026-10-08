@@ -4,10 +4,15 @@ import { createRequire } from 'node:module'
 import path from 'node:path'
 import { DEFAULT_PREFERENCES, resolveInitialPreferences } from '@ztd-me/ui'
 import * as frontend from '@ztd-me/ui'
-import { PublicShell, FrontendProvider } from '@ztd-me/ui/client'
+import { PublicShell, FrontendProvider, buttonVariants } from '@ztd-me/ui/client'
 
 assert.equal(typeof PublicShell, 'function')
 assert.equal(typeof FrontendProvider, 'function')
+const override = buttonVariants({ size: 'sm', className: 'min-h-0 text-help' })
+assert.ok(override.includes('min-h-0'))
+assert.equal(override.split(' ').includes('min-h-9'), false)
+assert.ok(override.includes('text-help'))
+assert.equal(override.split(' ').includes('text-control'), false)
 assert.equal(typeof resolveInitialPreferences, 'function')
 assert.equal(DEFAULT_PREFERENCES.mode, 'system')
 assert.equal('migrateLegacyPreferences' in frontend, false)
@@ -15,7 +20,9 @@ assert.equal('LEGACY_STORAGE_KEYS' in frontend, false)
 const require = createRequire(import.meta.url)
 const css = require.resolve('@ztd-me/ui/styles.css')
 const source = await readFile(css, 'utf8')
-assert.ok(source.includes('.ztd-appbar'))
+assert.ok(source.includes('.ztd-frontend'))
+assert.ok(source.includes('.border-b'))
+assert.ok(source.includes('--ztd-background'))
 const fonts = [...source.matchAll(/url\((?:['"])?\.\/([^)'"\s]+)/gu)]
 assert.equal(fonts.length, 0)
 assert.ok(source.includes('https://fonts.googleapis.com/css2?family=Noto+Sans'))

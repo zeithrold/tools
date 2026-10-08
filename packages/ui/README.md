@@ -7,11 +7,14 @@ version, compiled exports and packed artifact exist only to verify the source in
 There is no npm UI publishing workflow. The existing `@ztd-me/frontend@0.2.0` remains unchanged and
 available on npm; this directory move does not unpublish or deprecate it.
 
-Generic shadcn new-york/Radix chrome for React 19 projects. The default is **Neutral + System**; mode
+Generic shadcn new-york/Radix chrome and primitives for React 19 projects. The default is **Neutral + System**; mode
 and palette are independent. All six palettes support light and dark. Brand, footer content,
 deployment/storage policy, business navigation, identity and application state stay with the consumer.
 Requires Node >=22.14 and React/react-dom >=19.2 <20. The verified toolchain uses React 19.3,
 TypeScript 6.0.3 and pnpm 11.22.0.
+
+Read [the foundation contract](docs/foundation.md) for component APIs, native scrolling, semantic typography
+and explicit injected localization. The source baseline is body/control/help 18/16/14px, configurable by tokens.
 
 ## Installed entries
 
@@ -19,7 +22,8 @@ TypeScript 6.0.3 and pnpm 11.22.0.
 | --- | --- |
 | `./components/ui/ztd-me/index.js` | Server-safe types, defaults, normalization, cookie policy/serialization and locale negotiation; no DOM or React runtime import |
 | `./components/ui/ztd-me/client.js` | `FrontendProvider`, `useFrontendPreferences`, `PublicShell`, `ApplicationShell`, `Appbar`, `SiteFooter`, `AppearanceMenu`, `LocaleSelect`; preserved `use client` boundary |
-| `./components/ui/ztd-me/styles.css` | Namespaced source CSS, with Google Fonts API Noto Sans/CJK/Color Emoji imports |
+| `./components/ui/ztd-me/tailwind.css` | Tailwind 4 CSS-first theme bridge, fonts, runtime tokens and native component behavior |
+| `./components/ui/ztd-me/styles/fonts-serif.css` | Optional Google Fonts Serif/CJK import for reading content |
 
 The table and examples assume `aliases.ui = components/ui`; use the consumer’s own aliases or relative paths.
 ESM only. Client callbacks, custom links, identity and portal containers belong in a client adapter, not a serialized server payload. Use one provider per document; its initial preferences and policy identify that mounted document.
@@ -47,11 +51,11 @@ const initialPreferences = resolveInitialPreferences({
 // Pass exactly this snapshot and policy to the client adapter.
 ```
 
-```tsx
+```jsx
 'use client'
 
 import { FrontendProvider, PublicShell } from './components/ui/ztd-me/client.js'
-import './components/ui/ztd-me/styles.css'
+// Import Tailwind and shared tailwind.css once in the host stylesheet.
 
 <FrontendProvider initialPreferences={initialPreferences} policy={policy}>
   <PublicShell
@@ -82,7 +86,10 @@ Modes: `system`, `light`, `dark`. Palettes: `neutral`, `terracotta`, `moss`, `oc
 CSS uses root attributes `data-frontend-mode` and `data-frontend-palette`, with `lang`. System colors resolve through CSS media queries before hydration, without an inline prepaint script. Radix uses inline style attributes for positioning/hidden controls and injects scroll-lock style elements. A consumer CSP must account for these: the packed fixture keeps `script-src 'self'`, permits style attributes, and allows style elements only from self or a per-response nonce supplied as `styleNonce`. This does not promise compatibility with `style-src-attr 'none'`; the package does not change any consumer CSP. Client media changes update `resolvedMode`; an explicit mode stays fixed. The package does not add `.dark` or the old `data-palette` attribute. Consumers bridge their own business tokens or legacy attributes through the hook; shared root tokens are `--ztd-background`, `--ztd-foreground`, `--ztd-surface`, `--ztd-muted`, `--ztd-muted-foreground`, `--ztd-border`, `--ztd-accent`, `--ztd-focus`, `--ztd-action`, `--ztd-action-foreground`, and `--ztd-color-scheme`.
 
 Chrome is at most 1280px wide, 72px high on desktop and 64px below 1024px, with 16/24/32px gutters and
-44px control targets. Body width, content and layout remain project-owned. Import CSS once. Include
+44px control targets. Include the installed source in Tailwind source detection and use
+`@import "tailwindcss";` followed by `@import "./components/ui/ztd-me/tailwind.css";`.
+Host utility classes are merged by shared `cn`; `buttonVariants` exports the same Button class recipe
+for native links and fixtures. Body width, content and layout remain project-owned. Import CSS once. Include
 its actual declaration file as a `tokenFiles` source in the existing CSS checker when business CSS
 references its tokens; do not exempt arbitrary unknown variables. The current source uses Google Fonts
 Noto Sans with Chinese/Japanese/Korean variants and Noto Color Emoji for all emoji. Read [typography](docs/fonts.md)
@@ -111,9 +118,12 @@ pnpm run check
 
 Checks retain strict ESLint, CSS, full TypeScript declaration checking, unit boundary tests, and independent packed-consumer installation/types/build/browser evidence under `.artifacts/`. Browser fixtures use React SSR/Vite with synthetic data and intercepted local subdomain origins; they do not contact production, verify authentication or certify all consuming frameworks.
 
-The Select declaration compatibility patch is documented in [Radix compatibility](docs/radix-compatibility.md). The package retains the original Radix Select interaction and unmodified runtime. Consumers of this package's public declarations do not need the development patch.
+The Select declaration compatibility patch is documented in [Radix compatibility](docs/radix-compatibility.md). The package retains the original Radix Select interaction and unmodified runtime. The public primitive exports now reach Select declarations; strict consumers retain the documented declaration-only patch.
 
-The CSS gate uses the separate published `@ztd-me/frontend-checks@0.1.1` helper. A disposable packed
+The CSS gate for this local candidate uses the sibling frontend-checks source CLI. Published
+`@ztd-me/frontend-checks@0.1.1` does not yet understand the new native Tailwind utility and text-role
+metadata contract; keep portable consumer pins and record separate candidate verification until the
+checker completes its ordinary release process. A disposable packed
 consumer verifies the private compiled exports; the registry consumer verifies the delivered source,
 including its strict declaration patch. After owner merge, verify the exact full public source SHA with
 `node scripts/source-smoke.mjs <SOURCE_SHA>` before changing consumer pins. CI verifies both the merged

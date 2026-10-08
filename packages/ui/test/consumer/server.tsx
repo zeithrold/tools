@@ -46,6 +46,7 @@ const server = createServer(async (request, response) => {
     review: ['/review', '/fonts', '/review-zh'].includes(url.pathname),
     fonts: url.pathname === '/fonts',
     chinese: url.pathname === '/review-zh',
+    primitives: url.pathname === '/primitives',
   }
   const root = Object.entries(frontendRootAttributes(initialPreferences)).map(([key, value]) => `${key}="${value}"`).join(' ')
   const html = template.replace('lang="en"', root).replace('<!--content-->', renderToString(<Fixture {...props} />))
