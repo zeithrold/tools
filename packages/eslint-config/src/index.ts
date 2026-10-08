@@ -1,6 +1,6 @@
 import type { OptionsReact } from '@antfu/eslint-config'
 import type { ConfigOptions, LocalConfig } from './options.js'
-import antfu, { GLOB_SRC, GLOB_TESTS, GLOB_TS, GLOB_TSX } from '@antfu/eslint-config'
+import antfu, { GLOB_JS, GLOB_JSX, GLOB_SRC, GLOB_TESTS, GLOB_TS, GLOB_TSX } from '@antfu/eslint-config'
 import hooks from 'eslint-plugin-react-hooks'
 import sonar from 'eslint-plugin-sonarjs'
 import { appRouterConfigs, appRouterExports } from './app-router.js'
@@ -14,6 +14,7 @@ import { typedRules } from './rules/typed.js'
 import { vueA11yRules } from './rules/vue-a11y.js'
 import { vueRules } from './rules/vue.js'
 import { resolveTypeScript } from './typescript.js'
+import { javascriptUnusedVariables } from './unused-variables.js'
 
 export type { ConfigOptions, LocalConfig, ReactOptions, TypeScriptOptions, VueOptions } from './options.js'
 
@@ -226,6 +227,11 @@ export async function createConfig(
   ]
   const strict: LocalConfig[] = [
     shared(sfcFiles),
+    ...javascriptUnusedVariables([
+      GLOB_JS,
+      GLOB_JSX,
+      ...(tsOptions === false ? sfcFiles : []),
+    ]),
     ...react(enableReact),
     ...vue(enableVue),
     ...(tsOptions === false ? [] : typed(tsFiles, tsOptions.parserOptions)),

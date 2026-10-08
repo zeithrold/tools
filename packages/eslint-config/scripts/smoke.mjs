@@ -13,6 +13,19 @@ assert.equal(config, createConfig)
 const js = new ESLint({overrideConfigFile:true,overrideConfig:await config({typescript:false,gitignore:false})})
 const [bad] = await js.lintText('export const ids = [1, 2, 3]\\n',{filePath:'sample.js'})
 assert.ok(bad.messages.some(message => message.ruleId === 'ztd/array-layout'))
+const [usedVariable] = await js.lintText('const number = 1\\nconsole.warn(number)\\n',{filePath:'used.mjs'})
+assert.equal(usedVariable.errorCount,0,JSON.stringify(usedVariable.messages))
+const [usedImport] = await js.lintText(
+  'import { basename } from \\'node:path\\'\\n\\nexport const name = basename(\\'example\\')\\n',
+  {filePath:'used.mjs'},
+)
+assert.equal(usedImport.errorCount,0,JSON.stringify(usedImport.messages))
+const [unusedVariable] = await js.lintText('const unused = 1\\n',{filePath:'unused.mjs'})
+assert.ok(unusedVariable.messages.some(message=>message.ruleId==='no-unused-vars'))
+const [unusedImport] = await js.lintText('import { basename as _unused } from \\'node:path\\'\\n',{
+  filePath:'unused.mjs',
+})
+assert.ok(unusedImport.messages.some(message=>message.ruleId==='unused-imports/no-unused-imports'))
 const typed = new ESLint({overrideConfigFile:true,overrideConfig:await config({react:true,vue:true,gitignore:false})})
 const [safe] = await typed.lintFiles('sample.ts')
 assert.equal(safe.errorCount,0,JSON.stringify(safe.messages))

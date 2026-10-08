@@ -9,7 +9,7 @@ All 198 catalog entries have an explicit disposition: 157 enabled in their appli
 | Node / pnpm (cloud validation) | 24.19.0 / 11.19.0 |
 | ESLint / TypeScript | 10.11.0 / 6.0.3 |
 | @antfu/eslint-config | 9.5.1 |
-| @typescript-eslint parser / plugin | 8.71.0 / 8.71.0 |
+| @typescript-eslint parser / plugin | 8.71.1 / 8.71.1 |
 | @stylistic/eslint-plugin | 5.10.0 |
 | @eslint-react/eslint-plugin / react-hooks / react-refresh | 5.23.3 / 7.1.1 / 0.5.7 |
 | eslint-plugin-vue / vue-eslint-parser | 10.11.1 / 10.4.1 |
@@ -18,6 +18,14 @@ All 198 catalog entries have an explicit disposition: 157 enabled in their appli
 | @vitest/eslint-plugin | 1.6.27 |
 
 Core/TS extensions, unused-variable owners, React Hooks owners, SFC line-width owners and array layout owners are deduplicated. Handwritten `.d.ts`, configuration and script files retain strict safety and size rules after antfu disables. JS-specific setter diagnostics remain with the TS compiler in TS files. Typed constant-expression checks use `ts/no-unnecessary-condition`; JS keeps `no-constant-binary-expression`. The public factory fixes editor behavior so selected severities do not vary between editor and CI.
+
+Since 0.1.5, the researched unused-variable options apply through native `no-unused-vars` for JS/JSX
+and through the existing typed wrapper for TypeScript/TS-parsed Vue. The catalog's historical
+`unused-imports/no-unused-vars` entry is checked against the equivalent native JS owner without
+changing the 198-entry inventory or its strict options. Application import rejection/autofix remains
+enabled, including underscore-prefixed imports; ordinary unused imports may have two valid findings.
+Extracted Markdown JS/JSX examples retain Antfu's partial-example unused exceptions. See
+[the parser boundary](unused-variables.md).
 
 The implementation does not claim a Vue index-key check: current stable Vue rules ensure a key exists but cannot ensure it is not a loop index. Vue template typing and dynamic component inference also remain outside this package’s static proof boundary.
 

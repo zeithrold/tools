@@ -1,4 +1,5 @@
 import type { Linter } from 'eslint'
+import { unusedVariables } from '../unused-variables.js'
 
 export const sharedRules: Linter.RulesRecord = {
   'complexity': [
@@ -92,19 +93,7 @@ export const sharedRules: Linter.RulesRecord = {
       ignore: ['eslint-enable'],
     },
   ],
-  'unused-imports/no-unused-vars': [
-    'error',
-    {
-      args: 'all',
-      argsIgnorePattern: '^_',
-      caughtErrors: 'all',
-      caughtErrorsIgnorePattern: '^_',
-      vars: 'all',
-      varsIgnorePattern: '^_',
-      ignoreRestSiblings: true,
-      reportUsedIgnorePattern: true,
-    },
-  ],
+  'unused-imports/no-unused-vars': unusedVariables,
   'no-constant-binary-expression': 'error',
   'no-unsafe-optional-chaining': [
     'error',

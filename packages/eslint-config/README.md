@@ -60,6 +60,13 @@ receiving a syntax-only fallback. The same virtual-file boundary applies to type
 
 For a JavaScript-only scope, use `typescript: false`. This turns off TypeScript parsing and rules; it does not lower JS complexity, length, or correctness standards. There is no syntax-only TypeScript or `strictTypes: false` mode. Run `tsc --noEmit` as a separate compiler gate; `exactOptionalPropertyTypes`, `noPropertyAccessFromIndexSignature`, and `useUnknownInCatchVariables` are also recommended compiler settings.
 
+Since 0.1.5, JavaScript and JSX use ESLint's native unused-variable rule with the same strict options.
+TypeScript and TS-parsed Vue keep their existing typed rule; Vue without TypeScript uses the native JS
+rule. The existing unused-import checker and its autofix stay enabled for application JS, including
+underscore-prefixed imports. An ordinary unused import may have both native and import-checker
+findings. Extracted Markdown JS/JSX examples retain Antfu's incomplete-example unused exceptions;
+real application files remain strict. See [unused-variable ownership](docs/unused-variables.md).
+
 ## Framework options
 
 | Option | Default | Behavior |
@@ -147,6 +154,6 @@ pnpm run check
 
 The checks build JS/declarations, type-check the public API, self-lint source/tests/scripts, exercise real TS/React/Vue fixtures, check all numeric boundaries and all selected catalog options, and install/import/type-check an independently packed artifact with pnpm. Negative fixtures are checked by the test harness, not included in ordinary self-lint. The test modules have reasoned local exceptions for Node's asynchronous ESM setup and imports of the distribution being tested; safety and size limits remain active.
 
-[Publishing instructions](docs/publishing.md) describe the stage-only GitHub workflow and the user-controlled promotion. Version `0.1.3` prepares the MIT metadata and full license notice for a new npm release. Staging is not a public release. After promotion, run `node scripts/registry-smoke.mjs 0.1.3` to install the exact public version in a fresh pnpm project and verify imports, declarations and lint behavior. Registry installation follows pnpm's supply-chain policies; a policy rejection is a blocker, not permission to disable the policy.
+[Publishing instructions](docs/publishing.md) describe the stage-only GitHub workflow and the user-controlled promotion. Version `0.1.5` prepares native JS unused-variable ownership while retaining the strict type-alias policy and MIT license. Staging is not a public release. After promotion, run `node scripts/registry-smoke.mjs 0.1.5` to install the exact public version in a fresh pnpm project and verify imports, declarations and lint behavior. Registry installation follows pnpm's supply-chain policies; a policy rejection is a blocker, not permission to disable the policy.
 
 First-party code and documentation are [MIT licensed](LICENSE). Installed ESLint, antfu and plugin dependencies retain their own licenses and notices; the package does not relicense them. Existing published versions keep their original artifacts and metadata.

@@ -39,7 +39,10 @@ function normalized(value) {
 test('all 198 research entries have an explicit disposition and enabled options match effective configs', () => {
   assert.equal(catalog.length, 198)
   for (const entry of catalog.filter(row => row.status.startsWith('enabled'))) {
-    const current = configs[entry.group].rules[entry.rule]
+    const owner = entry.rule === 'unused-imports/no-unused-vars' && entry.group === 'shared'
+      ? 'no-unused-vars'
+      : entry.rule
+    const current = configs[entry.group].rules[owner]
     assert.partialDeepStrictEqual(current, normalized(entry.value), entry.rule)
   }
 })

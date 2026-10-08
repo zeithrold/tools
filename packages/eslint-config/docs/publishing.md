@@ -6,9 +6,12 @@ The only trigger is a push to `main` affecting `packages/eslint-config/**`, `.gi
 
 The verification jobs use a frozen pnpm lockfile on Node 22 and 24. The Node 24 job packs the tested package. A single staging job consumes that exact artifact and saves the npm stage response as a workflow artifact. Runs share one concurrency group without cancellation. Before upload, the script checks public registry metadata and the authenticated pending-stage list. Published or already-staged versions produce a skip receipt, preserving an existing stage ID. Registry/authentication errors and malformed responses fail before upload. The Actions run, source SHA, tarball checksum and stage ID are review evidence. Do not resubmit after an ambiguous timeout; inspect the existing stage before retrying.
 
-Version 0.1.4 delivers the explicit application type-alias policy. Published 0.1.3 artifacts remain
-unchanged; consumers must upgrade the official package after owner promotion and registry smoke
-verification rather than patching the config.
+Version 0.1.5 prepares native JavaScript unused-variable ownership for the upstream TypeScript
+ESLint 8.71.1 reference incompatibility, retaining the explicit application type-alias policy from
+0.1.4. Published artifacts remain unchanged; consumers must upgrade the official package after owner
+promotion and registry smoke verification rather than patching the config. The author lock tests
+8.71.1 directly, and fresh packed/registry consumers verify real JS value references and deliberately
+unused variables/imports. See [unused-variable ownership](unused-variables.md).
 
 ## Maintainer approval
 
