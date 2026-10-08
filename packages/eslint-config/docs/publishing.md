@@ -6,6 +6,10 @@ The only trigger is a push to `main` affecting `packages/eslint-config/**`, `.gi
 
 The verification jobs use a frozen pnpm lockfile on Node 22 and 24. The Node 24 job packs the tested package. A single staging job consumes that exact artifact and saves the npm stage response as a workflow artifact. Runs share one concurrency group without cancellation. Before upload, the script checks public registry metadata and the authenticated pending-stage list. Published or already-staged versions produce a skip receipt, preserving an existing stage ID. Registry/authentication errors and malformed responses fail before upload. The Actions run, source SHA, tarball checksum and stage ID are review evidence. Do not resubmit after an ambiguous timeout; inspect the existing stage before retrying.
 
+Version 0.1.4 delivers the explicit application type-alias policy. Published 0.1.3 artifacts remain
+unchanged; consumers must upgrade the official package after owner promotion and registry smoke
+verification rather than patching the config.
+
 ## Maintainer approval
 
 The user-provided stage-only repository `NPM_TOKEN` is the currently verified authentication route. Staging does not make a version installable, and creating a repository secret does not establish an npm Trusted Publisher. The first release, `0.1.0`, was staged and owner-approved separately; normal workflow runs must skip it rather than recreate its stage.

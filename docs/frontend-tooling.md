@@ -4,17 +4,19 @@ This phase adds shared guidance and native check execution to tools, including t
 
 ## Distribution
 
-- `@ztd-me/eslint@0.1.1` is already published. Its standards are unchanged.
+- `@ztd-me/eslint@0.1.4` prepares the explicit application type-alias policy. Consumers upgrade the exact official release after owner promotion and registry verification.
 - `zt` and complete Skill directories are shipped together. Pin an exact reviewed tools commit with `go install github.com/zeithrold/tools/cmd/zt@<SHA>` after it is reachable, or use the CI-built Linux binary from that revision. There is no official CLI release tag yet.
-- `@ztd-me/frontend-checks@0.1.0` is published. Its release source is `3f9a3a7d33befc5a954ba1e86d3aa6d72e2c762f`; the public tarball matches the tested staging artifact. Future releases use automatic Node 22/24 verification, staging and owner 2FA promotion. See [publication and verification](../packages/frontend-checks/docs/publishing.md).
+- `@ztd-me/frontend-checks@0.1.3` prepares native Tailwind utility/text-role and static JS/TS token validation. Releases use automatic Node 22/24 verification, staging and owner 2FA promotion. See [publication and verification](../packages/frontend-checks/docs/publishing.md).
 
 After owner promotion and successful registry smoke checks, consumers install the exact release:
 
 ```sh
-pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.0 @playwright/test@1.62.0
+pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.3 @playwright/test@1.62.0
 pnpm install --frozen-lockfile
 pnpm exec playwright install chromium
 ```
+
+Shared npm behavior must be implemented and versioned in tools. Consumer patches, local CLI replacements and package extensions for tools-owned npm libraries are not supported delivery mechanisms.
 
 CI tarballs, source SHAs and checksums are release review evidence. Consumers use the pinned registry package rather than vendoring those artifacts. The tools verification workspaces maintain their own `@ztd-me/*` release-age exception. Consumers own approval of any equivalent exception in their own workspace policy; the following optional entry does not authorize a consumer policy change:
 

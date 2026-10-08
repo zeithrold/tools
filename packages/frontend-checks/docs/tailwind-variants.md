@@ -1,6 +1,6 @@
 # Tailwind block variant compatibility
 
-The 0.1.1 patch candidate fixes the valid Tailwind 4.3.3 system-dark variant rejected by frontend-checks 0.1.0:
+Version 0.1.1 fixes the valid Tailwind 4.3.3 system-dark variant rejected by frontend-checks 0.1.0:
 
 ```css
 @custom-variant dark {
@@ -16,13 +16,13 @@ Tailwind substitutes each utility selector for `&`. The native compiler produces
 
 The fix keeps `nesting-selector-no-missing-scoping-root` enabled and uses its supported secondary option `ignoreAtRules: ['custom-variant']`. It does not ignore files, media blocks, arbitrary at-rules or other findings. Tests require root/media `&` outside custom variants to fail and preserve native invalid-property findings plus semantic literal-color and undefined-token checks. Both direct and nested-media variant roots pass. The packed CLI consumer includes the exact source variant, and native Tailwind 4.3.3 compilation is an independent regression check. This is not a claim that the source CSS checker accepts every generated utility naming convention or validates the complete Tailwind language.
 
-The CSS API/config shape and Playwright exports are unchanged. Keep release-age, integrity, no-downgrade and existing build restrictions. This fix requires a new 0.1.1 release; changing tools source cannot repair consumers locked to published 0.1.0. The owner merges, the existing automatic workflow stages the candidate, and the owner approves it with npm 2FA. Verify the promoted exact version against its reviewed tarball using `scripts/registry-smoke.mjs` before updating final consumer locks. Staging alone is insufficient.
+The CSS API/config shape and Playwright exports are unchanged. Keep release-age, integrity, no-downgrade and existing build restrictions. Consumers need an official version containing the fix; changing tools source cannot repair an older published lock. New releases follow automatic staging and owner approval with npm 2FA. Verify the promoted exact version against its reviewed tarball using `scripts/registry-smoke.mjs` before updating final consumer locks. Staging alone is insufficient.
 
 Reference: [Stylelint's native ignoreAtRules option](https://stylelint.io/user-guide/rules/nesting-selector-no-missing-scoping-root/#ignoreatrules).
 
-## CSS-first source candidate
+## CSS-first validation in 0.1.3
 
-The local candidate additionally supports nested `@utility`, native `--text-name--line-height`,
+Version 0.1.3 additionally supports nested `@utility`, native `--text-name--line-height`,
 `--letter-spacing` and `--font-weight` theme metadata, and canonical string import notation. String
 imports are required by Tailwind's native stylesheet loader; remote Google Fonts imports use the same
 notation. Import-notation stays enabled, as do all property, nesting, color and token checks.
@@ -36,7 +36,8 @@ custom properties. Dynamic expressions remain outside this static proof; it does
 Tailwind compilation or runtime-cascade validation. Keep consumer tokens in the CSS inventory and
 external runtime properties explicit. Comment text and ordinary layout utility strings are ignored.
 
-Published 0.1.1 does not contain these adaptations. Keep consumer published dependencies portable;
-local candidate verification may run this checkout's `src/css-cli.mjs` against the consumer's config
-from that consumer's cwd. Retain both the native published-checker result and candidate result until
-the owner separately reviews and promotes a checker release. No publish or stage operation is implied.
+Published versions through 0.1.2 do not contain these adaptations. Upgrade the exact official npm
+version after owner promotion and fresh registry verification; consumer patches, package extensions,
+and local CLI replacements are not supported delivery mechanisms. The package declares TypeScript
+as a runtime dependency for AST parsing. Packed and registry consumer checks exercise the native
+CLI with this contract and require deliberately invalid CSS and utility tokens to fail.

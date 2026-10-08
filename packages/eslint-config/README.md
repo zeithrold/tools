@@ -41,7 +41,7 @@ Framework dependencies used by this package are included: enabling a supported p
 
 ## TypeScript
 
-Object definitions use `type` aliases; `ts/consistent-type-definitions` is explicitly `['error', 'type']`,
+Since 0.1.4, object definitions use `type` aliases; `ts/consistent-type-definitions` is explicitly `['error', 'type']`,
 overriding the inherited interface preference. Compose aliases with intersections/unions and preserve
 consistent type-only imports. This concerns TypeScript declarations, separately from the application's
 source import/path alias. Do not alter upstream declarations to normalize your own contracts.

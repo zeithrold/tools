@@ -5,10 +5,9 @@ import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 
-export async function consumerSmoke(spec, label, options = {}) {
+export async function consumerSmoke(spec, label) {
   const consumer = await mkdtemp(path.join(os.tmpdir(), 'ztd-frontend-consumer-'))
   await writeConsumerFiles(consumer, spec)
-  await options.beforeInstall?.(consumer)
   execFileSync('pnpm', ['install'], { cwd: consumer, stdio: 'inherit' })
   execFileSync('pnpm', ['install', '--frozen-lockfile'], { cwd: consumer, stdio: 'inherit' })
   execFileSync('node', ['smoke.mjs'], { cwd: consumer, stdio: 'inherit' })
@@ -43,7 +42,45 @@ minimumReleaseAgeExclude:
 shellEmulator: true
 trustPolicy: no-downgrade
 `)
-  await writeFile(path.join(consumer, 'app.css'), `:root { --paint: #234567; }
+  await writeCssFixtures(consumer)
+  await writeFile(path.join(consumer, 'smoke.mjs'), `
+import assert from 'node:assert/strict'
+import { checkCss } from '@ztd-me/frontend-checks/css'
+import { verificationArtifacts } from '@ztd-me/frontend-checks/playwright'
+const options = { files: ['app.css'], classFiles: ['app.tsx'], tokenFiles: ['tokens.css'] }
+assert.equal((await checkCss(options)).status, 'passed')
+const invalid = await checkCss({ ...options, files: ['app.css', 'invalid.css'], classFiles: ['invalid.tsx'] })
+assert.equal(invalid.status, 'failed')
+for (const rule of [
+  'property-no-unknown', 'ztd/semantic-color',
+  'ztd/semantic-class-color', 'ztd/defined-class-custom-property',
+]) {
+  assert.ok(invalid.warnings.some(warning => warning.rule === rule), rule)
+}
+assert.equal(verificationArtifacts('out').outputDir, 'out/test-results')
+`)
+}
+
+async function writeCssFixtures(consumer) {
+  await writeFile(path.join(consumer, 'tokens.css'), ':root { --paint: #234567; }\n')
+  await writeFile(path.join(consumer, 'app.tsx'), 'const classes = "text-foreground bg-[var(--paint)] h-8";\n')
+  await writeFile(path.join(consumer, 'invalid.tsx'), 'const classes = "bg-red-500 text-(--missing)";\n')
+  await writeFile(path.join(consumer, 'invalid.css'), `@utility invalid-utility {
+  & > a { unknown-ztd-property: 1; background: red; }
+}
+`)
+  await writeFile(path.join(consumer, 'app.css'), `@import "./tokens.css";
+
+@theme inline {
+  --color-foreground: var(--paint);
+  --text-body: 1rem;
+  --text-body--line-height: 1.75;
+}
+
+@utility consumer-utility {
+  & > a { color: var(--paint); }
+}
+
 a { color: var(--paint); }
 
 @custom-variant dark {
@@ -54,13 +91,9 @@ a { color: var(--paint); }
   }
 }
 `)
-  await writeFile(path.join(consumer, 'css-check.config.mjs'), 'export default { files: ["app.css"] }\n')
-  await writeFile(path.join(consumer, 'smoke.mjs'), `
-import assert from 'node:assert/strict'
-import { checkCss } from '@ztd-me/frontend-checks/css'
-import { verificationArtifacts } from '@ztd-me/frontend-checks/playwright'
-assert.equal((await checkCss({ files: ['app.css'] })).status, 'passed')
-assert.equal(verificationArtifacts('out').outputDir, 'out/test-results')
+  await writeFile(path.join(consumer, 'css-check.config.mjs'), `export default {
+  files: ['app.css'], classFiles: ['app.tsx'], tokenFiles: ['tokens.css'],
+}
 `)
 }
 

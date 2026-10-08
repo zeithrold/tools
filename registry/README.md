@@ -157,9 +157,11 @@ This mode installs from the pinned public GitHub item, compares its payload with
 checks every installed file byte, and repeats the native and browser gates in a fresh consumer. Only a
 successful receipt with `publicInstallationVerified: true` satisfies the post-merge public-install gate.
 
-The local candidate CSS gate uses the sibling frontend-checks source CLI; its updated metadata,
-string-import and utility checks are not yet in published 0.1.1. Keep portable published consumer pins
-and record candidate verification separately; a local checker pass is not public release approval.
+The local candidate CSS gate uses the sibling frontend-checks source CLI. Published checker versions
+through 0.1.2 lack the required metadata, string-import and utility checks; official version 0.1.3
+prepares that contract. Owner promotion and fresh registry verification are required before upgrading
+consumer pins. Do not patch the checker, replace its CLI with a local checkout, or add package
+extensions to supply runtime dependencies. A local checker pass is not public release approval.
 
 The delivered `foundation.md` describes generic primitives and the host-injected i18n adapter. Configure
 application `@/*` aliases against its declared source root (normally `src`), and match compiler/bundler/
