@@ -1,6 +1,7 @@
 ---
 name: frontend-verification
 description: Use when establishing or running frontend lint, CSS, types, unit, build, browser accessibility and artifact gates with exact execution evidence and explicit blocked checks.
+license: MIT
 ---
 
 # Frontend verification

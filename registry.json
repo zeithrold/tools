@@ -408,12 +408,20 @@
           "path": "packages/ui/third-party/NOTO-SERIF-KR-OFL.txt",
           "type": "registry:file",
           "target": "@ui/ztd-me/third-party/NOTO-SERIF-KR-OFL.txt"
+        },
+        {
+          "path": "packages/ui/third-party/REACT-REMOVE-SCROLL-BAR-MIT.txt",
+          "type": "registry:file",
+          "target": "@ui/ztd-me/third-party/REACT-REMOVE-SCROLL-BAR-MIT.txt"
         }
       ],
       "devDependencies": [
         "tailwindcss@4.3.3",
         "@tailwindcss/vite@4.3.3"
-      ]
+      ],
+      "meta": {
+        "license": "MIT"
+      }
     }
   ]
 }

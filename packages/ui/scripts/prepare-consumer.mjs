@@ -1,11 +1,9 @@
 import { execFileSync } from 'node:child_process'
 import { cp, mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+import { copyConsumerFixture, retainConsumerLicenses } from './consumer-licenses.mjs'
 
 async function configureTailwind(consumer) {
-  await writeFile(path.join(consumer, 'vite.config.ts'), 'import { defineConfig } from \'vite\';\n'
-  + 'import tailwind from \'@tailwindcss/vite\';\n'
-  + 'export default defineConfig({ plugins: [tailwind()] });\n')
   const fixture = path.join(consumer, 'fixture.css')
   await writeFile(fixture, `@import \"tailwindcss\";\n${await readFile(fixture, 'utf8')}`)
 }
@@ -23,7 +21,7 @@ async function configureTypes(consumer) {
 export async function prepareConsumer(packageSpecifier) {
   await mkdir('.artifacts', { recursive: true })
   const consumer = await mkdtemp(path.resolve('.artifacts/consumer-'))
-  await cp('test/consumer', consumer, { recursive: true })
+  await copyConsumerFixture(consumer)
   const packageInfo = JSON.parse(await readFile('package.json', 'utf8'))
   const devDependencies = Object.fromEntries(Object.entries(packageInfo.devDependencies).filter(([name]) => [
     '@types/react',
@@ -42,6 +40,7 @@ export async function prepareConsumer(packageSpecifier) {
   }
   await writeFile(path.join(consumer, 'package.json'), JSON.stringify({
     private: true,
+    license: 'MIT',
     type: 'module',
     packageManager: 'pnpm@11.22.0',
     dependencies,
@@ -73,5 +72,6 @@ export async function prepareConsumer(packageSpecifier) {
     '--outDir',
     'dist/server',
   ])
+  await retainConsumerLicenses(consumer)
   return consumer
 }

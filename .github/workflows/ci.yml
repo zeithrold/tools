@@ -32,13 +32,16 @@ jobs:
           run_install: false
       - run: pnpm install --frozen-lockfile
         working-directory: packages/frontend-checks
-      - name: Lint shared stage guard
-        run: packages/frontend-checks/node_modules/.bin/eslint scripts/npm-staging.mjs --config packages/frontend-checks/eslint.config.js --max-warnings 0
+      - name: Lint shared stage and license checks
+        run: packages/frontend-checks/node_modules/.bin/eslint scripts/npm-staging.mjs scripts/license-coverage*.mjs --config packages/frontend-checks/eslint.config.js --max-warnings 0
       - run: pnpm exec playwright install --with-deps chromium
         working-directory: packages/frontend-checks
       - run: |
           mkdir -p artifacts/frontend
           go build -ldflags "-X github.com/zeithrold/tools.releaseVersion=source-${{ github.event.pull_request.head.sha || github.sha }}" -o artifacts/frontend/zt ./cmd/zt
+          cp LICENSE THIRD_PARTY_NOTICES.md artifacts/frontend/
+          mkdir -p artifacts/frontend/third-party
+          cp third-party/GO-BSD.txt artifacts/frontend/third-party/
           artifacts/frontend/zt check --module frontend-checks --profile frontend --timeout 5m
       - run: pnpm run test:pack
         working-directory: packages/frontend-checks
@@ -46,7 +49,7 @@ jobs:
           pnpm --dir packages/frontend-checks pack --pack-destination "${GITHUB_WORKSPACE}/artifacts/frontend"
           git rev-parse HEAD > artifacts/frontend/SOURCE_SHA
           cd artifacts/frontend
-          sha256sum zt *.tgz SOURCE_SHA > SHA256SUMS
+          sha256sum zt *.tgz SOURCE_SHA LICENSE THIRD_PARTY_NOTICES.md third-party/GO-BSD.txt > SHA256SUMS
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         if: always()
         with:
@@ -221,8 +224,8 @@ jobs:
         with:
           version: 11.22.0
           run_install: false
-      - name: Verify immutable Action pins
-        run: node --test scripts/workflow-pins.test.mjs
+      - name: Verify Action pins and license coverage
+        run: node --test scripts/*.test.mjs
       - run: go test ./...
       - run: go vet ./...
       - run: go build ./cmd/zt

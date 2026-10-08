@@ -29,9 +29,23 @@ func main() {
 
 func run(args []string, output io.Writer) error {
 	if len(args) == 0 {
-		return fmt.Errorf("usage: zt inspect [--root DIR] [--json] | zt plan CAPABILITY [--module ID] [--root DIR] [--json] | zt sync [--root DIR] [--plan] [--json] | zt check [--module ID] [--profile NAME] [--root DIR] [--json] | zt version")
+		return fmt.Errorf("usage: zt inspect [--root DIR] [--json] | zt plan CAPABILITY [--module ID] [--root DIR] [--json] | zt sync [--root DIR] [--plan] [--json] | zt check [--module ID] [--profile NAME] [--root DIR] [--json] | zt version | zt license")
 	}
 	switch args[0] {
+	case "license":
+		if len(args) != 1 {
+			return fmt.Errorf("license accepts no arguments")
+		}
+		for _, name := range []string{"LICENSE", "third-party/GO-BSD.txt"} {
+			data, err := tools.LicenseFiles.ReadFile(name)
+			if err != nil {
+				return err
+			}
+			if _, err := fmt.Fprintf(output, "%s\n%s\n", name, data); err != nil {
+				return err
+			}
+		}
+		return nil
 	case "version":
 		if len(args) != 1 {
 			return fmt.Errorf("version accepts no arguments")

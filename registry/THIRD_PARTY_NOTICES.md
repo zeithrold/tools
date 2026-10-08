@@ -6,6 +6,11 @@ The delivered self-owned source is MIT licensed; see `LICENSE`. This does not re
   delivered in `third-party/SHADCN-MIT.txt` alongside this notice.
 - Radix primitives, Lucide React and other installed dependencies retain their upstream licenses and
   notices. Preserve those notices when distributing the consumer application.
+- The Select 2.3.7 declaration patch includes Radix source context (MIT, copyright 2022 WorkOS).
+  Its original notice is delivered in `third-party/RADIX-MIT.txt` and must accompany the patch.
+- The transitive `react-remove-scroll-bar@2.3.8` npm artifact declares MIT but omits its full notice.
+  Its original upstream Anton Korzunov notice is preserved in `third-party/REACT-REMOVE-SCROLL-BAR-MIT.txt`.
+  Source: [upstream LICENSE](https://github.com/theKashey/react-remove-scroll-bar/blob/7301c160fda44cb8cf2b9fdfde61efad35736196/LICENSE).
 - The stylesheet loads Noto Sans, Noto Sans SC/JP/KR and Noto Color Emoji directly through the Google
   Fonts API. These fonts retain SIL Open Font License 1.1. Their complete copyright and license notices
   are delivered as `third-party/NOTO-*-OFL.txt`, including the Color Emoji notice. The earlier monochrome

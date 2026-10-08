@@ -21,6 +21,7 @@ await mkdir('dist/assets', { recursive: true })
 for (const license of [
   'SHADCN-MIT.txt',
   'RADIX-MIT.txt',
+  'REACT-REMOVE-SCROLL-BAR-MIT.txt',
   'VAUL-MIT.txt',
   'NOTO-SANS-OFL.txt',
   'NOTO-SANS-SC-OFL.txt',

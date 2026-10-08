@@ -1,6 +1,7 @@
 ---
 name: go-testing
 description: Inspect and run a Go project's unit, fuzz, and mutation checks with clear evidence boundaries and bounded execution.
+license: MIT
 ---
 
 # Go testing

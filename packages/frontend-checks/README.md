@@ -1,11 +1,11 @@
 # @ztd-me/frontend-checks
 
-Native CSS and Playwright accessibility checks. Requires Node >=22.14 and Playwright Test ^1.62.0. Version `0.1.1` is the patch candidate for Tailwind block custom variants; it requires automatic staging, owner 2FA promotion and fresh registry verification before consumers install it. See [publishing](docs/publishing.md) and [CLI integration](https://github.com/zeithrold/tools/blob/main/docs/frontend-tooling.md). Consumers retain `@ztd-me/eslint@0.1.1` and its strict standards.
+Native CSS and Playwright accessibility checks. Requires Node >=22.14 and Playwright Test ^1.62.0. Version `0.1.2` prepares the MIT metadata and full license notice for a new npm release, retaining the Tailwind block custom variant fix from `0.1.1`. It requires automatic staging, owner 2FA promotion and fresh registry verification before consumers install it. See [publishing](docs/publishing.md) and [CLI integration](https://github.com/zeithrold/tools/blob/main/docs/frontend-tooling.md). Consumers retain `@ztd-me/eslint@0.1.1` and its strict standards.
 
 After promotion and verified public installation:
 
 ```sh
-pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.1 @playwright/test@1.62.0
+pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.2 @playwright/test@1.62.0
 pnpm exec playwright install chromium
 ```
 
@@ -86,3 +86,10 @@ pnpm run check
 ```
 
 Tests execute native CSS parsing/lint, real Chromium Axe/keyboard/dialog behavior, a deliberate accessibility failure, typed imports, fresh tarball installation/CLI use, and stage authorization/duplicate guards. The workspace uses the authorized `@ztd-me/*` age exclusion and retains the existing exact `semver@6.3.1` trust exception. Fresh consumers retain strict 24-hour release age for other packages and no-downgrade for all packages. `test:registry` verifies registry integrity against the original reviewed release tarball and repeats consumer import/type/CLI/browser pass/failure checks; metadata alone is insufficient. Source documentation updates do not overwrite an already published version.
+
+## License
+
+First-party code and documentation are [MIT licensed](LICENSE). Installed dependencies, including
+Axe, Stylelint and Playwright, retain their upstream licenses and notices. This package does not
+relicense dependencies or their transitive code. Existing published versions keep their original
+artifacts and metadata.

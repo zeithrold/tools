@@ -1,8 +1,8 @@
 {
   "name": "@ztd-me/frontend-checks",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "description": "Native CSS and Playwright accessibility checks for zt frontend profiles",
   "engines": {
     "node": ">=22.14.0"
@@ -24,7 +24,8 @@
   "files": [
     "src",
     "README.md",
-    "docs"
+    "docs",
+    "LICENSE"
   ],
   "scripts": {
     "lint": "eslint src scripts test playwright.config.mjs eslint.config.js --max-warnings 0",

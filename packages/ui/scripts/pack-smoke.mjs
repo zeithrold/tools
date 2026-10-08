@@ -1,8 +1,9 @@
 import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
+import { assertPackedLicense } from '../../../scripts/license-coverage.mjs'
 import { browserArtifactRoot } from './browser-artifacts.mjs'
 import { prepareConsumer } from './prepare-consumer.mjs'
 
@@ -14,6 +15,12 @@ execFileSync('pnpm', [
   '--out',
   archive,
 ], { stdio: 'inherit' })
+const notices = Object.fromEntries((await readdir('third-party')).map(file => [
+  `dist/assets/${file}`,
+  `third-party/${file}`,
+]))
+notices['THIRD_PARTY_NOTICES.md'] = 'THIRD_PARTY_NOTICES.md'
+await assertPackedLicense(archive, process.cwd(), notices)
 const consumer = await prepareConsumer(`file:${archive}`)
 const sha256 = createHash('sha256').update(await readFile(archive)).digest('hex')
 await writeFile('.artifacts/packed-consumer.json', JSON.stringify({

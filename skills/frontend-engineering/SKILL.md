@@ -1,6 +1,7 @@
 ---
 name: frontend-engineering
 description: Use when implementing or reviewing frontend architecture, component variants, data boundaries, localization, preferences or SSR hydration while preserving native framework and product contracts.
+license: MIT
 ---
 
 # Frontend engineering

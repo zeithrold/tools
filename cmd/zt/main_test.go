@@ -7,7 +7,28 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+
+	tools "github.com/zeithrold/tools"
 )
+
+func TestLicenseCommandRetainsEmbeddedNotices(t *testing.T) {
+	var output bytes.Buffer
+	if err := run([]string{"license"}, &output); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"LICENSE", "third-party/GO-BSD.txt"} {
+		data, err := tools.LicenseFiles.ReadFile(name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Contains(output.Bytes(), data) {
+			t.Fatalf("license command omitted %s", name)
+		}
+	}
+	if err := run([]string{"license", "extra"}, &output); err == nil {
+		t.Fatal("license accepted unexpected arguments")
+	}
+}
 
 func TestCheckCLIReportsRequiredFailureAndRetainsJSON(t *testing.T) {
 	if _, err := exec.LookPath("pnpm"); err != nil {
