@@ -181,16 +181,28 @@ func TestDependencyReadinessAliasesAreRejectedBeforeExecution(t *testing.T) {
 	}
 }
 
+func writePNPMFixtureDependency(t *testing.T, root string) {
+	t.Helper()
+	dependency := filepath.Join(root, "fixture-dependency")
+	if err := os.Mkdir(dependency, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dependency, "package.json"), []byte(`{"name":"fixture-dependency","version":"1.0.0"}`), 0644); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestNativePackageScriptsUsePNPMAndPropagateFailure(t *testing.T) {
 	if _, err := exec.LookPath("pnpm"); err != nil {
 		t.Skip("pnpm not installed")
 	}
 	root := t.TempDir()
-	// No packageManager: the lock is sufficient, and no installation is needed.
+	writePNPMFixtureDependency(t, root)
+	// No packageManager: native pnpm owns the real local dependency and lockfile.
 	os.WriteFile(filepath.Join(root, "pnpm-lock.yaml"), []byte("lockfileVersion: '9.0'\n"), 0644)
-	os.WriteFile(filepath.Join(root, "package.json"), []byte(`{"scripts":{"lint":"node -e \"console.log('native pnpm');process.exit(9)\""}}`), 0644)
+	os.WriteFile(filepath.Join(root, "package.json"), []byte(`{"dependencies":{"fixture-dependency":"file:fixture-dependency"},"scripts":{"lint":"node -e \"console.log('native pnpm');process.exit(9)\""}}`), 0644)
 	os.WriteFile(filepath.Join(root, "zt.json"), []byte(`{"schemaVersion":1,"modules":[{"id":"web","path":".","stack":"js-ts","profiles":{"frontend":["lint"]}}]}`), 0644)
-	// Provision this dependency-free fixture explicitly. check must never do so.
+	// Provision this local-only dependency fixture explicitly. check must never do so.
 	t.Setenv("PNPM_HOME", filepath.Join(root, "pnpm-home"))
 	t.Setenv("XDG_DATA_HOME", filepath.Join(root, "data"))
 	t.Setenv("XDG_CACHE_HOME", filepath.Join(root, "cache"))
@@ -200,7 +212,7 @@ func TestNativePackageScriptsUsePNPMAndPropagateFailure(t *testing.T) {
 		t.Fatalf("fixture install: %s %v", data, err)
 	}
 	report, err := Run(context.Background(), Options{Root: root, Module: "web", Profile: "frontend", Timeout: 10 * time.Second})
-	if err != nil || report.Status != "failed" || report.Checks[0].Steps[0].ExitCode == 0 || report.Checks[0].Steps[0].Argv[0] != "pnpm" {
+	if err != nil || report.Status != "failed" || report.Checks[0].Steps[0].ExitCode != 9 || report.Checks[0].Steps[0].Argv[0] != "pnpm" {
 		t.Fatalf("%+v %v", report, err)
 	}
 
@@ -215,7 +227,8 @@ func TestPNPMMissingDependenciesCannotInstallDuringCheck(t *testing.T) {
 		t.Skip("pnpm not installed")
 	}
 	root := t.TempDir()
-	os.WriteFile(filepath.Join(root, "package.json"), []byte(`{"scripts":{"lint":"node -e \"console.log('should not run')\""}}`), 0644)
+	writePNPMFixtureDependency(t, root)
+	os.WriteFile(filepath.Join(root, "package.json"), []byte(`{"dependencies":{"fixture-dependency":"file:fixture-dependency"},"scripts":{"lint":"node -e \"console.log('should not run')\""}}`), 0644)
 	os.WriteFile(filepath.Join(root, "pnpm-lock.yaml"), []byte("lockfileVersion: '9.0'\n"), 0644)
 	os.WriteFile(filepath.Join(root, "zt.json"), []byte(`{"schemaVersion":1,"modules":[{"id":"web","path":".","stack":"js-ts","profiles":{"frontend":["lint"]}}]}`), 0644)
 	report, err := Run(context.Background(), Options{Root: root, Module: "web", Profile: "frontend", Timeout: 10 * time.Second})
@@ -226,7 +239,7 @@ func TestPNPMMissingDependenciesCannotInstallDuringCheck(t *testing.T) {
 		t.Fatal("check installed dependencies")
 	}
 	data, err := os.ReadFile(filepath.Join(report.ArtifactDir, report.Checks[0].Steps[0].Log))
-	if err != nil || !strings.Contains(string(data), "VERIFY_DEPS_BEFORE_RUN") {
+	if err != nil || !strings.Contains(string(data), "VERIFY_DEPS_BEFORE_RUN") || strings.Contains(string(data), "should not run") {
 		t.Fatalf("readiness blocker not surfaced: %s %v", data, err)
 	}
 }
