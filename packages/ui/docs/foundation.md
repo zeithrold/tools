@@ -111,6 +111,8 @@ in Tailwind's source detection. The entry maps runtime tokens to semantic utilit
 explicit/system dark variant. Runtime palettes and typography live in base; native overlay motion
 and Vaul behavioral adaptation live in components. Consumer utilities can override components.
 All component className props use the shared `cn`, including text body/control/help/heading/reading/editable roles.
+Dialog and AlertDialog retain Tailwind positioning throughout native enter/exit opacity and scale motion;
+keyframes do not repeat the centering translate. Reduced-motion preferences keep immediate dismissal and focus restoration.
 The private packed verification artifact compiles the same source classes with native Tailwind;
 source consumers own compilation. Do not copy the compiled verification artifact into a registry item.
 

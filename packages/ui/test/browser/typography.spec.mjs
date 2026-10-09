@@ -149,6 +149,10 @@ test('dialog and drawer use compact interface titles while editable text stays 1
     await sizeRole(panel.locator(`[data-slot="${kind}-description"]`), 13, 19.5)
     await sizeRole(panel.getByRole('textbox'), 16, 24)
     await expect(panel.getByRole('textbox')).toBeFocused()
+    await page.locator('.ztd-dialog, .ztd-modal-overlay, [data-vaul-drawer], [data-vaul-overlay]')
+      .evaluateAll(async nodes => Promise.all(nodes.flatMap(node =>
+        node.getAnimations().map(animation => animation.finished.catch(() => undefined)),
+      )))
     expect(await panel.evaluate(node => node.scrollWidth <= node.clientWidth)).toBe(true)
     await assertAccessible(page, info)
     await page.screenshot({ path: info.outputPath(`typography-${kind}-390.png`) })
