@@ -5,7 +5,7 @@ import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogTitle, AlertDialogTrigger,
-  Badge, Button, Checkbox, ColorGrid, Collapsible, CollapsibleContent, CollapsibleTrigger,
+  Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Checkbox, ColorGrid, Collapsible, CollapsibleContent, CollapsibleTrigger,
   Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger,
   Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger,
   Input, Label, ScrollArea, Select, SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValue,
@@ -37,6 +37,9 @@ function Fields(): React.JSX.Element {
       <Label htmlFor="primitive-input">Fixture name</Label>
       <Input id="primitive-input" name="name" defaultValue="Preserved" />
       <Label>Wrapped field<Input aria-label="Wrapped field" /></Label>
+      <Label htmlFor="primitive-disabled">Disabled name</Label>
+      <Input id="primitive-disabled" name="disabledName" defaultValue="Unchanged" disabled />
+      <Button type="submit" disabled>Disabled submit</Button>
       <Label htmlFor="primitive-note">Fixture note</Label>
       <Textarea id="primitive-note" name="note" defaultValue="Draft" />
       <Label htmlFor="primitive-native">Native choice</Label>
@@ -109,6 +112,30 @@ function Selections(): React.JSX.Element {
     </>
   )
 }
+function TypographyRoles(): React.JSX.Element {
+  return (
+    <section aria-label="Typography roles">
+      <Card>
+        <CardHeader>
+          <CardTitle>Typography role sample</CardTitle>
+          <CardDescription>Supporting copy 中文</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p id="typography-body">Ordinary interface copy 中文</p>
+          <p id="typography-reading" className="text-reading">Reading prose with preserved legibility 中文</p>
+          <Button id="reading-class-override" variant="outline" className="text-reading">Reading role override</Button>
+          <Button id="input-class-override" variant="outline" className="text-editable">Input role override</Button>
+          <Label htmlFor="reading-input-override">Explicit reading input override</Label>
+          <Input id="reading-input-override" className="text-reading" defaultValue="Consumer-owned typography" />
+          <Button size="xs" variant="outline">Extra small target</Button>
+          <Button size="sm" variant="outline">Small target</Button>
+          <Button size="icon-xs" variant="outline" aria-label="Extra small icon target"><FileText size={16} aria-hidden="true" /></Button>
+          <Button size="icon-sm" variant="outline" aria-label="Small icon target"><FileText size={16} aria-hidden="true" /></Button>
+        </CardContent>
+      </Card>
+    </section>
+  )
+}
 function SharedExtras(): React.JSX.Element {
   const [color, setColor] = useState('automatic')
   return (
@@ -140,7 +167,7 @@ function SharedExtras(): React.JSX.Element {
 export function PrimitiveFixture(): React.JSX.Element {
   return (
     <section aria-label="Primitive fixture">
-      <h1>Foundation primitives</h1><InjectedLocale /><Fields /><Selections /><Overlays /><SharedExtras />
+      <h1>Foundation primitives</h1><InjectedLocale /><Fields /><Selections /><Overlays /><SharedExtras /><TypographyRoles />
       <ScrollArea style={{ height: 120, width: 240 }} type="always"
         viewportProps={{ tabIndex: 0, role: 'region', 'aria-label': 'Scrollable sample' }}>
         {Array.from({ length: 35 }, (_, index) => <p key={index}>Scrollable row {index + 1}</p>)}

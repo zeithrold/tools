@@ -27,7 +27,7 @@ test('compact chrome preserves hit areas, focus and narrow layout', async ({ con
     for (const control of controls) {
       expect(control.width).toBeGreaterThanOrEqual(44)
       expect(control.height).toBeGreaterThanOrEqual(44)
-      expect(control.fontSize).toBe('16px')
+      expect(control.fontSize).toBe('14px')
       expect(control.border).toBe('rgba(0, 0, 0, 0)')
     }
   }

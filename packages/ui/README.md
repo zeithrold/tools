@@ -14,7 +14,9 @@ Requires Node >=22.14 and React/react-dom >=19.2 <20. The verified toolchain use
 TypeScript 6.0.3 and pnpm 11.22.0.
 
 Read [the foundation contract](docs/foundation.md) for component APIs, native scrolling, semantic typography
-and explicit injected localization. The source baseline is body/control/help 18/16/14px, configurable by tokens.
+and explicit injected localization. The source baseline is body/control/help/heading 16/14/13/20px,
+with separate 18px reading and 16px editable-input roles, configurable by tokens. Text sizing does not
+reduce touch targets; default input text remains 16px on narrow and wide screens.
 
 ## Installed entries
 

@@ -132,7 +132,7 @@ test('shared controls retain state, touch sizing and class overrides', async ({ 
   expect(await automatic.evaluate(n => n.getBoundingClientRect().height)).toBe(44)
   const compact = page.getByRole('button', { name: 'Compact override' })
   expect(await compact.evaluate(n => n.getBoundingClientRect().height)).toBe(32)
-  expect(await compact.evaluate(n => getComputedStyle(n).fontSize)).toBe('14px')
+  expect(await compact.evaluate(n => getComputedStyle(n).fontSize)).toBe('13px')
   const wrapped = page.getByRole('textbox', { name: 'Wrapped field' })
   expect(await wrapped.evaluate(n => getComputedStyle(n).fontWeight)).toBe('400')
   await assertAccessible(page, info)

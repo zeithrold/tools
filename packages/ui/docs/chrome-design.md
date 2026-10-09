@@ -6,8 +6,9 @@ Production consumer migrations require fresh public source verification and cons
 
 ## Visual decisions
 
-- Appbar controls use the configurable 16px control role, a 16px appearance icon and a 14px locale chevron. They have no boxed
-  border at rest. Hover and open states use a 32px visual surface within the retained 44px hit area.
+- Appbar controls use the configurable 14px control role, a 16px appearance icon and a 14px locale chevron. They have no boxed
+  border at rest. Hover and open states use the semantic muted surface within the retained 44px hit area.
+  Brand text uses the separate 16px body role.
 - The 2px accent focus outline remains visible around the full hit area. Compact appearance text still
   hides below 640px; the locale label stays visible. Consumer navigation remains a consumer slot.
 - `--ztd-border` is a decorative divider/outline token, with subdued light and dark values for all six
