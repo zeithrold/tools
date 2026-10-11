@@ -168,5 +168,5 @@ The delivered `foundation.md` describes generic primitives and the host-injected
 application `@/*` aliases against its declared source root (normally `src`), and match compiler/bundler/
 test/registry mappings. Shared source keeps its portable relative ESM graph. New primitives preserve
 provider portal/nonce ownership and native scrolling. Body/control/help/heading sizes use configurable
-16/14/13/20px semantic roles; reading prose stays 18px and editable input stays 16px. Touch targets
+15/13/12/19px semantic roles; reading prose stays 17px and editable input stays 16px. Touch targets
 remain independent of text size. This candidate does not change the requirement for reviewed public source.

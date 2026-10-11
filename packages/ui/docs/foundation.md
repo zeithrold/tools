@@ -40,11 +40,11 @@ The generic interface scale keeps reading prose and editable fields separate fro
 
 | Role | Default | Line height | Utility and use |
 | --- | --- | --- | --- |
-| `--ztd-font-body` | 16px | `--ztd-leading-body:1.65` | `text-body` for ordinary cards and modal content |
-| `--ztd-font-control` | 14px | `--ztd-leading-control:1.5` | `text-control` for buttons, menus, selectors and tabs |
-| `--ztd-font-help` | 13px | `--ztd-leading-help:1.5` | `text-help` for labels, descriptions and badges |
-| `--ztd-font-heading` | 20px | 1.35 | `text-heading` for card and modal titles |
-| `--ztd-font-reading` | 18px | `--ztd-leading-reading:1.65` | `text-reading` for long prose and document canvases |
+| `--ztd-font-body` | 15px | `--ztd-leading-body:1.65` | `text-body` for ordinary cards and modal content |
+| `--ztd-font-control` | 13px | `--ztd-leading-control:1.5` | `text-control` for buttons, menus, selectors and tabs |
+| `--ztd-font-help` | 12px | `--ztd-leading-help:1.5` | `text-help` for labels, descriptions and badges |
+| `--ztd-font-heading` | 19px | 1.35 | `text-heading` for card and modal titles |
+| `--ztd-font-reading` | 17px | `--ztd-leading-reading:1.65` | `text-reading` for long prose and document canvases |
 | `--ztd-font-input` | 16px | `--ztd-leading-input:1.5` | `text-editable` for Input and Textarea, including mobile |
 
 Native and Radix selectors use the control role; editable inputs retain 16px independently of the

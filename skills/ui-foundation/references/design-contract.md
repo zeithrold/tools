@@ -19,8 +19,9 @@ Apply semantic tokens to component variants; prefer the existing variant mechani
 
 Cite affected decisions and inspect relevant interaction states. State how automated checks and human visual review support the result. New screenshot baselines and performance budgets are deferred in this tools phase.
 
-Use semantic typography roles throughout forms and reading content. Shared defaults are body 18px,
-controls 16px and help/metadata 14px, with configurable role tokens and intentional heading hierarchy.
+Use semantic typography roles throughout forms and reading content. Shared defaults are body 15px,
+controls 13px, help/metadata 12px and headings 19px, with a separate 17px reading role and 16px editable
+input role. Role tokens remain configurable and headings retain an intentional hierarchy.
 Consumers record justified token overrides in their own design contract; tools accepts configuration,
 never selects values through a project name. Preserve minimum reachable control dimensions, text zoom,
 long translation and narrow-layout behavior when choosing sizes.

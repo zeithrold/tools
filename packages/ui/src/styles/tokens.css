@@ -1,9 +1,9 @@
 :root {
-  --ztd-font-body: 16px;
-  --ztd-font-control: 14px;
-  --ztd-font-help: 13px;
-  --ztd-font-heading: 20px;
-  --ztd-font-reading: 18px;
+  --ztd-font-body: 15px;
+  --ztd-font-control: 13px;
+  --ztd-font-help: 12px;
+  --ztd-font-heading: 19px;
+  --ztd-font-reading: 17px;
   --ztd-font-input: 16px;
   --ztd-leading-body: 1.65;
   --ztd-leading-control: 1.5;

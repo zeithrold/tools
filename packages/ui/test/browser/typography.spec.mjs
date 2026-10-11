@@ -18,11 +18,11 @@ async function fieldRoles(page) {
   await sizeRole(page.getByLabel('Wrapped field', { exact: true }), 16, 24)
   await expect(page.getByLabel('Wrapped field', { exact: true })).toHaveCSS('font-weight', '400')
   const native = page.getByLabel('Native choice')
-  await expect(native).toHaveCSS('font-size', '14px')
+  await expect(native).toHaveCSS('font-size', '13px')
   // Chromium native select keeps its platform line height even when the role declares 1.5.
   await expect(native).toHaveCSS('line-height', 'normal')
   expect(await native.evaluate(node => node.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44)
-  await sizeRole(page.getByRole('combobox', { name: 'Enhanced choice' }), 14, 21)
+  await sizeRole(page.getByRole('combobox', { name: 'Enhanced choice' }), 13, 19.5)
   await expect(page.getByLabel('Disabled name')).toBeDisabled()
   await sizeRole(page.getByLabel('Disabled name'), 16, 24)
   await expect(page.getByRole('button', { name: 'Disabled submit' })).toBeDisabled()
@@ -32,7 +32,7 @@ async function fieldRoles(page) {
 
 async function controlTargets(page, coarse) {
   const defaults = page.getByRole('button', { name: 'Submit fixture', exact: true })
-  await sizeRole(defaults, 14, 21)
+  await sizeRole(defaults, 13, 19.5)
   expect(await defaults.evaluate(node => node.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44)
   for (const [name, fineSize] of [
     ['Extra small target', 32],
@@ -47,7 +47,7 @@ async function controlTargets(page, coarse) {
   await page.getByRole('combobox', { name: 'Enhanced choice' }).press('Enter')
   await settleOverlay(page)
   for (const item of await page.getByRole('option').all()) {
-    await sizeRole(item, 14, 21)
+    await sizeRole(item, 13, 19.5)
     if (coarse) {
       expect(await item.evaluate(node => node.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44)
     }
@@ -68,14 +68,14 @@ for (const [width, coarse] of [
       const errors = watchErrors(page)
       await page.goto('/primitives')
       await expect(page.locator('html')).toHaveCSS('font-size', '16px')
-      await sizeRole(page.locator('#typography-body'), 16, 26.4)
-      await sizeRole(page.locator('#typography-reading'), 18, 29.7)
+      await sizeRole(page.locator('#typography-body'), 15, 24.75)
+      await sizeRole(page.locator('#typography-reading'), 17, 28.05)
       const sample = page.getByRole('region', { name: 'Typography roles', exact: true })
-      await sizeRole(sample.locator('[data-slot="card-title"]'), 20, 27)
-      await sizeRole(sample.locator('[data-slot="card-description"]'), 13, 19.5)
-      await sizeRole(page.locator('#reading-class-override'), 18, 29.7)
+      await sizeRole(sample.locator('[data-slot="card-title"]'), 19, 25.65)
+      await sizeRole(sample.locator('[data-slot="card-description"]'), 12, 18)
+      await sizeRole(page.locator('#reading-class-override'), 17, 28.05)
       await sizeRole(page.locator('#input-class-override'), 16, 24)
-      await sizeRole(page.locator('#reading-input-override'), 18, 29.7)
+      await sizeRole(page.locator('#reading-input-override'), 17, 28.05)
       await mergedRole(page.locator('#reading-class-override'), 'text-reading', 'text-control')
       await mergedRole(page.locator('#input-class-override'), 'text-editable', 'text-control')
       await mergedRole(page.locator('#reading-input-override'), 'text-reading', 'text-editable')
@@ -144,9 +144,9 @@ test('dialog and drawer use compact interface titles while editable text stays 1
     const trigger = page.getByRole('button', { name: `Open ${kind}`, exact: true })
     await trigger.press('Enter')
     const panel = page.getByRole('dialog', { name, exact: true })
-    await sizeRole(panel, 16, 26.4)
-    await sizeRole(panel.locator(`[data-slot="${kind}-title"]`), 20, 27)
-    await sizeRole(panel.locator(`[data-slot="${kind}-description"]`), 13, 19.5)
+    await sizeRole(panel, 15, 24.75)
+    await sizeRole(panel.locator(`[data-slot="${kind}-title"]`), 19, 25.65)
+    await sizeRole(panel.locator(`[data-slot="${kind}-description"]`), 12, 18)
     await sizeRole(panel.getByRole('textbox'), 16, 24)
     await expect(panel.getByRole('textbox')).toBeFocused()
     await page.locator('.ztd-dialog, .ztd-modal-overlay, [data-vaul-drawer], [data-vaul-overlay]')
