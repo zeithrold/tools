@@ -25,6 +25,8 @@ Set a local role budget for display, section headings, body, reading, controls, 
 
 Capture a representative initial frame, a complete page and the interaction states affected by the change. Choose a risk-based environment matrix: narrow and wide layouts, at least one intermediate breakpoint, supported locales, light/dark palettes, reduced motion, enlarged text and relevant browsers. Check edge widths around a breakpoint when the layout changes there. Keep screenshots, measurements, videos and reports in the consumer's ignored artifacts location.
 
+When an SSR browser fixture injects a font specimen or other test-only content into framework-owned markup, first confirm a real interaction round trip and restored focus. Enabled static controls and loaded fonts do not prove client hydration. Retain page-error assertions and use a controlled startup delay when investigating timing.
+
 Inspect each capture visually. Automated overflow checks do not catch optical imbalance, inappropriate line breaks, bad cropping or weak hierarchy. Conversely, a pleasing frame does not prove keyboard behavior, font delivery or a successful mutation. Use the consumer's native lint, CSS, type, unit and browser gates without weakening them.
 
 For each observed gap, make a specific repair and repeat the affected check. Keep successful unaffected evidence; repeat broader checks when the change or a failure justifies it. Finish the review when the agreed scope has no known unresolved defect in the inspected states. Report untested states and remaining visual judgment explicitly. Self-review cannot establish an award win or a universal absence of possible improvements.

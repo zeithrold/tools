@@ -10,7 +10,7 @@ Read AGENTS.md, the project design contract, scripts, compiler config and framew
 
 1. Map the feature from route/server boundary through validation, state owner and components. Follow [boundaries](references/boundaries.md) and [source structure](references/source-structure.md); keep business/deployment assumptions local.
 2. Reuse semantic tokens, typography and component variants. Use configurable body/control/help size roles
-   (18/16/14px baseline), rather than shrinking whole forms or scattering literal sizes. Define missing semantic roles, including destructive actions, in the project contract without copying another product's values.
+   from the project design contract and `ui-foundation`, rather than shrinking whole forms or scattering literal sizes. Define missing semantic roles, including destructive actions, in the project contract without copying another product's values.
    Fonts must use Noto Sans or Noto Serif families, including appropriate CJK variants, and Noto Color
    Emoji for all emoji. Support at least English and Chinese/Japanese/Korean glyphs. Use Noto Sans for ordinary
    UI; choose Noto Serif only where the content benefits from serif typography. The Google Fonts
