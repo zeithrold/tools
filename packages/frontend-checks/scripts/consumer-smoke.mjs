@@ -1,9 +1,87 @@
 import assert from 'node:assert/strict'
+import { Buffer } from 'node:buffer'
 import { execFileSync } from 'node:child_process'
 import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
+
+const pngSignature = Buffer.from([
+  0x89,
+  0x50,
+  0x4E,
+  0x47,
+  0x0D,
+  0x0A,
+  0x1A,
+  0x0A,
+])
+const scanSections = [
+  'violations',
+  'passes',
+  'incomplete',
+  'inapplicable',
+]
+
+function allResults(report) {
+  const results = []
+  const walk = (suite) => {
+    for (const spec of suite.specs ?? []) {
+      for (const test of spec.tests ?? []) {
+        results.push(...test.results ?? [])
+      }
+    }
+    for (const child of suite.suites ?? []) {
+      walk(child)
+    }
+  }
+  for (const suite of report.suites ?? []) {
+    walk(suite)
+  }
+  return results
+}
+
+/** Report evidence counts only when the referenced file is still complete on disk. */
+async function attachedFile(attachment, reportFile, contentType) {
+  assert.equal(attachment.contentType, contentType, attachment.name)
+  assert.equal(attachment.body, undefined, `${attachment.name} must be attached by path`)
+  assert.ok(attachment.path, `${attachment.name} keeps a path`)
+  const file = path.isAbsolute(attachment.path)
+    ? attachment.path
+    : path.resolve(path.dirname(reportFile), attachment.path)
+  const content = await readFile(file)
+  assert.ok(content.length > 0, `${attachment.name} stays readable`)
+  return content
+}
+
+function assertCompleteScan(scan, name) {
+  for (const section of scanSections) {
+    assert.ok(Array.isArray(scan[section]), `${name} keeps ${section}`)
+  }
+  assert.equal(scan.testEngine?.name, 'axe-core', name)
+}
+
+async function assertTimingReport(consumer, directory, status, expectedCases) {
+  const file = path.join(consumer, directory, 'test-timings.json')
+  const report = JSON.parse(await readFile(file, 'utf8'))
+  assert.equal(report.schemaVersion, 1)
+  assert.equal(report.status, status)
+  assert.equal(report.summary.executed, expectedCases)
+  assert.equal(report.cases.length, expectedCases)
+  for (const item of report.cases) {
+    assert.equal(item.retry, 0)
+    assert.equal(item.stepsAvailable, true)
+    assert.equal(item.phaseTimingAvailable, true)
+    for (const key of [
+      'durationMs',
+      'setupMs',
+      'bodyMs',
+      'teardownMs',
+    ]) {
+      assert.ok(Number.isFinite(item[key]) && item[key] >= 0, `${key} records an actual nonnegative duration`)
+    }
+  }
+}
 
 export async function consumerSmoke(spec, label) {
   const consumer = await mkdtemp(path.join(os.tmpdir(), 'ztd-frontend-consumer-'))
@@ -140,6 +218,28 @@ export default defineConfig({
   const browserReport = JSON.parse(await readFile(reportFile, 'utf8'))
   assert.equal(browserReport.stats.expected, 3)
   assert.equal(browserReport.stats.unexpected, 0)
+  const scans = []
+  for (const result of allResults(browserReport)) {
+    for (const attachment of result.attachments) {
+      assert.equal(attachment.body, undefined, `${attachment.name} must be attached by path`)
+      if (attachment.contentType === 'application/json') {
+        const content = await attachedFile(attachment, reportFile, 'application/json')
+        assertCompleteScan(JSON.parse(content), attachment.name)
+        scans.push({ path: attachment.path, size: content.length })
+      }
+      if (attachment.contentType === 'image/png') {
+        const content = await attachedFile(attachment, reportFile, 'image/png')
+        assert.deepEqual(content.subarray(0, pngSignature.length), pngSignature, attachment.name)
+      }
+    }
+  }
+  assert.ok(scans.length > 1, 'repeated scans keep separate evidence files')
+  assert.equal(new Set(scans.map(scan => scan.path)).size, scans.length)
+  // The JSON report must reference the scan files instead of inlining their bytes.
+  const reportBytes = (await readFile(reportFile)).length
+  const scanBytes = scans.reduce((total, scan) => total + scan.size, 0)
+  assert.ok(scanBytes > reportBytes, `scan JSON (${scanBytes} B) must stay out of the ${reportBytes} B report`)
+  await assertTimingReport(consumer, 'positive-artifacts', 'passed', 3)
 }
 
 async function checkBrowserFailure(consumer) {
@@ -174,7 +274,15 @@ test('broken accessible name fails', async ({ page }, info) => {
   const reportFile = path.join(consumer, 'negative-artifacts', 'playwright.json')
   const browserReport = JSON.parse(await readFile(reportFile, 'utf8'))
   assert.equal(browserReport.stats.unexpected, 1)
-  const failed = browserReport.suites[0].specs[0].tests[0].results[0]
+  const failed = allResults(browserReport).find(result => result.error)
+  assert.ok(failed, 'the failing result stays in the report')
   assert.ok(failed.error.message.includes('button-name'))
-  assert.ok(failed.attachments.some(attachment => attachment.name === 'a11y-state'))
+  // Evidence is attached before the assertion fails, so it survives the deliberate failure.
+  const scan = failed.attachments.find(attachment => attachment.name === 'a11y-state')
+  assert.ok(scan, 'the failing assertion still retains the scan evidence')
+  const content = await attachedFile(scan, reportFile, 'application/json')
+  const results = JSON.parse(content)
+  assertCompleteScan(results, scan.name)
+  assert.ok(results.violations.some(violation => violation.id === 'button-name'))
+  await assertTimingReport(consumer, 'negative-artifacts', 'failed', 1)
 }

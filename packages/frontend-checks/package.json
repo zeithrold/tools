@@ -1,6 +1,6 @@
 {
   "name": "@ztd-me/frontend-checks",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "type": "module",
   "license": "MIT",
   "description": "Native CSS and Playwright accessibility checks for zt frontend profiles",
