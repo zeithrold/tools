@@ -4,53 +4,324 @@ on:
   push:
     tags: ['v*']
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
-  contents: write
+  contents: read
+
+env:
+  GOFLAGS: -mod=readonly
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
+  source:
+    name: Verify tagged source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
           go-version-file: go.mod
           cache: false
-      - name: Validate tag and source
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Validate tag
         env:
           TAG: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]] || {
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
             echo "Expected a semantic version tag, got: $TAG" >&2
             exit 1
-          }
+          fi
+      - name: Verify frozen module graph
+        run: |
+          set -euo pipefail
+          go mod download
+          go mod verify
+      - name: Test tagged source
+        run: |
+          set -euo pipefail
           go test ./...
           go vet ./...
-      - name: Build archives and checksums
+          node --test scripts/*.test.mjs
+
+  build:
+    name: Build ${{ matrix.goos }}/${{ matrix.goarch }}
+    needs: source
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: macos-26-intel, goos: darwin, goarch: amd64, cgo: '1', archive: tar.gz }
+          - { runner: macos-26, goos: darwin, goarch: arm64, cgo: '1', archive: tar.gz }
+          - { runner: ubuntu-24.04, goos: linux, goarch: amd64, cgo: '0', archive: tar.gz }
+          - { runner: ubuntu-24.04-arm, goos: linux, goarch: arm64, cgo: '0', archive: tar.gz }
+          - { runner: windows-2025, goos: windows, goarch: amd64, cgo: '0', archive: zip }
+          - { runner: windows-11-arm, goos: windows, goarch: arm64, cgo: '0', archive: zip }
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Verify frozen module graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          go mod download
+          go mod verify
+      - name: Build release binary
+        shell: bash
+        env:
+          TAG: ${{ github.ref_name }}
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: ${{ matrix.cgo }}
+          ZEITHROLD_GITHUB_CLIENT_ID: ${{ secrets.ZEITHROLD_GITHUB_CLIENT_ID }}
+        run: |
+          set -euo pipefail
+          if [[ "$(go env GOHOSTOS)/$(go env GOHOSTARCH)" != "$GOOS/$GOARCH" ]]; then
+            echo "The release target must match this runner's native Go toolchain" >&2
+            exit 1
+          fi
+          client_id="$(bash scripts/release-identity.sh)"
+          if [[ "$GOOS" == windows ]]; then binary=zt.exe; else binary=zt; fi
+          directory="release/$GOOS-$GOARCH"
+          mkdir -p "$directory"
+          go build -trimpath -buildvcs=true \
+            -ldflags "-s -w -X github.com/zeithrold/tools.releaseVersion=$TAG -X main.githubClientID=$client_id" \
+            -o "$directory/$binary" ./cmd/zt
+          if ! LC_ALL=C grep -qF -- "$client_id" "$directory/$binary"; then
+            echo "Release binary does not embed the configured GitHub App client ID" >&2
+            exit 1
+          fi
+      - name: Run the built binary natively
+        shell: bash
+        env:
+          TAG: ${{ github.ref_name }}
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          set -euo pipefail
+          if [[ "$GOOS" == windows ]]; then binary=zt.exe; else binary=zt; fi
+          directory="release/$GOOS-$GOARCH"
+          version="$("$directory/$binary" version)"
+          if [[ "$version" != "$TAG" ]]; then
+            echo "Native run reported $version, expected $TAG" >&2
+            exit 1
+          fi
+          bash scripts/check-cli-license.sh "$directory/$binary"
+          {
+            echo "target=$GOOS/$GOARCH"
+            echo "version=$version"
+            echo "native_run=passed"
+          } > "$directory/native-run.txt"
+          echo "native_run=passed target=$GOOS/$GOARCH version=$version" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: build-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: release/${{ matrix.goos }}-${{ matrix.goarch }}/*
+          if-no-files-found: error
+      - name: Retain partial build on failure
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: failure-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: release/
+          if-no-files-found: warn
+
+  package:
+    name: Package release assets
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: build-*
+          path: artifacts
+      - name: Assemble archives from native builds
         env:
           TAG: ${{ github.ref_name }}
         run: |
           set -euo pipefail
           mkdir -p dist
-          for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 windows/arm64; do
-            goos="${target%/*}"
-            goarch="${target#*/}"
-            name="zt_${TAG}_${goos}_${goarch}"
-            mkdir -p "build/$name"
-            binary=zt
-            if [[ "$goos" == windows ]]; then binary=zt.exe; fi
-            CGO_ENABLED=0 GOOS="$goos" GOARCH="$goarch" go build -trimpath \
-              -ldflags "-s -w -X github.com/zeithrold/tools.releaseVersion=$TAG" \
-              -o "build/$name/$binary" ./cmd/zt
-            if [[ "$goos" == windows ]]; then
-              bash scripts/package-cli.sh "build/$name" "dist/$name.zip"
-            else
-              bash scripts/package-cli.sh "build/$name" "dist/$name.tar.gz"
-            fi
+          for target in darwin-amd64 darwin-arm64 linux-amd64 linux-arm64 windows-amd64 windows-arm64; do
+            goos="${target%-*}"
+            goarch="${target#*-}"
+            directory="artifacts/build-$target"
+            if [[ "$goos" == windows ]]; then binary=zt.exe; else binary=zt; fi
+            test -f "$directory/$binary"
+            for expected in "target=$goos/$goarch" "version=$TAG" native_run=passed; do
+              grep -qx "$expected" "$directory/native-run.txt"
+            done
+            mkdir -p "staging/$target"
+            cp "$directory/$binary" "staging/$target/$binary"
+            if [[ "$goos" == windows ]]; then archive=zip; else archive=tar.gz; fi
+            bash scripts/package-cli.sh "staging/$target" "dist/zt_${TAG}_${goos}_${goarch}.$archive"
           done
-          (cd dist && sha256sum zt_* > SHA256SUMS)
-      - name: Publish GitHub Release
+          (cd dist && LC_ALL=C sha256sum zt_* > SHA256SUMS)
+      - name: Verify release assets
+        env:
+          TAG: ${{ github.ref_name }}
+        run: node scripts/verify-release.mjs --dist dist --tag "$TAG" --receipt "$RUNNER_TEMP/release-receipt.json"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: always()
+        with:
+          name: release-dist
+          path: dist/*
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: always()
+        with:
+          name: release-evidence
+          path: ${{ runner.temp }}/release-receipt.json
+          if-no-files-found: warn
+
+  keystore:
+    name: Native credential store ${{ matrix.goos }}/${{ matrix.goarch }}
+    needs: source
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: macos-26-intel, goos: darwin, goarch: amd64 }
+          - { runner: macos-26, goos: darwin, goarch: arm64 }
+          - { runner: ubuntu-24.04, goos: linux, goarch: amd64 }
+          - { runner: ubuntu-24.04-arm, goos: linux, goarch: arm64 }
+          - { runner: windows-2025, goos: windows, goarch: amd64 }
+          - { runner: windows-11-arm, goos: windows, goarch: arm64 }
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Run native OS credential store integration test
+        shell: bash
+        env:
+          GOOS_NAME: ${{ matrix.goos }}
+          GOARCH_NAME: ${{ matrix.goarch }}
+          ZT_KEYSTORE_INTEGRATION: '1'
+        run: |
+          set -euo pipefail
+          if [[ "$(go env GOHOSTOS)/$(go env GOHOSTARCH)" != "$GOOS_NAME/$GOARCH_NAME" ]]; then
+            echo "The credential gate must run on its target's native Go toolchain" >&2
+            exit 1
+          fi
+          if [[ "$GOOS_NAME" == darwin ]]; then
+            keychain="$RUNNER_TEMP/zt-native"
+            security delete-keychain "$keychain.keychain" >/dev/null 2>&1 || true
+            security create-keychain -p zt-ci "$keychain.keychain"
+            security unlock-keychain -p zt-ci "$keychain.keychain"
+            trap 'security delete-keychain "$keychain.keychain" >/dev/null 2>&1 || true' EXIT
+            export ZT_KEYSTORE_KEYCHAIN="$keychain"
+            go test -json -v ./internal/keystore -run '^TestOSStoreIntegration$' -count=1 > "$RUNNER_TEMP/keystore.json"
+          elif [[ "$GOOS_NAME" == linux ]]; then
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends dbus-x11 gnome-keyring libsecret-tools
+            dbus-run-session -- bash -c '
+              set -e
+              eval "$(printf %s zt-ci | gnome-keyring-daemon --unlock --components=secrets)"
+              printf %s zt-ci | secret-tool store --label=zt-ci-bootstrap service zt-ci-bootstrap key bootstrap >/dev/null
+              set +e
+              go test -json -v ./internal/keystore -run "^TestOSStoreIntegration$" -count=1 > "$RUNNER_TEMP/keystore.json"
+              status=$?
+              secret-tool clear service zt-ci-bootstrap key bootstrap >/dev/null 2>&1
+              exit $status
+            '
+          else
+            go test -json -v ./internal/keystore -run '^TestOSStoreIntegration$' -count=1 > "$RUNNER_TEMP/keystore.json"
+          fi
+          node --input-type=module -e '
+          import { readFileSync } from "node:fs"
+          const events = readFileSync(process.env.RUNNER_TEMP + "/keystore.json", "utf8").split("\n").filter(Boolean).map(line => JSON.parse(line))
+          const name = "TestOSStoreIntegration"
+          if (events.some(event => event.Test === name && event.Action === "skip")) {
+            console.error("keystore integration skipped; the gate requires a real native run")
+            process.exit(1)
+          }
+          if (!events.some(event => event.Test === name && event.Action === "pass")) {
+            console.error("keystore integration did not pass on this runner")
+            process.exit(1)
+          }
+          console.log("native keystore integration passed: " + process.env.GOOS_NAME + "/" + process.env.GOARCH_NAME)
+          '
+          echo "keystore_integration=passed target=$GOOS_NAME/$GOARCH_NAME" >> "$GITHUB_STEP_SUMMARY"
+      - name: Retain native credential test output
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: keystore-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: ${{ runner.temp }}/keystore.json
+          if-no-files-found: warn
+
+  publish:
+    name: Publish GitHub Release
+    needs: [package, keystore]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: release-dist
+          path: dist
+      - name: Verify downloaded release assets
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          (cd dist && sha256sum --check SHA256SUMS)
+          node scripts/verify-release.mjs --dist dist --tag "$TAG"
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
+        with:
+          subject-path: dist/zt_*
+      - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
@@ -58,4 +329,4 @@ jobs:
           set -euo pipefail
           flags=()
           if [[ "$TAG" == *-* ]]; then flags+=(--prerelease); fi
-          gh release create "$TAG" dist/* --verify-tag --generate-notes "${flags[@]}"
+          gh release create "$TAG" dist/zt_* dist/SHA256SUMS --verify-tag --generate-notes "${flags[@]}"

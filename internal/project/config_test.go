@@ -68,3 +68,39 @@ func TestDependencyReadinessErrorAliasesAreAllowed(t *testing.T) {
 		}
 	}
 }
+
+func TestLoadSelectionReadsOnlyTheGlobalSkillSelection(t *testing.T) {
+	dir := t.TempDir()
+	put := func(data string) {
+		t.Helper()
+		if err := os.WriteFile(filepath.Join(dir, ConfigName), []byte(data), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if names, found, err := LoadSelection(dir); err != nil || found || names != nil {
+		t.Fatalf("missing global config: %v %v %v", names, found, err)
+	}
+	put(`{"schemaVersion":1,"skills":["ui-web","go-testing"]}`)
+	names, found, err := LoadSelection(dir)
+	if err != nil || !found || strings.Join(names, ",") != "ui-web,go-testing" {
+		t.Fatalf("unexpected selection: %v %v %v", names, found, err)
+	}
+	for _, rejected := range []struct{ data, want string }{
+		{`{"schemaVersion":1,"skills":[]}`, "selects no Skill"},
+		{`{"schemaVersion":1,"skills":null}`, "selects no Skill"},
+		{`{"schemaVersion":2,"skills":["ui-web"]}`, "unsupported schemaVersion"},
+		{`{"schemaVersion":1,"skills":["ui-web","ui-web"]}`, "duplicate"},
+		{`{"schemaVersion":1,"skills":["UI-Web"]}`, "invalid"},
+		{`{"schemaVersion":1,"skills":["ui-web"],"unexpected":true}`, "unknown field"},
+		{`{"schemaVersion":1,"skills":["ui-web"],"modules":[]}`, "unknown field"},
+		{`{"schemaVersion":1,"skills":["ui-web"],"modules":null}`, "unknown field"},
+		{`{"schemaVersion":1,"skills":["ui-web"],"lint":{}}`, "unknown field"},
+		{`{"schemaVersion":1,"skills":["ui-web"],"modules":[{"id":"web","path":".","stack":"js-ts"}]}`, "unknown field"},
+		{`{"schemaVersion":1,"skills":["ui-web"],"lint":{"js-ts":"@ztd-me/eslint"}}`, "unknown field"},
+	} {
+		put(rejected.data)
+		if _, _, err := LoadSelection(dir); err == nil || !strings.Contains(err.Error(), rejected.want) {
+			t.Fatalf("accepted %s: %v", rejected.data, err)
+		}
+	}
+}

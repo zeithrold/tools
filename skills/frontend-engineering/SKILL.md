@@ -6,7 +6,7 @@ license: MIT
 
 # Frontend engineering
 
-Read AGENTS.md, the project design contract, scripts, compiler config and framework entry points. Use ui-foundation/ui-web for design and frontend-verification for execution evidence. Select Skills explicitly in zt.json; sync does not resolve their dependencies.
+Read AGENTS.md, the project design contract, scripts, compiler config and framework entry points. Use ui-foundation/ui-web for design and frontend-verification for execution evidence. Select generic Skills explicitly in user-global `~/.agents/zt.json` or `zt sync --skills`; sync does not resolve their dependencies. Project-level Skills contain project knowledge, not copies of generic workflows. Load only the guidance relevant to the current task and stage.
 
 1. Map the feature from route/server boundary through validation, state owner and components. Follow [boundaries](references/boundaries.md) and [source structure](references/source-structure.md); keep business/deployment assumptions local.
 2. Reuse semantic tokens, typography and component variants. Use configurable body/control/help size roles

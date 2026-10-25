@@ -2,30 +2,54 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	tools "github.com/zeithrold/tools"
 )
 
+// runCLI drives one invocation through the injected command tree. It never
+// reads os.Args, so tests cannot leak state between cases.
+func runCLI(t *testing.T, args ...string) (stdout, stderr string, err error) {
+	t.Helper()
+	out, errOut := &bytes.Buffer{}, &bytes.Buffer{}
+	err = executeApp(newApp(out, errOut), context.Background(), args)
+	return out.String(), errOut.String(), err
+}
+
 func TestLicenseCommandRetainsEmbeddedNotices(t *testing.T) {
-	var output bytes.Buffer
-	if err := run([]string{"license"}, &output); err != nil {
+	output, _, err := runCLI(t, "license")
+	if err != nil {
 		t.Fatal(err)
 	}
-	for _, name := range []string{"LICENSE", "third-party/GO-BSD.txt"} {
+	names, err := licenseFileNames()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(names) == 0 {
+		t.Fatal("no embedded notices")
+	}
+	last := -1
+	for _, name := range names {
 		data, err := tools.LicenseFiles.ReadFile(name)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !bytes.Contains(output.Bytes(), data) {
+		if !bytes.Contains([]byte(output), data) {
 			t.Fatalf("license command omitted %s", name)
 		}
+		at := strings.Index(output, name+"\n")
+		if at <= last {
+			t.Fatalf("license output is not in stable path order at %s", name)
+		}
+		last = at
 	}
-	if err := run([]string{"license", "extra"}, &output); err == nil {
+	if _, _, err := runCLI(t, "license", "extra"); err == nil {
 		t.Fatal("license accepted unexpected arguments")
 	}
 }
@@ -45,13 +69,13 @@ func TestCheckCLIReportsRequiredFailureAndRetainsJSON(t *testing.T) {
 	if data, err := install.CombinedOutput(); err != nil {
 		t.Fatalf("fixture install: %s %v", data, err)
 	}
-	var output bytes.Buffer
-	if err := run([]string{"check", "--root", root, "--module", "web", "--json"}, &output); err == nil {
+	output, _, err := runCLI(t, "check", "--root", root, "--module", "web", "--json")
+	if err == nil {
 		t.Fatal("required failure returned success")
 	}
 	var report struct{ Status, ArtifactDir string }
-	if err := json.Unmarshal(output.Bytes(), &report); err != nil || report.Status != "failed" {
-		t.Fatalf("invalid report %s: %v", output.String(), err)
+	if err := json.Unmarshal([]byte(output), &report); err != nil || report.Status != "failed" {
+		t.Fatalf("invalid report %s: %v", output, err)
 	}
 	if _, err := os.Stat(filepath.Join(report.ArtifactDir, "report.json")); err != nil {
 		t.Fatal(err)

@@ -44,24 +44,12 @@ type Module struct {
 }
 
 // Load returns nil when a project has not adopted zt yet. Inspect can still
-// discover native manifests in that case; sync requires an explicit config.
+// discover native manifests in that case.
 func Load(root string) (*Config, error) {
-	f, err := os.Open(filepath.Join(root, ConfigName))
-	if errors.Is(err, os.ErrNotExist) {
-		return nil, nil
-	}
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	dec := json.NewDecoder(f)
-	dec.DisallowUnknownFields()
 	var config Config
-	if err := dec.Decode(&config); err != nil {
-		return nil, fmt.Errorf("%s: %w", ConfigName, err)
-	}
-	if err := dec.Decode(new(any)); !errors.Is(err, io.EOF) {
-		return nil, fmt.Errorf("%s: trailing JSON data", ConfigName)
+	found, err := decode(root, &config)
+	if err != nil || !found {
+		return nil, err
 	}
 	if err := config.Validate(root); err != nil {
 		return nil, err
@@ -69,9 +57,62 @@ func Load(root string) (*Config, error) {
 	return &config, nil
 }
 
+// globalConfig is the exact schema of the user-global selector: schemaVersion
+// and skills, nothing else. Any other key, including an empty "modules" or
+// "lint", is rejected by the strict decode below.
+type globalConfig struct {
+	SchemaVersion int      `json:"schemaVersion"`
+	Skills        []string `json:"skills"`
+}
+
+// LoadSelection returns the Skill selection of the user-global config at
+// dir/zt.json. found is false when that file does not exist. An existing config
+// must select at least one Skill: zt never expands a selection by itself.
+func LoadSelection(dir string) (skills []string, found bool, err error) {
+	var config globalConfig
+	found, err = decode(dir, &config)
+	if err != nil || !found {
+		return nil, found, err
+	}
+	if config.SchemaVersion != 1 {
+		return nil, true, fmt.Errorf("%s: unsupported schemaVersion %d", ConfigName, config.SchemaVersion)
+	}
+	if err := ValidateSkills(config.Skills); err != nil {
+		return nil, true, fmt.Errorf("%s: %w", ConfigName, err)
+	}
+	if len(config.Skills) == 0 {
+		return nil, true, fmt.Errorf("%s: \"skills\" selects no Skill", ConfigName)
+	}
+	return config.Skills, true, nil
+}
+
+// decode reads dir/zt.json strictly into target and reports whether it exists.
+func decode(dir string, target any) (bool, error) {
+	f, err := os.Open(filepath.Join(dir, ConfigName))
+	if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	defer f.Close()
+	dec := json.NewDecoder(f)
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(target); err != nil {
+		return true, fmt.Errorf("%s: %w", ConfigName, err)
+	}
+	if err := dec.Decode(new(any)); !errors.Is(err, io.EOF) {
+		return true, fmt.Errorf("%s: trailing JSON data", ConfigName)
+	}
+	return true, nil
+}
+
 func (c Config) Validate(root string) error {
 	if c.SchemaVersion != 1 {
 		return fmt.Errorf("%s: unsupported schemaVersion %d", ConfigName, c.SchemaVersion)
+	}
+	if err := ValidateSkills(c.Skills); err != nil {
+		return fmt.Errorf("%s: %w", ConfigName, err)
 	}
 	seenModules := make(map[string]bool)
 	for _, module := range c.Modules {
@@ -127,12 +168,17 @@ func (c Config) Validate(root string) error {
 			}
 		}
 	}
-	seenSkills := make(map[string]bool)
-	for _, skill := range c.Skills {
-		if !identifier.MatchString(skill) || seenSkills[skill] {
-			return fmt.Errorf("%s: invalid or duplicate skill %q", ConfigName, skill)
+	return nil
+}
+
+// ValidateSkills rejects unknown or duplicated Skill ids.
+func ValidateSkills(skills []string) error {
+	seen := make(map[string]bool, len(skills))
+	for _, skill := range skills {
+		if !identifier.MatchString(skill) || seen[skill] {
+			return fmt.Errorf("invalid or duplicate Skill id %q", skill)
 		}
-		seenSkills[skill] = true
+		seen[skill] = true
 	}
 	return nil
 }
