@@ -153,6 +153,15 @@ test('verify-release rejects a tampered archive', () => withDist({}, (dist) => {
   return result
 }))
 
+test('verify-release rejects checksum mismatch before parsing invalid archive data', () => withDist({}, (dist) => {
+  writeFileSync(path.join(dist, assetName(tag, targets[2])), 'not an archive')
+  const result = runVerify(dist)
+  assert.equal(result.status, 1)
+  assert.match(result.stderr, /sha256/)
+  assert.doesNotMatch(result.stderr, /Command failed|gzip:|tar:/)
+  assert.equal(result.stdout, '')
+}))
+
 test('verify-release rejects an unexpected extra asset', () => withDist({}, (dist) => {
   writeFileSync(path.join(dist, 'zt_v9.9.9_linux_amd64.tar.gz.sig'), 'extra')
   const result = runVerify(dist)

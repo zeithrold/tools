@@ -19,6 +19,15 @@ const { values } = parseArgs({
 const problems = []
 const fail = message => problems.push(message)
 
+function exitOnProblems() {
+  if (problems.length > 0) {
+    for (const problem of problems) {
+      console.error(`verify-release: ${problem}`)
+    }
+    process.exit(1)
+  }
+}
+
 const dist = path.resolve(values.dist)
 const licenseFiles = [...archiveFiles, ...thirdPartyNotices()]
 const tag = values.tag
@@ -121,6 +130,10 @@ if (actual.length && checksums.size !== actual.length) {
   fail(`SHA256SUMS lists ${checksums.size} entries for ${actual.length} assets`)
 }
 
+// Do not parse, extract or execute any archive until the entire inventory and
+// checksum manifest pass. Archive tools differ in how they handle corrupt input.
+exitOnProblems()
+
 const runTarget = values['skip-run'] ? undefined : hostTarget()
 let nativeRun = 'skipped'
 
@@ -178,12 +191,7 @@ for (const target of targets) {
   }
 }
 
-if (problems.length > 0) {
-  for (const problem of problems) {
-    console.error(`verify-release: ${problem}`)
-  }
-  process.exit(1)
-}
+exitOnProblems()
 
 const receipt = { tag, assets: expected, checksums: 'verified', nativeRun }
 const summary = `verified ${expected.length} assets, SHA256SUMS, native run: ${nativeRun}`
