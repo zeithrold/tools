@@ -1,0 +1,7 @@
+# zt through mise's github backend. This is a usage example: 0.1.0 has not
+# been published yet, so `mise install` fails until the first release exists.
+# `matching = "zt_"` keeps only the zt archives; mise picks the asset for the
+# current OS/architecture and verifies the release SHA256SUMS (and GitHub
+# artifact attestations on public GitHub).
+[tools]
+"github:zeithrold/tools" = { version = "0.1.0", matching = "zt_" }

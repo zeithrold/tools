@@ -7,22 +7,27 @@
 - `zt inspect`: read-only inventory. Go and JS/TS have focused detectors; Flutter, Rust, Python, and JVM have conservative initial detectors. The report separates discovered entry points from environment readiness and execution results. This command never runs checks.
 - `zt plan CAPABILITY --module ID`: read-only command plan for Go and JS/TS. It prefers existing project recipes and package scripts. Generated Go fuzz commands have a 30-second budget per target.
 - `zt check --module ID --profile NAME`: executes reviewed native commands in an explicit ordered profile, stops after a required failure/blocker, and retains execution reports/logs/artifacts. It never installs dependencies or deploys.
-- `zt sync --plan`: read-only preview of bundled Skill directory changes.
-- `zt sync`: installs selected complete Skill directories and writes `zt.lock.json`. It refuses to overwrite unmanaged or locally edited Skill directories. Removal is intentionally manual in this slice.
-- `zt license`: prints the embedded MIT license and the Go standard library's original BSD notice, including in standalone binaries.
+- `zt sync --plan`: read-only preview of user-global Skill directory changes.
+- `zt sync [--global] [--skills ID[,ID]]`: installs complete Skill directories into `~/.agents/skills/<id>` and records them in `~/.agents/zt.lock.json`. The selection is the `skills` list of the user-global `~/.agents/zt.json` or an explicit `--skills` list; zt never selects the whole catalog by default, and it refuses to overwrite unmanaged or locally edited Skill directories. Removal is intentionally manual in this slice.
+- `zt skills list` / `zt skills sync`: discover bundled Skills and use the same global distributor. `zt sync` remains an alias; neither manages project knowledge.
+- `zt auth login/status/logout`: GitHub App Device Flow with `99designs/keyring` and only the current OS's native credential backend. Login requests expiring user tokens by default; local status does not contact GitHub unless `--probe` is explicit. See [GitHub App setup](docs/github-app-setup.md).
+- `zt completion`: Cobra-generated shell completion. Commands support help and explicit JSON output; non-TTY runs do not automatically open a browser.
+- `zt license`: prints the embedded first-party license and complete upstream CLI dependency notices, including in standalone binaries.
 - `packages/frontend-checks`: publishable CSS and Playwright/Axe helpers, with packed consumer tests and an automatic stage-only npm workflow. Owner 2FA promotion and public installation verification precede consumer rollout. See [frontend integration](docs/frontend-tooling.md).
 - `packages/eslint-config`: strict JS/TS/React/Vue flat-config package (`@ztd-me/eslint`), with a pnpm stage-only publication workflow. It is a native ESLint package, not code executed by the Go CLI.
 - `packages/ui`: canonical editable UI source and private verification harness; no npm UI publication.
 - `registry.json` and `registry/`: `@ztd-me/ui` source delivery through the existing GitHub route. Consumers own installed source and reviewed updates; see the [registry recipe](registry/README.md). The owner reviews upstream changes; fresh public installation is required before consumer migrations.
 
-`zt run`, `zt doctor`, native command planning for the other four stacks, and lint distribution for other stacks are **not implemented yet**. Release automation is configured, but no versioned release exists yet. This repository does not replace `ledger-tooling` or modify Ledger's current gates.
+`zt run`, `zt doctor`, `zt evolve`, native command planning for the other four stacks, and lint distribution for other stacks are **not implemented yet**. The [evolve plan](docs/agent-evolution-plan.md) does not imply a working PR submission command. Release automation is configured, but no versioned release exists yet. This repository does not replace `ledger-tooling` or modify Ledger's current gates.
 
 See the [Ledger assessment queue](docs/ledger-assessment.md) before extracting any existing Ledger behavior.
 See [contributor guidance](CONTRIBUTING.md) for maintained documentation, generated registry files and CI evidence.
+See [Release and mise distribution](docs/distribution.md) for native platform gates, checksums,
+installation/rollback, and removing an old mise Go-backend installation before a formal switch.
 
 ## Try it locally
 
-With Go 1.24 or newer:
+With Go 1.25 or newer (required for handle-relative Skill directory mutations):
 
 ```sh
 go test ./...
@@ -31,25 +36,40 @@ go run ./cmd/zt plan fuzz --root /path/to/ledger
 go run ./cmd/zt inspect --root /path/to/memory
 ```
 
-For a development install from the public repository, use Go 1.24 or newer:
+macOS native Keychain support uses the dependency's CGO binding and needs the Apple compiler/SDK.
+Linux uses Secret Service over D-Bus; Windows uses Credential Manager. There are no handwritten OS
+bindings in zt and no plaintext credential fallback. Linux's upstream keyring package may initialize a
+session-bus connection (and discover/start a bus) at process startup; inventory commands do not call
+credential methods, authenticate, run project checks or write project files.
+
+For a development install from the public repository, use Go 1.25 or newer:
 
 ```sh
 go install github.com/zeithrold/tools/cmd/zt@main
 zt version
 ```
 
-`go install` places the binary in `GOBIN`, or `GOPATH/bin` when `GOBIN` is unset; put that directory on `PATH`. Once a release tag exists, pin it instead of using `@main`, for example `@v0.1.0`. A project should pin the same `zt` version in its CI/bootstrap recipe; `zt.lock.json` records the version and content hash of each synchronized Skill. `zt.json` does not download or update the CLI itself.
+`go install` places the binary in `GOBIN`, or `GOPATH/bin` when `GOBIN` is unset; put that directory on `PATH`. Once a release tag exists, pin it instead of using `@main`, for example `@v0.1.0`. Skill distribution is user-global, so pin the same `zt` version where machines are provisioned; `~/.agents/zt.lock.json` records the version and content hash of each synchronized Skill. Neither config file downloads or updates the CLI itself.
 
-To try Skill sync, copy an [example config](examples/zt-memory.json) to `zt.json` in a **temporary project copy**, then run:
+Release builds embed the public GitHub App Client ID from `ZEITHROLD_GITHUB_CLIENT_ID`; development
+builds can supply `zt auth login --client-id CLIENT_ID`. This is not a token flag. Device Flow uses a
+Client ID, not the numeric App ID; no client private key or client secret is distributed.
+
+To try Skill distribution, copy the [example global config](examples/zt-global.json) to `~/.agents/zt.json`, or select Skills for a single run:
 
 ```sh
-go run ./cmd/zt sync --root /path/to/project --plan
-go run ./cmd/zt sync --root /path/to/project
+go run ./cmd/zt sync --plan
+go run ./cmd/zt sync --skills ui-foundation,go-testing
+go run ./cmd/zt sync
 ```
 
-`sync --plan` is safe against an existing checkout. `sync` changes only selected `.agents/skills/<id>/` directories and `zt.lock.json`; review its plan first. It never rewrites a project's own `AGENTS.md`, `DESIGN.md`, or other Skills.
+`sync --plan` is read-only: it reports installs, updates, adoptions and conflicts without creating directories or a lock. `sync` writes only `~/.agents/skills/<id>/` and `~/.agents/zt.lock.json`. It never reads a project `zt.json`, so the result is identical from any working directory, and it never touches project `.agents/skills`, `AGENTS.md`, or `DESIGN.md`. Skills, project knowledge, and design contracts that live in a repository stay project-owned; copy a Skill into the global tree only as an explicit, reviewed distribution decision. See [global Skills](docs/global-skills.md).
+
+`zt sync --root DIR` is rejected with an explanation. Project-level Skill sync was removed; an existing project `.agents/skills/` tree and its `zt.lock.json` are left untouched for you to review and migrate by hand.
 
 ## `zt.json`
+
+A project `zt.json` declares modules and their native expectations:
 
 ```json
 {
@@ -65,10 +85,20 @@ go run ./cmd/zt sync --root /path/to/project
         "mutation": "warn"
       }
     }
-  ],
+  ]
+}
+```
+
+Skill selection has a separate config at `~/.agents/zt.json`. It contains only `schemaVersion` and `skills`; project sections such as `modules` and `lint` are rejected there, and a project `zt.json` no longer distributes Skills:
+
+```json
+{
+  "schemaVersion": 1,
   "skills": ["go-testing"]
 }
 ```
+
+`--skills ID[,ID]` overrides that list for a single run and never rewrites the config file.
 
 Supported stack IDs are `go`, `jvm`, `js-ts`, `flutter`, `rust`, and `python`. `expect` is advisory in `inspect`; `zt check` enforces it for entries in the selected explicit profile. If no `zt.json` exists, `inspect` detects a manifest at the root and reports without changing the project.
 
@@ -85,16 +115,18 @@ cmd/zt/                 CLI
 internal/project/       zt.json validation
 internal/inspect/       read-only stack inventory
 internal/check/         native execution and evidence collection
-internal/skills/        Skill planning, collision detection, and sync
+internal/skills/        user-global Skill planning, collision detection, and sync
+internal/githubauth/    GitHub App device authorization and credential lifecycle
+internal/keystore/      restricted native keyring adapter and process coordination
 skills/                 complete bundled Skill directories
 packages/eslint-config/ native strict ESLint package
 packages/frontend-checks/ CSS and browser verification helpers
 packages/ui/            editable UI registry source and private verification harness
-examples/               proposed pilot configurations
+examples/               example project and user-global configurations
 ```
 
 ## License and publication
 
 All first-party code and documentation in this checkout are licensed under [MIT](LICENSE), including the Go CLI, npm packages, UI registry source and templates, Skills and workflows. Package archives and copied Skill directories include the full license with the existing Zeithrold copyright notice. Preserve original third-party notices; see the [licensing inventory](docs/licensing.md) and [third-party boundary](THIRD_PARTY_NOTICES.md). Dependencies and Noto fonts retain their upstream terms.
 
-The repository is public. CI tests each push and pull request. A semantic version tag triggers a GitHub Release with macOS, Linux, and Windows archives for amd64 and arm64, plus SHA-256 checksums. CLI archives include MIT and Go BSD notices. The Go release workflow does not publish npm packages or create tags automatically. Separate `publish-eslint.yml` and `publish-frontend.yml` workflows automatically verify relevant pushes to `main` and stage new package versions; published or pending versions are skipped. A maintainer must promote each stage with 2FA before it becomes installable. Existing published npm versions retain their original artifacts and metadata; licensing changes apply to this checkout and future distributions. No versioned Go CLI release has been published yet. Release signing remains an open decision.
+The repository is public. CI tests each push and pull request. A semantic version tag triggers native macOS, Linux and Windows release jobs for amd64 and arm64, with real credential-store gates, SHA-256 checksums and GitHub provenance attestations. Defining these jobs does not establish that they ran; see the distribution contract for actual acceptance requirements. CLI archives retain first-party and upstream dependency notices. The Go release workflow does not publish npm packages or create tags automatically. Separate `publish-eslint.yml` and `publish-frontend.yml` workflows automatically verify relevant pushes to `main` and stage new package versions; published or pending versions are skipped. A maintainer must promote each stage with 2FA before it becomes installable. Existing published npm versions retain their original artifacts and metadata; licensing changes apply to this checkout and future distributions. No versioned Go CLI release has been published yet.

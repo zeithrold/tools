@@ -12,11 +12,18 @@ mkdir -p "$(dirname "$2")"
 archive="$(cd "$(dirname "$2")" && pwd)/$(basename "$2")"
 cp "$repository/LICENSE" "$repository/THIRD_PARTY_NOTICES.md" "$directory/"
 mkdir -p "$directory/third-party"
-cp "$repository/third-party/GO-BSD.txt" "$directory/third-party/"
+cp -R "$repository/third-party/." "$directory/third-party/"
 binary=zt
 if [[ -f "$directory/zt.exe" ]]; then binary=zt.exe; fi
 [[ -f "$directory/$binary" ]] || { echo 'CLI binary is missing' >&2; exit 1; }
-files=("$binary" LICENSE THIRD_PARTY_NOTICES.md third-party/GO-BSD.txt)
+# Artifact upload/download does not preserve modes, so restore the executable
+# bit before archiving; tar then records it and the archive is runnable.
+if [[ "$binary" != zt.exe ]]; then chmod +x "$directory/$binary"; fi
+files=("$binary" LICENSE THIRD_PARTY_NOTICES.md)
+# Ship every notice under third-party/, including licenses for new Go runtime
+# dependencies, rather than a fixed list that silently drops additions.
+while IFS= read -r notice; do files+=("$notice"); done \
+  < <(cd "$directory" && find third-party -type f | LC_ALL=C sort)
 
 case "$archive" in
   *.zip) (cd "$directory" && zip -q "$archive" "${files[@]}") ;;

@@ -24,7 +24,9 @@ func Version() string {
 //go:embed skills
 var SkillFiles embed.FS
 
-// LicenseFiles retains first-party and Go runtime notices in standalone binaries.
+// LicenseFiles retains first-party, Go runtime and third-party Go module
+// notices in standalone binaries. It embeds the directory rather than listing
+// files so no embedded dependency license can go missing from `zt license`.
 //
-//go:embed LICENSE third-party/GO-BSD.txt
+//go:embed LICENSE THIRD_PARTY_NOTICES.md third-party
 var LicenseFiles embed.FS

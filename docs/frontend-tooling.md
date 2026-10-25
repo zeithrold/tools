@@ -50,24 +50,23 @@ Set the consumer `packageManager` to its approved pnpm version (currently 11.22.
       "a11y": ["pnpm", "run", "test:a11y"]
     }
   }],
-  "skills": ["js-ts-testing", "ui-foundation", "ui-web", "frontend-engineering", "frontend-verification"],
   "lint": { "js-ts": "@ztd-me/eslint" }
 }
 ```
 
-Commands are argv arrays, not shell strings. They run from the declared module directory. Native package scripts may themselves invoke a shell; read them before running. The `lint` map is metadata and does not install/configure a package. Modules are explicit; workspace packages are not recursively inferred. Select every required Skill; sync does not automatically install Skill dependencies.
+Commands are argv arrays, not shell strings. They run from the declared module directory. Native package scripts may themselves invoke a shell; read them before running. The `lint` map is metadata and does not install/configure a package. Modules are explicit; workspace packages are not recursively inferred. Skill distribution is user-global and independent of this file: select Skills in `~/.agents/zt.json` or with `zt sync --skills`, and select every required Skill yourself because sync installs no dependencies.
 
 For missing command overrides, planning recognizes lint/lint:check; lint:css/check:css; typecheck/check:types/check-types; test:unit/test-unit/test; build; test:e2e/e2e:test/e2e; and test:a11y/check:a11y. The declared packageManager takes precedence; otherwise one unambiguous supported lockfile selects pnpm/npm/yarn. Missing/ambiguous/unsupported managers produce a blocker, not an npm guess.
 
 ```sh
 zt inspect --root . --json
 zt plan css --module web --root . --json
-zt sync --root . --plan
-zt sync --root .
+zt sync --plan
+zt sync
 zt check --module web --profile frontend --root . --json
 ```
 
-`inspect`, `plan`, and `sync --plan` do not execute or write. `sync` only changes selected managed Skill directories and its lock, refusing conflicting local edits. `check` validates the complete profile, creates a unique directory below `.zt/artifacts`, then executes in order. Profile entries default to required. `expect` can explicitly declare required/warn/off; it applies only to selected entries. Required failed/blocked commands stop the profile; subsequent checks are `not_run`. Warning failures continue and remain recorded. Overall failure exits 1. Zero native exit codes do not certify inferred test coverage.
+`inspect`, `plan`, and `sync --plan` do not execute or write. `sync` only changes managed Skill directories under `~/.agents/skills` and `~/.agents/zt.lock.json`, refusing conflicting local edits and leaving project-owned Skills alone. `check` validates the complete profile, creates a unique directory below `.zt/artifacts`, then executes in order. Profile entries default to required. `expect` can explicitly declare required/warn/off; it applies only to selected entries. Required failed/blocked commands stop the profile; subsequent checks are `not_run`. Warning failures continue and remain recorded. Overall failure exits 1. Zero native exit codes do not certify inferred test coverage.
 
 `--timeout 10m` is the default per-command limit; `--artifacts DIR` changes the artifact parent. Context cancellation/timeouts kill the process group on Unix. Other platforms terminate the immediate process; native test runners must clean up child servers. The planner adds `--config.verify-deps-before-run=error` to pnpm argv and the runner sets the equivalent environment override for nested pnpm scripts, preventing pnpm 11 from auto-installing stale/missing dependencies before scripts. Configuration rejects dependency-readiness overrides, including pnpm's camelCase alias; use the explicit `=error` form if declaring the option. Install explicitly beforehand. This per-run setting does not weaken release-age/trust/build policy or alter persistent configuration. The CLI never explicitly installs or deploys; reviewed native scripts retain their own semantics.
 
