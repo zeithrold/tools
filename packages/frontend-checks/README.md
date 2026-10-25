@@ -1,11 +1,11 @@
 # @ztd-me/frontend-checks
 
-Native CSS and Playwright accessibility checks. Requires Node >=22.14 and Playwright Test ^1.62.0. Version `0.1.3` adds native Tailwind utility and text-role metadata validation, canonical string import notation, and static JS/TS utility token checks with a declared TypeScript runtime dependency, retaining the MIT license and Tailwind block custom variant fix. It requires automatic staging, owner 2FA promotion and fresh registry verification before consumers install it. See [publishing](docs/publishing.md) and [CLI integration](https://github.com/zeithrold/tools/blob/main/docs/frontend-tooling.md). Consumers retain the strict official `@ztd-me/eslint` profile and upgrade each package only after its release is verified.
+Native CSS and Playwright accessibility checks. Requires Node >=22.14 and Playwright Test ^1.62.0. Version `0.1.4` adds file-backed browser evidence and observational test timings, preserving the complete Axe scan and existing CSS validation. It requires automatic staging, owner 2FA promotion and fresh registry verification before consumers install it. See [publishing](docs/publishing.md) and [CLI integration](https://github.com/zeithrold/tools/blob/main/docs/frontend-tooling.md). Consumers retain the strict official `@ztd-me/eslint` profile and upgrade each package only after its release is verified.
 
 After promotion and verified public installation:
 
 ```sh
-pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.3 @playwright/test@1.62.0
+pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.4 @playwright/test@1.62.0
 pnpm exec playwright install chromium
 ```
 
@@ -47,6 +47,11 @@ prepare the release; successful registry verification establishes public install
 
 ## Playwright
 
+The file-backed attachments and timing report described below are introduced in `0.1.4`,
+not features of the published `0.1.3` artifact. Consumers must retain their verified public pin until `0.1.4`
+has completed owner-approved staging, promotion and fresh registry verification; do not commit
+local tarball overrides as a substitute.
+
 ```js
 import { defineConfig } from '@playwright/test'
 import { verificationArtifacts } from '@ztd-me/frontend-checks/playwright'
@@ -72,9 +77,29 @@ test('translated dialog', async ({ page }, info) => {
 })
 ```
 
-`assertAccessible` uses Axe 4.13 and defaults to WCAG 2 A/AA, 2.1 AA and 2.2 AA tags. It attaches the complete scan before asserting zero violations. Optional `include` scopes a supplemental scan; optional nonempty `tags` changes the selected coverage and must be justified locally. Full-page and keyboard/focus tests remain necessary. Projects own routes, states, browser matrices, service mocks and the built-Worker server. This helper does not provision or start them.
+`assertAccessible` uses Axe 4.13 and defaults to WCAG 2 A/AA, 2.1 AA and 2.2 AA tags. It writes the complete scan, including `passes`, `incomplete` and `inapplicable`, to a unique file under `testInfo.outputPath()` and attaches it by path before asserting zero violations, so reports reference the evidence instead of embedding its base64 body. Optional `include` scopes a supplemental scan; optional nonempty `tags` changes the selected coverage and must be justified locally. Full-page and keyboard/focus tests remain necessary. Projects own routes, states, browser matrices, service mocks and the built-Worker server. This helper does not provision or start them.
 
-`verificationArtifacts(root?)` provides HTML/JSON reports, test attachments, failure traces/screenshots/videos. The root defaults to `ZT_ARTIFACTS_DIR`, otherwise `.zt/browser`. Merge with existing config; preserve native server/projects/use settings. `captureState` attaches a named PNG for review without maintaining screenshot baselines.
+`captureState` takes one full-page screenshot per call, writes it to `testInfo.outputPath()` and attaches the PNG by path. It does not maintain baselines or capture additional screenshots. Labels name the attachment; the file name keeps only portable characters, so non-ASCII labels survive and separators cannot escape the test output directory. Repeating a label within one test keeps every scan by adding `-2`, `-3`, … to the file name, and a same-named file already present in the test output directory is never overwritten because the helper reserves its own name exclusively before writing. Playwright names its attachment copy after the display name, so attachment names longer than 180 UTF-8 bytes (including the `a11y-` prefix) use the previous inline attachment form; the display name and the complete scan/PNG stay intact, while normal labels stay path-backed. Playwright copies a path attachment into the test output directory, so the helper removes only its own source file afterwards; write and attach failures propagate, and a failed attach leaves the source on disk for diagnosis.
+
+`verificationArtifacts(root?)` provides HTML/JSON reports, test attachments, failure traces/screenshots/videos. The root defaults to `ZT_ARTIFACTS_DIR`, otherwise `.zt/browser`. Merge with existing config; preserve native server/projects/use settings.
+
+### Timing observations
+
+The artifact configuration also installs a reporter that writes `test-timings.json` after
+the run. It records each attempt's project, file, title, status, retry and repeat index,
+along with setup, body and teardown wall durations derived from native Playwright step
+timestamps. Native `durationMs` is retained separately: Playwright can exclude `beforeAll`
+and `afterAll` from that charged duration, so subtracting hook times from it would mismeasure
+the body. `wallDurationMs` includes those observed hooks. Missing or backwards timestamps
+and unfinished native `-1` durations remain `null`, not a fabricated zero. Aggregates report
+their valid sample count and exclude unknown durations. Nested steps overlap, so slow-step observations are not
+added to phase totals; skipped cases do not contribute to duration percentiles.
+
+The report distinguishes elapsed run time from summed case work, which can exceed wall time
+when workers run in parallel. Per-project totals, P50/P95 and the slowest steps help compare
+equivalent runs; they are diagnostic observations, not new latency budgets, coverage claims
+or replacements for the native command's exit status. No extra navigation, scan, screenshot
+or trace is collected for timing. Trace/video defaults, retries and test ordering are unchanged.
 
 ## Verification
 

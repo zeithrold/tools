@@ -12,6 +12,11 @@ Version 0.1.3 carries the CSS-first validation contract and its TypeScript runti
 public 0.1.2 artifacts are immutable and do not contain this feature. Consumers must use the promoted
 official release, without patching the checker or supplying package extensions.
 
+Version 0.1.4 adds complete file-backed browser attachments and an observational timing reporter.
+Long attachment names retain the inline compatibility form. It does not change CSS coverage,
+browser assertions, retries or evidence defaults. Public 0.1.3 remains immutable; only the new
+version can provide these changes after staging, owner promotion and registry verification.
+
 ## Owner review and promotion
 
 1. Review and merge the tested draft PR to `main` using the repository's normal owner-controlled review process.
@@ -23,11 +28,11 @@ First-package staging creates a public `0.0.0-stage` placeholder so package sett
 
 ## Exact registry verification
 
-From the reviewed source checkout, download the automatic release run's exact `frontend-package-<SHA>` artifact and verify `SHA256SUMS` and `source-commit.txt`. Once the owner has promoted `0.1.3`, run:
+From the reviewed source checkout, download the automatic release run's exact `frontend-package-<SHA>` artifact and verify `SHA256SUMS` and `source-commit.txt`. Once the owner has promoted `0.1.4`, run:
 
 ```sh
 pnpm exec playwright install chromium
-pnpm run test:registry 0.1.3 /path/to/verified/package.tgz
+pnpm run test:registry 0.1.4 /path/to/verified/package.tgz
 ```
 
 The script checks the exact public package/version and registry SHA-512 integrity against the reviewed tarball, then creates a fresh pnpm consumer. It installs the exact registry version, reruns frozen installation, imports both `/css` and `/playwright`, invokes `ztd-css`, checks TypeScript declarations with strict settings and executes a deliberately failing browser Axe scan that must retain the violation evidence. Browser infrastructure errors cannot satisfy that assertion.
@@ -35,7 +40,7 @@ The script checks the exact public package/version and registry SHA-512 integrit
 The user authorizes `minimumReleaseAgeExclude: ['@ztd-me/*']` in tools verification and the three consumer projects. The consumer retains `minimumReleaseAge: 1440`, `minimumReleaseAgeStrict: true`, pruning and `trustPolicy: no-downgrade`. Other packages still wait 24 hours. Scope packages keep integrity/trust checks; no scope-wide trust exclusion is authorized. Preserve the existing exact `semver@6.3.1` trust exception wherever the ESLint graph needs it. Pin the verified registry version:
 
 ```sh
-pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.3 @playwright/test@1.62.0
+pnpm add -D --save-exact @ztd-me/frontend-checks@0.1.4 @playwright/test@1.62.0
 pnpm install --frozen-lockfile
 ```
 
