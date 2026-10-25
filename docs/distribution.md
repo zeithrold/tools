@@ -105,14 +105,17 @@ type -a zt          # Windows: where zt
 mise ls
 ```
 
-The previously used install in this environment is a mise `go:` backend:
+For an existing mise `go:` backend installation at `@main`, remove its global
+request before uninstalling it:
 
 ```sh
 mise unuse -g --no-prune 'go:github.com/zeithrold/tools/cmd/zt@main'
 mise uninstall 'go:github.com/zeithrold/tools/cmd/zt@main'
 ```
 
-`unuse` removes the global request and `uninstall` removes the installed copy.
+Use the actual installed version if it differs from `@main`. Do this only once
+the replacement release is available and verified. `unuse` removes the global
+request and `uninstall` removes the installed copy.
 Keep that order: if the request stays in global config, a later `mise install`
 reinstalls the old build. `unuse -g` without `--no-prune` also removes the
 installed version it no longer needs; `--no-prune` lets you verify before

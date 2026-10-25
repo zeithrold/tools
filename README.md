@@ -18,9 +18,8 @@
 - `packages/ui`: canonical editable UI source and private verification harness; no npm UI publication.
 - `registry.json` and `registry/`: `@ztd-me/ui` source delivery through the existing GitHub route. Consumers own installed source and reviewed updates; see the [registry recipe](registry/README.md). The owner reviews upstream changes; fresh public installation is required before consumer migrations.
 
-`zt run`, `zt doctor`, `zt evolve`, native command planning for the other four stacks, and lint distribution for other stacks are **not implemented yet**. The [evolve plan](docs/agent-evolution-plan.md) does not imply a working PR submission command. Release automation is configured, but no versioned release exists yet. This repository does not replace `ledger-tooling` or modify Ledger's current gates.
+`zt run`, `zt doctor`, `zt evolve`, native command planning for the other four stacks, and lint distribution for other stacks are **not implemented yet**. The [roadmap](docs/roadmap.md) describes proposed Skill improvements and evolution workflows, not working PR submission commands. Release automation is configured, but no versioned release exists yet. This repository does not replace `ledger-tooling` or modify Ledger's current gates.
 
-See the [Ledger assessment queue](docs/ledger-assessment.md) before extracting any existing Ledger behavior.
 See [contributor guidance](CONTRIBUTING.md) for maintained documentation, generated registry files and CI evidence.
 See [Release and mise distribution](docs/distribution.md) for native platform gates, checksums,
 installation/rollback, and removing an old mise Go-backend installation before a formal switch.

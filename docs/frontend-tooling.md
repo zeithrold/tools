@@ -1,11 +1,11 @@
 # Frontend tooling integration
 
-This phase adds shared guidance and native check execution to tools, including the authorized public frontend helper release. Consumers retain product-specific branding, layout values, business rules, framework/runtime configuration and their existing strict ESLint profile. Visual snapshot baselines and performance budgets are deferred. Changes are reviewed through a draft PR; consumer migrations follow successful public installation verification and parent confirmation.
+Frontend packages provide shared guidance and native checks. Consumers retain branding, layout, business rules, framework configuration and their existing strict ESLint profile. Adopt published packages only after owner promotion and fresh public installation verification.
 
 ## Distribution
 
 - `@ztd-me/eslint@0.1.4` prepares the explicit application type-alias policy. Consumers upgrade the exact official release after owner promotion and registry verification.
-- `zt` and complete Skill directories are shipped together. Pin an exact reviewed tools commit with `go install github.com/zeithrold/tools/cmd/zt@<SHA>` after it is reachable, or use the CI-built Linux binary from that revision. There is no official CLI release tag yet.
+- `zt` and complete Skill directories are shipped together. See [CLI distribution](distribution.md) for installation and version pinning.
 - `@ztd-me/frontend-checks@0.1.4` prepares native Tailwind utility/text-role and static JS/TS token validation, file-backed browser evidence and observational test timings. Releases use automatic Node 22/24 verification, staging and owner 2FA promotion. See [publication and verification](../packages/frontend-checks/docs/publishing.md).
 
 After owner promotion and successful registry smoke checks, consumers install the exact release:
@@ -93,4 +93,4 @@ Upload the complete `.zt/artifacts` root on both success and failure:
 
 The report records tools version, profile, native argv/directory/status/exit/duration and artifact paths. Attach the exact source revision and lockfile/tool versions in CI. CSS is a static inventory, Axe covers selected DOM states/rules, screenshots retain human-review evidence, and a framework build is separate from deployment proof. Preserve native fallback behavior, unknown-input validation, deterministic preference hydration, translations and main-only deployment verification in project-owned tests/workflows.
 
-The existing consumer example is a target profile, not a claim that its scripts already exist. Stage 2 maps each project's native checks, resolves token/translation/coverage findings, then runs all gates. Parent confirmation of validated/distributable tools and owner review precede that rollout.
+The profile above is an example, not a claim that its scripts exist in a consumer. Map it to actual native checks and verify the complete profile before rollout.
