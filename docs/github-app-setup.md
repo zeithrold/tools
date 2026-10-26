@@ -3,10 +3,11 @@
 `zt auth` uses GitHub App Device Flow user tokens and native OS credential
 storage. It accepts no App private key, client secret, PAT, `gh auth` state or
 environment token. Offline `zt evolve prepare/plan` need no authentication.
-Development after `v0.1.1` adds reviewed Draft PR submission through the same
-GitHub App and OS-keystore path; independent acceptance and an explicitly
-authorized live submission remain separate gates. The published `v0.1.1`
-binary does not include that lifecycle. See the [roadmap](roadmap.md).
+[v0.2.0](https://github.com/zeithrold/tools/releases/tag/v0.2.0) also submits
+reviewed Draft PRs through the same GitHub App and OS-keystore path. A live
+authorized submission, independent review and the resulting acceptance remain
+separate gates that publishing the code does not establish. See the
+[roadmap](roadmap.md).
 
 ## Create and install the App
 
@@ -20,8 +21,8 @@ binary does not include that lifecycle. See the [roadmap](roadmap.md).
 5. Record the public **Client ID**, not the numeric App ID or installation ID.
    GitHub App client IDs use the `Iv1.`/`Iv23` form; OAuth App `Ov...` IDs are rejected.
 
-The proposed PR workflow needs these repository permissions. Authentication
-alone does not require granting future write capabilities.
+The reviewed Draft PR workflow needs these repository permissions.
+Authentication alone does not require granting future write capabilities.
 
 | Permission | Level | Purpose |
 | --- | --- | --- |
@@ -29,12 +30,12 @@ alone does not require granting future write capabilities.
 | Contents | Read/write | Candidate trees, commits and branches |
 | Pull requests | Read/write | Draft PR creation and lookup |
 | Checks / Actions | Read | Independent results and workflow evidence |
-| Issues / Discussions / Workflows / Administration / Secrets / Members | None | Outside the proposed write scope |
+| Issues / Discussions / Workflows / Administration / Secrets / Members | None | Outside the write scope |
 
 Do not add the App to protection bypass lists. GitHub has no permission for
 "create PRs but never merge"; require human review through branch protection.
 Contents write is not path-scoped. Trusted operator policy must limit targets
-and paths, and the proposed adapter must not call merge, auto-merge or deploy.
+and paths, and the adapter does not call merge, auto-merge or deploy.
 Installation and login do not authorize a candidate's publication.
 
 ## Login and account management
@@ -58,8 +59,11 @@ must supply it to all four commands unless set in the environment.
   `--no-browser`, `--no-input` or a non-interactive session suppresses automatic
   browser launch. `--replace` explicitly permits replacing a different account.
 - `status` reads local metadata without networking or printing tokens.
-  `--probe` verifies remote identity and any selected installation/repository,
-  refreshing tokens when necessary.
+  `--probe` refreshes an expired or rejected token when possible and verifies the
+  stored account identity through `GET /user`. It does not probe a selected App
+  installation or repository: `zt auth status` passes no target, so a successful
+  probe shows that the account is authenticated, not that an installation can
+  read a particular repository.
 - `logout` idempotently deletes the selected local record. It does not revoke
   GitHub authorization; revoke that separately in GitHub settings.
 
@@ -121,9 +125,10 @@ never supply a private key, client secret or token as build configuration.
 
 Verify native storage, real browser login, identity, refresh/revocation and
 target access separately. A Linux test with synthetic credentials proves
-neither macOS/Windows storage nor real GitHub authentication. Future PR acceptance
-must also verify exact-head checks and branch protection; creating a PR is not
-proof that CI ran.
+neither macOS/Windows storage nor real GitHub authentication. Accepting the
+Draft PR path still needs an explicitly authorized live submission whose
+exact-head checks and branch protection are observed; creating a PR is not proof
+that CI ran.
 
 ## References
 

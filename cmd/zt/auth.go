@@ -237,7 +237,7 @@ func newAuthStatusCommand(a *app) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "status",
 		Short: "Report local credential metadata, optionally probing GitHub",
-		Long:  "status reads only local keystore metadata by default and does not access the network. --probe explicitly asks GitHub to verify the stored identity and target access; the response reports only identity, scope, and expiry, never a token.",
+		Long:  "status reads only local keystore metadata by default and does not access the network. --probe explicitly asks GitHub to verify the stored account identity, refreshing tokens when necessary; it does not establish installation or repository access. The response reports only identity, scope, and expiry, never a token.",
 		Args:  noEchoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			host, err := normalizeHostname(hostname)

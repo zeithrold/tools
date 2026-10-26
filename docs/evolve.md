@@ -5,7 +5,8 @@ verification stage, and an idempotent draft pull request stage:
 `prepare`, `plan`, `check`, `submit` and `status`. It never merges, publishes,
 activates, force-updates a ref or reopens a closed pull request, and it never
 generates a candidate. The [proposal Skill](../skills/evolution-proposals/SKILL.md)
-explains the wider method; its lifecycle is not a shipped command contract.
+explains the wider method; activation, rollback and revocation remain outside
+this command surface.
 
 | Command | What it does | Effects |
 | --- | --- | --- |
@@ -262,9 +263,15 @@ own statements: zt does not verify license compatibility, privacy, provenance or
 suitability, and reports them as `attested_by_operator_not_verified_by_zt`
 anywhere a reader could confuse them with an observation.
 
-Only the reviewed replacement files are published. Logs, transcripts, reasoning,
-absolute host paths, environment values, credentials and unrelated source are not
-in the payload, and CI logs are never copied into it.
+The public payload is exactly: the target host, repository and pinned base with
+its commit time, the branch name, the approved replacement file contents, the
+declared reason and evidence labels with their digests, the declared source
+repository/commit/license lines, and the deterministic commit and pull-request
+text. zt adds no logs, transcripts, reasoning, absolute host paths, environment
+values, credentials or unrelated source to it, and CI logs are never copied into
+it. zt also does not scan the approved content for secrets: replacements, reason
+and labels publish exactly the bytes a reviewer approved, so keeping secret or
+private material out of a candidate remains the operator's responsibility.
 
 ## Submission, idempotency and recovery
 
@@ -386,10 +393,14 @@ exact match. Check-run counts are GitHub's observation, not zt execution.
   collisions, symlink/submodule targets and file/directory conflicts are refused.
 - Policy: 64 KiB; proposal: 1 MiB; canonical candidate: 2 MiB; validation
   contract: 64 KiB; approval: 64 KiB; journal: 64 KiB.
-- Verification workspaces: at most the pinned base's 4096 entries, 4 MiB per file
-  and 32 MiB total; logs are bounded per command. A pinned base that a particular
-  host filesystem cannot store distinctly (case-folding or normalising volumes)
-  is refused before execution rather than verified approximately.
+- Verification workspaces: the pinned base tree is capped at 4096 tracked
+  entries and read at up to 4 MiB per file and 32 MiB across its unreplaced
+  files; candidate replacements add at most eight files and 512 KiB, so a
+  materialised workspace is bounded by the base limit plus that candidate
+  content rather than by one combined total. Retained logs are bounded per
+  command. A pinned base that a particular host filesystem cannot store
+  distinctly (case-folding or normalising volumes) is refused before execution
+  rather than verified approximately.
 - Submission is serialised per candidate and payload by a lock under
   `.zt/artifacts/evolve/locks/`. A process that crashed while holding it leaves the
   lock behind: zt never steals it, and the error names the path for manual cleanup.

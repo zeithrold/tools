@@ -5,9 +5,11 @@ installation through [mise](https://mise.jdx.dev/). It does not authorize a
 release: creating a `v*` tag and publishing the GitHub release remain explicit
 owner actions.
 
-The first published version is [v0.1.0](https://github.com/zeithrold/tools/releases/tag/v0.1.0).
-It provides the six native archives and `SHA256SUMS` described below.
-[`examples/mise.toml`](../examples/mise.toml) pins that available version.
+The first published version was [v0.1.0](https://github.com/zeithrold/tools/releases/tag/v0.1.0);
+the current one is [v0.2.0](https://github.com/zeithrold/tools/releases/tag/v0.2.0).
+Both provide the six native archives and `SHA256SUMS` described below.
+[`examples/mise.toml`](../examples/mise.toml) pins v0.2.0; substitute the
+published version you verified.
 Each subsequent release must independently pass the native build, credential,
 packaging and provenance gates; a previous release's success is not evidence
 for a new tag. Release verification and CI receipts remain with the release
@@ -28,10 +30,14 @@ SHA256SUMS
 ```
 
 Each archive contains `zt` (`zt.exe` on Windows), `LICENSE`,
-`THIRD_PARTY_NOTICES.md` and **every** notice under `third-party/` at the same
-relative paths. `scripts/package-cli.sh` copies the whole directory, so a new Go
-dependency cannot ship without its license text. `SHA256SUMS` lists all six
-assets in byte order.
+`THIRD_PARTY_NOTICES.md` and every notice that currently sits under `third-party/`,
+at the same relative paths. `scripts/package-cli.sh` copies that directory as it
+stands and the packaging test compares the archive with the committed files, so a
+notice present in the checkout cannot be silently dropped from an archive.
+It does not detect a newly added dependency or author its notice: adding a Go
+dependency still requires adding the corresponding notice under `third-party/`
+and the `THIRD_PARTY_NOTICES.md` entry in the same change. `SHA256SUMS` lists all
+six assets in byte order.
 
 Release binaries are built from the tagged commit with
 `-X github.com/zeithrold/tools.releaseVersion=<tag>`, so `zt version` prints the
@@ -76,13 +82,13 @@ no custom plugin or pipe-to-shell installer is needed:
 ```toml
 # examples/mise.toml
 [tools]
-"github:zeithrold/tools" = { version = "0.1.0", matching = "zt_" }
+"github:zeithrold/tools" = { version = "0.2.0", matching = "zt_" }
 ```
 
 ```sh
 mise install
 mise exec -- zt version
-mise use -g 'github:zeithrold/tools[matching=zt_]@0.1.0'   # global install
+mise use -g 'github:zeithrold/tools[matching=zt_]@0.2.0'   # global install
 ```
 
 `matching = "zt_"` excludes `SHA256SUMS` and keeps the six zt archives; mise

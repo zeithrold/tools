@@ -182,16 +182,26 @@ before use and reconcile after; cancellation propagates to children and
 background work; a candidate cannot raise its own budget; no long-lived
 credentials are readable from a candidate's execution environment.
 
-## Aligning with the planned CLI
+## Aligning with the CLI
 
-The current source provides an offline `zt evolve prepare/plan` candidate stage.
-It stores structured file replacements and rechecks content/policy/base identity;
-it does not apply them, execute checks or establish publication readiness.
-Consult the installed CLI's help rather than assuming a source checkout matches
-an installed release.
+The released `v0.2.0` provides `zt evolve prepare`, `plan`, `check`, `submit` and
+`status`. `prepare` stores structured complete file replacements as one immutable
+candidate under the workspace's `.zt/artifacts/evolve/`; `plan` revalidates that
+candidate without a write, credential, network request or execution. `check` runs
+the operator's own validation contract against a materialised complete pinned
+base, and only with explicit trusted-local consent: it is neither an OS sandbox
+nor credential isolation, and its result is operator-local rather than an
+independent attestation. `submit` requires that local record plus human approval
+bound to the exact public payload, reconciles by reading before it writes, and
+creates at most one draft pull request; it never merges, force-updates a ref or
+reopens a closed proposal. `status` reads local state and contacts GitHub only
+with `--remote`. Consult the installed CLI's help rather than assuming a source
+checkout matches an installed release.
 
-Verification, remote submit/status, activation and the complete feedback loop
-remain proposed. A roadmap stage is not evidence that a gate exists. Future
-integration needs host-observed checks, digest-bound publication approval and
-read-based reconciliation. Report absent stages as unavailable or blocked for
-the requested task; do not simulate them with prose or invent output schemas.
+Activation, rollback, revocation, host-enforced cost/capability budgets,
+model-driven candidate generation and Issue-tracked follow-up remain
+unimplemented. A roadmap stage, a released command or a draft pull request is not
+evidence that a gate exists: a draft is not a merge, a publication or an
+activation, and platform check observations are not independent proof of improved
+guidance. Report absent stages as unavailable or blocked for the requested task;
+do not simulate them with prose or invent output schemas.
