@@ -23,7 +23,11 @@ func newCheckCommand(a *app) *cobra.Command {
 		Long:  "check runs the native commands of one explicit module/profile and retains logs and a report under the artifact directory. It never installs tools or expands the profile. Ctrl+C cancels running commands.",
 		Args:  noPositionalArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			report, err := check.Run(cmd.Context(), check.Options{Root: rootDir, Module: module, Profile: profile, Output: artifacts, Timeout: timeout})
+			progress := a.stdout
+			if asJSON {
+				progress = a.stderr
+			}
+			report, err := check.Run(cmd.Context(), check.Options{Root: rootDir, Module: module, Profile: profile, Output: artifacts, Timeout: timeout, Progress: progress})
 			if err != nil {
 				return err
 			}
