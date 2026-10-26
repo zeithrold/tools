@@ -47,6 +47,71 @@ func TestGoInspectKeepsTestKindsAndExecutionSeparate(t *testing.T) {
 	}
 }
 
+func TestGoInspectIgnoresNonPackageDirectories(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "go.mod", "module example.test/demo\n\ngo 1.24\n")
+	write(t, root, "internal/x/x_test.go", "package x\nimport \"testing\"\nfunc TestReal(t *testing.T) {}\n")
+	write(t, root, ".hidden/hidden_test.go", "package hidden\nimport \"testing\"\nfunc TestHidden(t *testing.T) {}\n")
+	write(t, root, "_scratch/scratch_test.go", "package scratch\nimport \"testing\"\nfunc TestScratch(t *testing.T) {}\n")
+	write(t, root, "testdata/data_test.go", "package data\nimport \"testing\"\nfunc TestData(t *testing.T) {}\n")
+	write(t, root, "nested/go.mod", "module example.test/nested\n\ngo 1.24\n")
+	write(t, root, "nested/y_test.go", "package nested\nimport \"testing\"\nfunc TestNested(t *testing.T) {}\n")
+
+	report, err := Run(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	unit := capability(t, report, "unit")
+	if unit.Detection != "discovered" || len(unit.Evidence) != 1 || unit.Evidence[0] != "internal/x/x_test.go:TestReal" {
+		t.Fatalf("unexpected unit evidence: %+v", unit)
+	}
+	for _, item := range report.Modules[0].Capabilities {
+		for _, evidence := range item.Evidence {
+			for _, excluded := range []string{".hidden/", "_scratch/", "testdata/", "nested/"} {
+				if strings.Contains(evidence, excluded) {
+					t.Fatalf("%s evidence includes non-package directory %q: %q", item.Name, excluded, evidence)
+				}
+			}
+		}
+	}
+	foundNestedWarning := false
+	for _, warning := range report.Warnings {
+		if strings.Contains(warning, "cannot parse") {
+			t.Fatalf("non-package test file was reported as a parse failure: %s", warning)
+		}
+		if strings.Contains(warning, "nested Go module nested:") {
+			foundNestedWarning = true
+		}
+	}
+	if !foundNestedWarning {
+		t.Fatalf("nested module warning missing: %v", report.Warnings)
+	}
+}
+
+func TestGoInspectReportsNestedModulesAsUnknown(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "go.mod", "module example.test/demo\n\ngo 1.24\n")
+	write(t, root, "nested/go.mod", "module example.test/nested\n\ngo 1.24\n")
+	write(t, root, "nested/y_test.go", "package nested\nimport \"testing\"\nfunc TestNested(t *testing.T) {}\n")
+
+	report, err := Run(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if unit := capability(t, report, "unit"); unit.Detection != "unknown" {
+		t.Fatalf("unit detection should be unknown when tests are in a nested module: %+v", unit)
+	}
+	foundNestedWarning := false
+	for _, warning := range report.Warnings {
+		if strings.Contains(warning, "nested Go module nested:") {
+			foundNestedWarning = true
+		}
+	}
+	if !foundNestedWarning {
+		t.Fatalf("nested module warning missing: %v", report.Warnings)
+	}
+}
+
 func TestGoInspectUsesOnlyExplicitConsumerCommandConfiguration(t *testing.T) {
 	root := t.TempDir()
 	write(t, root, "go.mod", "module example.test/demo\n\ngo 1.24\n")
