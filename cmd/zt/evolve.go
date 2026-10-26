@@ -13,7 +13,7 @@ import (
 // evolveLong states the contract of this slice: a structured replacement
 // proposal, an offline re-check, and no publication step. It deliberately does
 // not describe a --patch flag, because zt never accepted a patch stream.
-const evolveLong = `evolve prepares and re-checks immutable local candidates for evolving one Skill.
+const evolveLong = `evolve prepares, verifies and submits immutable local candidates for evolving one Skill.
 
 A candidate is a structured replacement proposal, not a unified diff. It names one
 Skill, declares the material's source, license and reason, and lists explicit file
@@ -23,22 +23,39 @@ diff, so there is no --patch flag and no patch stream is read.
 
 prepare validates a proposal against a trusted operator policy and a pinned local
 upstream commit, then writes only .zt/artifacts/evolve/<content-id>/candidate.json
-below --root. plan re-reads such a candidate and repeats every one of those checks.
+below --root. plan re-reads such a candidate and repeats every one of those checks;
+both are offline and read-only beyond prepare's own artifact directory.
 
-Both commands are offline: they read no credential, open no network connection, run
-no check, and modify no project file, branch or Git index. plan reports the policy's
-required checks as not_run and publication as not_ready, because this slice verifies
-and submits nothing. There is no check, submit, publish or status command here.`
+check runs the trusted validation contract against a complete materialised pinned
+base with the candidate applied. It only executes with --trusted-local-execution:
+those commands are native local processes, which is neither an OS sandbox nor
+credential isolation.
+
+submit requires a passed local verification and an operator approval naming the
+exact candidate, target, base commit, validation contract and public payload. It
+creates one deterministic branch and one draft pull request, or returns an exactly
+matching existing one without writing. --show-payload prints the exact publication
+and its digest without credentials, network or writes.
+
+status reports local state read-only; --remote explicitly reconciles the pull
+request and GitHub's checks. Nothing here merges, publishes, activates, force-updates
+a ref or reopens a closed pull request.`
 
 func newEvolveCommand(a *app) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "evolve",
-		Short: "Prepare and re-check offline Skill evolution candidates",
+		Short: "Prepare, verify and submit Skill evolution candidates",
 		Long:  evolveLong,
 		Args:  cobra.ArbitraryArgs,
 		RunE:  unknownSubcommand,
 	}
-	cmd.AddCommand(newEvolvePrepareCommand(a), newEvolvePlanCommand(a))
+	cmd.AddCommand(
+		newEvolvePrepareCommand(a),
+		newEvolvePlanCommand(a),
+		newEvolveCheckCommand(a),
+		newEvolveSubmitCommand(a),
+		newEvolveStatusCommand(a),
+	)
 	return cmd
 }
 

@@ -155,12 +155,24 @@ func snapshotFiles(t *testing.T, dir string) map[string]string {
 	return entries
 }
 
-func TestEvolveHelpDescribesAStructuredProposalAndStopsAtPlan(t *testing.T) {
+func TestEvolveHelpDescribesTheWholeReviewedLifecycle(t *testing.T) {
 	stdout, _, err := runCLI(t, "evolve", "--help")
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{"structured replacement proposal", "not a unified diff", "prepare", "plan", "not_run", "not_ready"} {
+	for _, want := range []string{
+		"structured replacement proposal",
+		"not a unified diff",
+		"prepare",
+		"plan",
+		"check",
+		"submit",
+		"status",
+		"--trusted-local-execution",
+		"neither an OS sandbox nor\ncredential isolation",
+		"draft pull request",
+		"merges, publishes, activates",
+	} {
 		if !strings.Contains(stdout, want) {
 			t.Fatalf("evolve help omits %q:\n%s", want, stdout)
 		}
@@ -168,13 +180,10 @@ func TestEvolveHelpDescribesAStructuredProposalAndStopsAtPlan(t *testing.T) {
 	if !strings.Contains(stdout, "there is no --patch flag") {
 		t.Fatalf("evolve help does not explain that no patch flag exists:\n%s", stdout)
 	}
-	for _, absent := range []string{"publish CANDIDATE", "status CANDIDATE", "submit CANDIDATE"} {
+	for _, absent := range []string{"--force", "--merge", "--publish", "--token"} {
 		if strings.Contains(stdout, absent) {
 			t.Fatalf("evolve help advertises %q:\n%s", absent, stdout)
 		}
-	}
-	if !strings.Contains(strings.ToLower(stdout), "no check, submit, publish or status command") {
-		t.Fatalf("evolve help does not state which commands are absent:\n%s", stdout)
 	}
 }
 
@@ -220,14 +229,17 @@ func TestEvolveGroupRejectsUnknownSubcommandsButHelpSucceeds(t *testing.T) {
 	if stdout == "" || stderr != "" {
 		t.Fatalf("bare evolve output: stdout=%q stderr=%q", stdout, stderr)
 	}
-	for _, name := range []string{"prepare", "plan"} {
+	for _, name := range []string{"prepare", "plan", "check", "submit", "status"} {
 		if !strings.Contains(stdout, name) {
 			t.Fatalf("help omits %q:\n%s", name, stdout)
 		}
 	}
-	_, _, err = runCLI(t, "evolve", "submit")
-	if err == nil || !strings.Contains(err.Error(), "unknown command") {
-		t.Fatalf("unknown subcommand was accepted: %v", err)
+	// There is deliberately no publish, merge or activation command.
+	for _, unknown := range []string{"publish", "merge", "activate"} {
+		_, _, err = runCLI(t, "evolve", unknown)
+		if err == nil || !strings.Contains(err.Error(), "unknown command") {
+			t.Fatalf("unknown subcommand %q was accepted: %v", unknown, err)
+		}
 	}
 }
 

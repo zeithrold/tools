@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"io"
 	"os"
 
 	"golang.org/x/term"
+
+	"github.com/zeithrold/tools/internal/githubauth"
 )
 
 // app carries the process dependencies a command may use. Building it performs
@@ -39,6 +42,11 @@ type app struct {
 	// keystore lazily. Only auth subcommands call it, so inspect, plan, check
 	// and skills sync never touch the keystore.
 	newAuth func(host string) (authService, error)
+
+	// openAPI opens an authenticated, target-bound GitHub API endpoint for the
+	// selected host and repository. Only `evolve submit` and `evolve status
+	// --remote` call it, so no other command reaches the keystore or the network.
+	openAPI func(ctx context.Context, host, clientID, profile, repository string) (githubauth.API, error)
 }
 
 func newApp(stdout, stderr io.Writer) *app {
@@ -52,6 +60,7 @@ func newApp(stdout, stderr io.Writer) *app {
 	}
 	a.isTTY = func() bool { return isTerminal(a.stdout) || isTerminal(a.stderr) }
 	a.newAuth = newAuthService
+	a.openAPI = newOpenAPI
 	return a
 }
 

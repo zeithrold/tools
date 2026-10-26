@@ -1,26 +1,45 @@
-// Package evolve prepares and re-checks immutable local candidates for evolving
-// one Agent Skill.
+// Package evolve prepares, verifies and submits immutable local candidates for
+// evolving one Agent Skill.
 //
-// This slice is deliberately offline and local. A candidate is a structured
-// replacement proposal stored as one canonical JSON document: it names one
-// Skill, declares provenance and license, states a reason, and lists explicit
-// file replacements, each with a path, the digest of the bytes it replaces and
-// its new content. It is never a unified diff, and zt never applies a patch
-// stream.
+// A candidate is a structured replacement proposal stored as one canonical JSON
+// document: it names one Skill, declares provenance and license, states a reason,
+// and lists explicit file replacements, each with a path, the digest of the bytes
+// it replaces and its new content. It is never a unified diff, and zt never applies
+// a patch stream.
 //
-// Two documents are kept apart:
+// Three kinds of document are kept apart, and none of them can supply another:
 //
 //   - The trusted operator policy, supplied with --policy. It fixes the host,
 //     repository, pinned base commit, allowed Skills and named required checks.
 //     Only an operator writes it; a proposal never carries or influences it.
-//   - The untrusted replacement proposal, supplied with --proposal. Everything
-//     it asserts about itself is a declaration, never observed evidence.
+//   - The untrusted replacement proposal, supplied with --proposal. Everything it
+//     asserts about itself is a declaration, never observed evidence.
+//   - The operator's validation contract and approval, supplied with --validation
+//     and --approval. The contract must name exactly the policy's required checks;
+//     the approval must name the exact candidate, target, base commit, contract
+//     digest and public payload digest.
 //
-// prepare validates both against a local upstream commit and then writes only
-// .zt/artifacts/evolve/<content-id>/candidate.json below the selected workspace.
-// plan re-reads a candidate and repeats the validation. Neither command
-// authenticates, reads a credential, contacts the network, runs a check, opens a
-// pull request, or modifies a project file, branch or Git index.
+// The commands are layered so that each stage adds evidence without gaining
+// authority over the next:
+//
+//   - prepare validates policy and proposal against a local upstream commit and
+//     writes only .zt/artifacts/evolve/<content-id>/candidate.json.
+//   - plan re-reads a candidate and repeats that validation, writing nothing.
+//   - Verify (`evolve check`) materialises the complete pinned base with the
+//     candidate applied and runs the validation contract, but only when the
+//     operator passed --trusted-local-execution: those commands are native local
+//     processes, which is neither an OS sandbox nor credential isolation.
+//   - Submit requires a passed local verification and a human approval, then opens
+//     one deterministic draft pull request, returns an exactly matching existing one
+//     without writing, or completes a verified branch that is missing only its pull
+//     request. It never merges, publishes, activates, force-updates a ref or reopens
+//     a closed pull request.
+//   - Status reports local observations, and with an explicit opt-in reconciles the
+//     pull request and GitHub's checks without writing.
+//
+// Prepare, plan, local status and the submission preview read no credential and open
+// no network connection. Only Submit and Status with --remote use the GitHub App
+// credential, through a seam that never hands zt a token.
 package evolve
 
 import (
