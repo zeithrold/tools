@@ -17,6 +17,10 @@ behavior of future tasks; it deserves the same care as a schema migration.
 A promotion records the previous active candidate so restoration is a pointer
 operation, not a reconstruction from memory.
 
+A submitted proposal is not active guidance. Creating a branch or draft pull
+request neither changes the active pointer nor authorizes a rollout. Verify the
+exact reviewed head separately from any local verification record.
+
 ## Approval binds to exact content
 
 Approval names the canonical digest, base revision, target, validation contract
