@@ -65,6 +65,25 @@ Login does not prove installation or repository access; organization approval
 or SSO may still be needed. Requests use trusted HTTPS endpoints and do not
 forward credentials through cross-host redirects.
 
+### Device authorization rejected
+
+`device_flow_disabled` means the App has not enabled Device Flow. Open GitHub
+Settings → Developer settings → GitHub Apps → the relevant App, enable
+**Device Flow**, save, and retry `zt auth login`. Changing the local Client ID
+does not enable this setting. A valid Client ID alone does not prove the App is
+ready for device authorization.
+
+`incorrect_client_credentials` means the public GitHub App Client ID needs to
+be checked. Do not substitute the numeric App ID, an OAuth App ID, a client
+secret or a PAT. Release builds already embed the public Client ID; use an
+explicit override only when deliberately selecting a different App.
+
+Version `v0.1.0` reports non-2xx device-code rejections as an HTTP status without
+the OAuth error name. For that version, check Device Flow and the selected
+Client ID when the first request returns HTTP 400/401. Newer code retains
+allowlisted OAuth error names with local hints, but never displays the remote
+description, error URL or raw response body.
+
 ## Native credential storage
 
 `99designs/keyring v1.2.2` is restricted to one backend per platform:
