@@ -19,7 +19,7 @@
 - `packages/ui`: canonical editable UI source and private verification harness; no npm UI publication.
 - `registry.json` and `registry/`: `@ztd-me/ui` source delivery through the existing GitHub route. Consumers own installed source and reviewed updates; see the [registry recipe](registry/README.md). The owner reviews upstream changes; fresh public installation is required before consumer migrations.
 
-`zt run`, `zt doctor`, evolve verification/remote submission/activation, native command planning for the other four stacks, and lint distribution for other stacks are **not implemented yet**. The [roadmap](docs/roadmap.md) describes those next stages, not working PR submission commands. Release automation is configured, but no versioned release exists yet. This repository does not replace `ledger-tooling` or modify Ledger's current gates.
+`zt run`, `zt doctor`, evolve verification/remote submission/activation, native command planning for the other four stacks, and lint distribution for other stacks are **not implemented yet**. The [roadmap](docs/roadmap.md) describes those next stages, not working PR submission commands. [v0.1.0](https://github.com/zeithrold/tools/releases/tag/v0.1.0) is the first versioned CLI release. This repository does not replace `ledger-tooling` or modify Ledger's current gates.
 
 See [contributor guidance](CONTRIBUTING.md) for maintained documentation, generated registry files and CI evidence.
 See [Release and mise distribution](docs/distribution.md) for native platform gates, checksums,
@@ -42,14 +42,26 @@ bindings in zt and no plaintext credential fallback. Linux's upstream keyring pa
 session-bus connection (and discover/start a bus) at process startup; inventory commands do not call
 credential methods, authenticate, run project checks or write project files.
 
-For a development install from the public repository, use Go 1.25 or newer:
+For a pinned Release install with mise:
 
 ```sh
-go install github.com/zeithrold/tools/cmd/zt@main
+mise use -g 'github:zeithrold/tools[matching=zt_]@0.1.0'
 zt version
 ```
 
-`go install` places the binary in `GOBIN`, or `GOPATH/bin` when `GOBIN` is unset; put that directory on `PATH`. Once a release tag exists, pin it instead of using `@main`, for example `@v0.1.0`. Skill distribution is user-global, so pin the same `zt` version where machines are provisioned; `~/.agents/zt.lock.json` records the version and content hash of each synchronized Skill. Neither config file downloads or updates the CLI itself.
+If an older mise Go-backend installation already provides `zt`, follow the
+[replacement procedure](docs/distribution.md#replacing-an-existing-installation)
+to remove its global request and installation after verifying the replacement.
+Upgrading the binary does not synchronize global Skills.
+
+Alternatively, build the tagged source with Go 1.25 or newer:
+
+```sh
+go install github.com/zeithrold/tools/cmd/zt@v0.1.0
+zt version
+```
+
+`go install` places the binary in `GOBIN`, or `GOPATH/bin` when `GOBIN` is unset; put that directory on `PATH`. Use `@main` only when deliberately following unreleased development. Skill distribution is user-global, so pin the same `zt` version where machines are provisioned; `~/.agents/zt.lock.json` records the version and content hash of each synchronized Skill. Neither config file downloads or updates the CLI itself.
 
 Release builds embed the public GitHub App Client ID from `ZEITHROLD_GITHUB_CLIENT_ID`; development
 builds can supply `zt auth login --client-id CLIENT_ID`. This is not a token flag. Device Flow uses a
@@ -130,4 +142,4 @@ examples/               example project and user-global configurations
 
 All first-party code and documentation in this checkout are licensed under [MIT](LICENSE), including the Go CLI, npm packages, UI registry source and templates, Skills and workflows. Package archives and copied Skill directories include the full license with the existing Zeithrold copyright notice. Preserve original third-party notices; see the [licensing inventory](docs/licensing.md) and [third-party boundary](THIRD_PARTY_NOTICES.md). Dependencies and Noto fonts retain their upstream terms.
 
-The repository is public. CI tests each push and pull request. A semantic version tag triggers native macOS, Linux and Windows release jobs for amd64 and arm64, with real credential-store gates, SHA-256 checksums and GitHub provenance attestations. Defining these jobs does not establish that they ran; see the distribution contract for actual acceptance requirements. CLI archives retain first-party and upstream dependency notices. The Go release workflow does not publish npm packages or create tags automatically. Separate `publish-eslint.yml` and `publish-frontend.yml` workflows automatically verify relevant pushes to `main` and stage new package versions; published or pending versions are skipped. A maintainer must promote each stage with 2FA before it becomes installable. Existing published npm versions retain their original artifacts and metadata; licensing changes apply to this checkout and future distributions. No versioned Go CLI release has been published yet.
+The repository is public. CI tests each push and pull request. A semantic version tag triggers native macOS, Linux and Windows release jobs for amd64 and arm64, with real credential-store gates, SHA-256 checksums and GitHub provenance attestations. Defining these jobs does not establish that they ran for a particular tag; see the distribution contract for actual acceptance requirements and the published release for its assets. CLI archives retain first-party and upstream dependency notices. The Go release workflow does not publish npm packages or create tags automatically. Separate `publish-eslint.yml` and `publish-frontend.yml` workflows automatically verify relevant pushes to `main` and stage new package versions; published or pending versions are skipped. A maintainer must promote each stage with 2FA before it becomes installable. Existing published npm versions retain their original artifacts and metadata; licensing changes apply to this checkout and future distributions.

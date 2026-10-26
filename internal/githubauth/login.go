@@ -180,14 +180,14 @@ func (c *Client) requestDeviceCode(ctx context.Context, options resolvedOptions)
 	if err := c.postForm(ctx, options.endpoints.DeviceCodeURL, form, &response); err != nil {
 		var status *statusError
 		if errors.As(err, &status) {
+			kind := ErrProtocol
 			switch {
 			case status.status == 400 || status.status == 401:
-				return deviceAuthorization{}, fmt.Errorf("%w: device code request returned HTTP %d", ErrAuthorizationRejected, status.status)
+				kind = ErrAuthorizationRejected
 			case status.status == 429 || status.status >= 500:
-				return deviceAuthorization{}, fmt.Errorf("%w: device code request returned HTTP %d", ErrRemote, status.status)
-			default:
-				return deviceAuthorization{}, fmt.Errorf("%w: device code request returned HTTP %d", ErrProtocol, status.status)
+				kind = ErrRemote
 			}
+			return deviceAuthorization{}, fmt.Errorf("%w: device code request returned %s%s", kind, status, deviceCodeHint(status.code))
 		}
 		return deviceAuthorization{}, err
 	}
@@ -196,7 +196,7 @@ func (c *Client) requestDeviceCode(ctx context.Context, options resolvedOptions)
 		if code == "" {
 			return deviceAuthorization{}, fmt.Errorf("%w: device authorization endpoint returned an unrecognized error", ErrAuthorizationRejected)
 		}
-		return deviceAuthorization{}, fmt.Errorf("%w: GitHub returned %s", ErrAuthorizationRejected, code)
+		return deviceAuthorization{}, fmt.Errorf("%w: GitHub returned %s%s", ErrAuthorizationRejected, code, deviceCodeHint(code))
 	}
 	if response.DeviceCode == "" || response.UserCode == "" || response.VerificationURI == "" {
 		return deviceAuthorization{}, fmt.Errorf("%w: device code response is missing required fields", ErrProtocol)
@@ -237,6 +237,18 @@ func (c *Client) requestDeviceCode(ctx context.Context, options resolvedOptions)
 		expiresAt: c.now().Add(expiresIn),
 		interval:  interval,
 	}, nil
+}
+
+// Hints are local text, never the remote error_description or error_uri.
+func deviceCodeHint(code string) string {
+	switch code {
+	case "device_flow_disabled":
+		return "; enable Device Flow in the GitHub App settings, then retry zt auth login"
+	case "incorrect_client_credentials":
+		return "; check the public GitHub App Client ID, not the App ID or a client secret"
+	default:
+		return ""
+	}
 }
 
 func (c *Client) pollDeviceToken(ctx context.Context, options resolvedOptions, authorization deviceAuthorization) (tokenResponse, error) {

@@ -1,5 +1,4 @@
-# zt through mise's github backend. This is a usage example: 0.1.0 has not
-# been published yet, so `mise install` fails until the first release exists.
+# zt through mise's github backend, pinned to the published v0.1.0 release.
 # `matching = "zt_"` keeps only the zt archives; mise picks the asset for the
 # current OS/architecture and verifies the release SHA256SUMS (and GitHub
 # artifact attestations on public GitHub).

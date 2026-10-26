@@ -188,6 +188,58 @@ func TestDeviceCodeExpiresWhilePolling(t *testing.T) {
 }
 
 func TestDeviceCodeHTTPAndMalformedResponses(t *testing.T) {
+	t.Run("safe actionable errors", func(t *testing.T) {
+		for _, tc := range []struct {
+			name   string
+			status int
+			code   string
+			want   string
+			kind   error
+		}{
+			{"disabled http", 400, "device_flow_disabled", "enable Device Flow in the GitHub App settings", ErrAuthorizationRejected},
+			{"disabled success body", 200, "device_flow_disabled", "enable Device Flow in the GitHub App settings", ErrAuthorizationRejected},
+			{"invalid client", 401, "incorrect_client_credentials", "check the public GitHub App Client ID", ErrAuthorizationRejected},
+			{"server error", 500, "server_error", "HTTP 500 (server_error)", ErrRemote},
+			{"rate limit", 429, "temporarily_unavailable", "HTTP 429 (temporarily_unavailable)", ErrRemote},
+			{"other status", 403, "access_denied", "HTTP 403 (access_denied)", ErrProtocol},
+			{"unknown http error", 400, "ghu_UNTRUSTED_ERROR", "HTTP 400", ErrAuthorizationRejected},
+			{"unknown success body", 200, "ghu_UNTRUSTED_ERROR", "unrecognized error", ErrAuthorizationRejected},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				h := newHarness(t)
+				store := newFakeStore()
+				h.override = func(w http.ResponseWriter, r *http.Request) bool {
+					if r.URL.Path != "/login/device/code" {
+						return false
+					}
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(tc.status)
+					_ = json.NewEncoder(w).Encode(map[string]string{
+						"error":             tc.code,
+						"error_description": "ghu_PRIVATE_DESCRIPTION",
+						"error_uri":         "https://evil.example/ghu_PRIVATE_URI",
+						"access_token":      "ghu_PRIVATE_ACCESS",
+						"refresh_token":     "ghr_PRIVATE_REFRESH",
+						"device_code":       "ghu_PRIVATE_DEVICE",
+					})
+					return true
+				}
+				_, err := h.login(context.Background(), store, newFakeClock(), h.options(), nil)
+				if !errors.Is(err, tc.kind) || !strings.Contains(errorText(err), tc.want) {
+					t.Fatalf("error = %v, want %v containing %q", err, tc.kind, tc.want)
+				}
+				if sanitizeOAuthCode(tc.code) != "" && !strings.Contains(errorText(err), tc.code) {
+					t.Fatalf("error omits safe OAuth code %q: %v", tc.code, err)
+				}
+				assertNoSecret(t, errorText(err), "ghu_UNTRUSTED_ERROR", "ghu_PRIVATE_DESCRIPTION",
+					"ghu_PRIVATE_URI", "ghu_PRIVATE_ACCESS", "ghr_PRIVATE_REFRESH", "ghu_PRIVATE_DEVICE")
+				if len(h.requestsFor("/login/oauth/access_token")) != 0 || store.count() != 0 {
+					t.Fatal("device rejection polled for or stored credentials")
+				}
+			})
+		}
+	})
+
 	t.Run("http error", func(t *testing.T) {
 		h := newHarness(t)
 		store := newFakeStore()
