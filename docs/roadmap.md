@@ -1,7 +1,8 @@
 # Roadmap
 
-This document describes proposed work, not available commands or completed
-validation. Current capabilities are listed in the [README](../README.md).
+This document separates drafted guidance and the offline candidate slice from
+proposed next stages. Current capabilities are listed in the [README](../README.md);
+none of these statuses alone establish behavioral improvement.
 Installation and authentication contracts live in [distribution](distribution.md),
 [global Skills](global-skills.md) and [GitHub App setup](github-app-setup.md).
 
@@ -63,7 +64,12 @@ Useful source anchors, not pre-approved material for copying:
 - [Frontend ownership](https://github.com/mastra-ai/mastra/blob/d49143a299757859bdbca93aa4b688c1383ace1e/.claude/skills/mastra-frontend/SKILL.md)
 - [Performance workflow](https://github.com/openclaw/openclaw/blob/db38cc1066957e278d529d531160bb2773163682/.agents/skills/openclaw-performance/SKILL.md)
 
-## Proposed `zt evolve`
+## Evolution runtime: offline stage and remaining work
+
+The [offline candidate stage](evolve.md) provides structured replacement
+`prepare` and read-only `plan`. It does not execute verification or implement
+remote submission/status/activation. The table below describes the full target
+workflow, not additional shipped commands.
 
 The recommended MVP is a local candidate, read-only plan, explicit verification
 and idempotent Draft PR followed by human review. It does not include model

@@ -18,13 +18,10 @@ func TestRootHelpListsEveryCommandWithoutErrors(t *testing.T) {
 	if stderr != "" {
 		t.Fatalf("help wrote to stderr: %q", stderr)
 	}
-	for _, name := range []string{"inspect", "plan", "check", "skills", "sync", "auth", "version", "license", "completion"} {
+	for _, name := range []string{"inspect", "plan", "check", "evolve", "skills", "sync", "auth", "version", "license", "completion"} {
 		if !strings.Contains(stdout, name) {
 			t.Fatalf("help omits %q:\n%s", name, stdout)
 		}
-	}
-	if strings.Contains(stdout, "evolve") {
-		t.Fatalf("help advertises an unimplemented command:\n%s", stdout)
 	}
 }
 

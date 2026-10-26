@@ -34,6 +34,7 @@ func newRootCommand(a *app) *cobra.Command {
 		newInspectCommand(a),
 		newPlanCommand(a),
 		newCheckCommand(a),
+		newEvolveCommand(a),
 		newSkillsCommand(a),
 		newSyncCommand(a),
 		newAuthCommand(a),
