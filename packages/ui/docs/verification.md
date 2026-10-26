@@ -5,7 +5,7 @@ no-downgrade and other existing pnpm policies. The approved @ztd-me/* exception 
 No TLS bypass, browser security exception or trust-store change is part of verification.
 
 The private `packages/ui` source harness pins pnpm 11.22.0, React 19.3.0, TypeScript 6.0.3, ESLint 10.11.0,
-Vite 8.3.1, Playwright 1.62.0, `@ztd-me/eslint` 0.1.4 and `@ztd-me/frontend-checks` 0.1.3. These npm
+Vite 8.3.1, Playwright 1.62.0, `@ztd-me/eslint` 0.1.5 and `@ztd-me/frontend-checks` 0.1.4. These npm
 versions require owner promotion and fresh registry verification before installation and frozen-lock
 updates. The harness CSS gate and both local and public source consumers invoke the installed official
 `ztd-css` CLI; no sibling source CLI or checker patch is used. CI repeats
@@ -15,14 +15,15 @@ remains unchanged and available; this source transition is not a new npm UI rele
 ## Native and consumer checks
 
 - Strict ESLint, CSS variable validation, full TypeScript declaration checking and build.
-- Nineteen unit cases covering preference boundaries, generic policy, cookie/locale validation, typed
-  i18n boundaries, footer URLs and the reproduced/patched Select declaration defect.
+- Unit cases covering preference boundaries, generic policy, cookie/locale validation, typed
+  i18n boundaries, footer URLs, retained browser evidence and the reproduced/patched Select declaration
+  defect.
 - A fresh consumer installs the actual packed artifact using pnpm, reinstalls with a frozen lock,
   imports all exports, validates Google Fonts CSS and six complete OFL notices plus MIT without font binaries,
   rejects invalid typed API usage, and builds real React SSR and client assets.
 - A separate source consumer uses the real pinned shadcn CLI to preview/install the item, compares all
   installed file bytes, confirms no npm UI runtime dependency, applies the documented declaration
-  patch and runs strict lint/CSS/types, fourteen consumer units, SSR/client build and the complete 32-case browser
+  patch and runs strict lint/CSS/types, fourteen consumer units, SSR/client build and the complete browser
   suite.
   It preserves pnpm security settings and enables `skipLibCheck: false`.
 
@@ -32,7 +33,7 @@ Select patch to its own workspace. That deliberate patch change updates its gene
 The next verification step requires `pnpm install --frozen-lockfile`; checked-in package locks and
 release-age, trust and integrity policies remain enforced.
 
-The 32-case browser suite covers SSR/hydration, first paint without JavaScript, nonce-bearing CSP, independent
+The browser suite covers SSR/hydration, first paint without JavaScript, nonce-bearing CSP, independent
 mode/palette selection, all six palettes/light/dark/system, responsive Chinese controls, keyboard/focus,
 entry/exit and reduced motion, 44px touch targets, inert cleanup, fullscreen portals, storage rejection
 and application slots. It preserves unrelated auth/business records and project-owned footer/policy.
@@ -43,7 +44,11 @@ browser context allow 10,000 bytes each. Every cold scenario starts in a fresh c
 specimen reports transfers without an ordinary-page byte cap and retains its glyph/weight/emoji/CSP
 checks and request-count guard. These owner-approved budgets apply to the representative fixtures;
 consumer page budgets remain consumer-owned. See [typography](fonts.md) for units and exclusions.
-Reports and captures are evidence; they are not approved visual baselines.
+Reports and captures are evidence; they are not approved visual baselines. The installed checker writes
+each Axe scan and capture to a file and attaches it by path, and its reporter writes
+`test-timings.json` for the run. The evidence gate requires those files in both consumer runs, a complete
+Axe scan, and timings matching the same run's cases; an inline payload, a missing file or a checker other
+than the pinned install fails it.
 
 Axe's CSSOM preloader copies CSS into a temporary document. The fixture adapter gives those analysis
 styles the existing response nonce only while the scan runs. Its CSSOM reader also reuses the exact
