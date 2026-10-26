@@ -37,23 +37,23 @@ func sync(t *testing.T, args ...string) (string, error) {
 
 func TestSyncDefaultsToTheGlobalTreeAndIgnoresTheProject(t *testing.T) {
 	home := syncHome(t)
-	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-web","go-testing"]}`)
+	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-design","verification"]}`)
 	project := t.TempDir()
 	// A project config no longer selects Distribution targets, so even an
 	// unreadable one must not change the outcome.
-	writeFile(t, filepath.Join(project, "zt.json"), `{"schemaVersion":1,"unexpected":true,"skills":["ui-foundation"]}`)
+	writeFile(t, filepath.Join(project, "zt.json"), `{"schemaVersion":1,"unexpected":true,"skills":["code-review"]}`)
 	t.Chdir(project)
 
 	out, err := sync(t)
 	if err != nil {
 		t.Fatalf("sync from a project directory failed: %v\n%s", err, out)
 	}
-	for _, name := range []string{"ui-web", "go-testing"} {
+	for _, name := range []string{"ui-design", "verification"} {
 		if _, err := os.Stat(filepath.Join(home, ".agents", "skills", name, "SKILL.md")); err != nil {
 			t.Fatalf("global Skill %s not installed: %v", name, err)
 		}
 	}
-	if _, err := os.Stat(filepath.Join(home, ".agents", "skills", "ui-foundation")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(home, ".agents", "skills", "code-review")); !os.IsNotExist(err) {
 		t.Fatalf("project Skill selection was distributed: %v", err)
 	}
 	lock := filepath.Join(home, ".agents", "zt.lock.json")
@@ -61,7 +61,7 @@ func TestSyncDefaultsToTheGlobalTreeAndIgnoresTheProject(t *testing.T) {
 	if err != nil {
 		t.Fatalf("global lock missing: %v", err)
 	}
-	for _, name := range []string{"ui-web", "go-testing"} {
+	for _, name := range []string{"ui-design", "verification"} {
 		if !bytes.Contains(data, []byte(`"`+name+`"`)) {
 			t.Fatalf("lock omits %s: %s", name, data)
 		}
@@ -84,38 +84,38 @@ func TestSyncDefaultsToTheGlobalTreeAndIgnoresTheProject(t *testing.T) {
 
 func TestSyncFromDifferentWorkingDirectoriesIsIdentical(t *testing.T) {
 	home := syncHome(t)
-	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-web"]}`)
+	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-design"]}`)
 	first := t.TempDir()
 	t.Chdir(first)
 	out, err := sync(t)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(out, "install: .agents/skills/ui-web") {
+	if !strings.Contains(out, "install: .agents/skills/ui-design") {
 		t.Fatalf("unexpected first run:\n%s", out)
 	}
 	second := t.TempDir()
-	writeFile(t, filepath.Join(second, "zt.json"), `{"schemaVersion":1,"skills":["go-testing"]}`)
+	writeFile(t, filepath.Join(second, "zt.json"), `{"schemaVersion":1,"skills":["verification"]}`)
 	t.Chdir(second)
 	out, err = sync(t)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(out, "unchanged: .agents/skills/ui-web") {
+	if !strings.Contains(out, "unchanged: .agents/skills/ui-design") {
 		t.Fatalf("second working directory changed the target:\n%s", out)
 	}
-	if _, err := os.Stat(filepath.Join(home, ".agents", "skills", "go-testing")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(home, ".agents", "skills", "verification")); !os.IsNotExist(err) {
 		t.Fatalf("second working directory contributed Skills: %v", err)
 	}
 }
 
 func TestSyncExplicitSelectionNeedsNoConfigAndWritesNone(t *testing.T) {
 	home := syncHome(t)
-	out, err := sync(t, "--skills", "ui-web, go-testing")
+	out, err := sync(t, "--skills", "ui-design, verification")
 	if err != nil {
 		t.Fatalf("explicit selection failed: %v\n%s", err, out)
 	}
-	for _, name := range []string{"ui-web", "go-testing"} {
+	for _, name := range []string{"ui-design", "verification"} {
 		if _, err := os.Stat(filepath.Join(home, ".agents", "skills", name, "SKILL.md")); err != nil {
 			t.Fatalf("Skill %s not installed: %v", name, err)
 		}
@@ -123,7 +123,7 @@ func TestSyncExplicitSelectionNeedsNoConfigAndWritesNone(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(home, ".agents", "zt.json")); !os.IsNotExist(err) {
 		t.Fatalf("--skills wrote a global config: %v", err)
 	}
-	if _, err := sync(t, "--skills", "UI-Web"); err == nil || !strings.Contains(err.Error(), "invalid or duplicate") {
+	if _, err := sync(t, "--skills", "UI-Design"); err == nil || !strings.Contains(err.Error(), "invalid or duplicate") {
 		t.Fatalf("invalid Skill id accepted: %v", err)
 	}
 }
@@ -151,9 +151,9 @@ func TestSyncWithoutConfigOrSelectionFails(t *testing.T) {
 
 func TestSyncRejectsProjectRootWithoutTouchingProject(t *testing.T) {
 	home := syncHome(t)
-	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-web"]}`)
+	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-design"]}`)
 	project := t.TempDir()
-	projectSkill := filepath.Join(project, ".agents", "skills", "ui-web", "SKILL.md")
+	projectSkill := filepath.Join(project, ".agents", "skills", "ui-design", "SKILL.md")
 	writeFile(t, projectSkill, "project owns this")
 
 	out, err := sync(t, "--root", project)
@@ -178,7 +178,7 @@ func TestSyncRejectsProjectRootWithoutTouchingProject(t *testing.T) {
 
 func TestSyncPlanIsReadOnly(t *testing.T) {
 	home := syncHome(t)
-	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-web"]}`)
+	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-design"]}`)
 	out, err := sync(t, "--plan", "--json")
 	if err != nil {
 		t.Fatalf("plan failed: %v\n%s", err, out)
@@ -189,7 +189,7 @@ func TestSyncPlanIsReadOnly(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &result); err != nil {
 		t.Fatalf("invalid plan json %s: %v", out, err)
 	}
-	if len(result.Actions) != 1 || result.Actions[0].Action != "install" || result.Actions[0].Target != ".agents/skills/ui-web" {
+	if len(result.Actions) != 1 || result.Actions[0].Action != "install" || result.Actions[0].Target != ".agents/skills/ui-design" {
 		t.Fatalf("unexpected plan: %s", out)
 	}
 	if _, err := os.Stat(filepath.Join(home, ".agents", "skills")); !os.IsNotExist(err) {
@@ -202,14 +202,14 @@ func TestSyncPlanIsReadOnly(t *testing.T) {
 
 func TestSyncConflictWritesNothing(t *testing.T) {
 	home := syncHome(t)
-	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-web","go-testing"]}`)
-	unmanaged := filepath.Join(home, ".agents", "skills", "ui-web", "SKILL.md")
+	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-design","verification"]}`)
+	unmanaged := filepath.Join(home, ".agents", "skills", "ui-design", "SKILL.md")
 	writeFile(t, unmanaged, "local work")
 
 	if _, err := sync(t); err == nil || !strings.Contains(err.Error(), "not managed") {
 		t.Fatalf("unmanaged global Skill was overwritten: %v", err)
 	}
-	if _, err := os.Stat(filepath.Join(home, ".agents", "skills", "go-testing")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(home, ".agents", "skills", "verification")); !os.IsNotExist(err) {
 		t.Fatalf("conflicting run installed another Skill: %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(home, ".agents", "zt.lock.json")); !os.IsNotExist(err) {
@@ -220,7 +220,7 @@ func TestSyncConflictWritesNothing(t *testing.T) {
 	}
 
 	// A managed Skill with local edits is a conflict too.
-	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-web"]}`)
+	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-design"]}`)
 	if _, err := os.Stat(unmanaged); err != nil {
 		t.Fatal(err)
 	}
@@ -248,17 +248,17 @@ func TestSyncRejectsSymlinkedGlobalTree(t *testing.T) {
 	if err := os.Symlink(outside, filepath.Join(home, ".agents", "skills")); err != nil {
 		t.Skipf("symlinks unavailable: %v", err)
 	}
-	if _, err := sync(t, "--skills", "ui-web"); err == nil || !strings.Contains(err.Error(), "symlink") {
+	if _, err := sync(t, "--skills", "ui-design"); err == nil || !strings.Contains(err.Error(), "symlink") {
 		t.Fatalf("symlinked global tree accepted: %v", err)
 	}
-	if _, err := os.Stat(filepath.Join(outside, "ui-web")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(outside, "ui-design")); !os.IsNotExist(err) {
 		t.Fatalf("wrote through the symlink: %v", err)
 	}
 }
 
 func TestSyncRejectsProjectSectionsInTheGlobalConfig(t *testing.T) {
 	home := syncHome(t)
-	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-web"],"modules":[{"id":"web","path":".","stack":"js-ts"}]}`)
+	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-design"],"modules":[{"id":"web","path":".","stack":"js-ts"}]}`)
 	if _, err := sync(t); err == nil || !strings.Contains(err.Error(), "unknown field") {
 		t.Fatalf("global config accepted project sections: %v", err)
 	}
@@ -269,7 +269,7 @@ func TestSyncRejectsProjectSectionsInTheGlobalConfig(t *testing.T) {
 
 func TestSyncRejectsExplicitEmptyRoot(t *testing.T) {
 	home := syncHome(t)
-	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-web"]}`)
+	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-design"]}`)
 	out, err := sync(t, "--root=")
 	if err == nil {
 		t.Fatalf("sync --root= succeeded:\n%s", out)
@@ -289,7 +289,7 @@ func TestSyncRejectsExplicitEmptyRoot(t *testing.T) {
 
 func TestSyncExplicitEmptySkillsDoesNotFallBackToConfig(t *testing.T) {
 	home := syncHome(t)
-	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-web"]}`)
+	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-design"]}`)
 	out, err := sync(t, "--skills=")
 	if err == nil {
 		t.Fatalf("sync --skills= fell back to the global config:\n%s", out)
@@ -304,7 +304,7 @@ func TestSyncExplicitEmptySkillsDoesNotFallBackToConfig(t *testing.T) {
 
 func TestSkillsSyncAliasesLegacySync(t *testing.T) {
 	home := syncHome(t)
-	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-web"]}`)
+	writeFile(t, filepath.Join(home, ".agents", "zt.json"), `{"schemaVersion":1,"skills":["ui-design"]}`)
 	out, _, err := runCLI(t, "skills", "sync", "--plan", "--json")
 	if err != nil {
 		t.Fatalf("skills sync failed: %v\n%s", err, out)
@@ -315,7 +315,7 @@ func TestSkillsSyncAliasesLegacySync(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &result); err != nil {
 		t.Fatalf("invalid plan json %s: %v", out, err)
 	}
-	if len(result.Actions) != 1 || result.Actions[0].Target != ".agents/skills/ui-web" {
+	if len(result.Actions) != 1 || result.Actions[0].Target != ".agents/skills/ui-design" {
 		t.Fatalf("unexpected plan: %s", out)
 	}
 	if _, err := os.Stat(filepath.Join(home, ".agents", "skills")); !os.IsNotExist(err) {

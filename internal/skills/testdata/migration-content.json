@@ -1,0 +1,38 @@
+{
+  "sourceCommit": "b8db754ed2b7ba08bad30497840c926c8c196b8d",
+  "purpose": "Reviewed migration bytes: five resources remain verbatim; frontend gates makes repository setup history optional for standalone installation. Intentional revisions require explicit review and updated expectations; this checks preservation, not behavioral effectiveness.",
+  "resources": [
+    {
+      "from": "skills/ui-foundation/references/design-contract.md",
+      "to": "skills/ui-design/references/design-contract.md",
+      "sha256": "343c35190668bf7c3fb886a15b28d69dc8e9d7a6c4b97bd2a5282309b1a81b9d"
+    },
+    {
+      "from": "skills/ui-foundation/references/review-matrix.md",
+      "to": "skills/ui-design/references/review-matrix.md",
+      "sha256": "60298a190cabe9a9d8eee26a1300a8888360792d43f8065a15347925e6a4d7ec"
+    },
+    {
+      "from": "skills/ui-foundation/references/visual-design.md",
+      "to": "skills/ui-design/references/visual-design.md",
+      "sha256": "cf3e8e24ba605cfe958b0c34d32609eb13895924befa543ac3f6d2b685982f49"
+    },
+    {
+      "from": "skills/ui-web/references/browser-review.md",
+      "to": "skills/ui-design/references/web-browser-review.md",
+      "sha256": "0a8e21d290f57f455df9b83da1112a371af475f8a30efab85850a1cfce63723e"
+    },
+    {
+      "from": "skills/frontend-verification/references/gates.md",
+      "to": "skills/verification/references/frontend-gates.md",
+      "sourceSha256": "c7be0e7b7a722a5cb16f9c5b44b735b9f7380fb22176ad204dee2992fb0d84ab",
+      "change": "Preserve native gates and trust policy; replace required repository-doc lookup with optional versioned setup history and no implied install permission",
+      "sha256": "c5a645b5d3dea817cc60a921e9d9b7d20837a0ee125d723bf680f95622a8913a"
+    },
+    {
+      "from": "skills/frontend-verification/references/evidence.md",
+      "to": "skills/verification/references/frontend-evidence.md",
+      "sha256": "f1e3e14877d8a983a12f137726576ff0240871ebb62d5e5ea51ede68de2755d9"
+    }
+  ]
+}

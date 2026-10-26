@@ -6,11 +6,14 @@ license: MIT
 
 # Frontend engineering
 
-Read AGENTS.md, the project design contract, scripts, compiler config and framework entry points. Use ui-foundation/ui-web for design and frontend-verification for execution evidence. Select generic Skills explicitly in user-global `~/.agents/zt.json` or `zt sync --skills`; sync does not resolve their dependencies. Project-level Skills contain project knowledge, not copies of generic workflows. Load only the guidance relevant to the current task and stage.
+Read AGENTS.md, the project design contract, scripts, compiler config and framework entry points. Use `ui-design` for design and experience decisions and `verification` for execution evidence and gate profiles. Select generic Skills explicitly in user-global `~/.agents/zt.json` or `zt sync --skills`; sync does not resolve their dependencies. Project-level Skills contain project knowledge, not copies of generic workflows. Load only the guidance relevant to the current task and stage.
 
 1. Map the feature from route/server boundary through validation, state owner and components. Follow [boundaries](references/boundaries.md) and [source structure](references/source-structure.md); keep business/deployment assumptions local.
+   For persisted or asynchronous state, trace [ownership and lifecycle](references/state-lifecycle.md).
+   For streaming, request dependencies or caches, verify [useful UI and freshness](references/async-and-cache.md);
+   these references do not prescribe a framework or grant backend authority.
 2. Reuse semantic tokens, typography and component variants. Use configurable body/control/help size roles
-   from the project design contract and `ui-foundation`, rather than shrinking whole forms or scattering literal sizes. Define missing semantic roles, including destructive actions, in the project contract without copying another product's values.
+   from the project design contract and `ui-design`, rather than shrinking whole forms or scattering literal sizes. Define missing semantic roles, including destructive actions, in the project contract without copying another product's values.
    Fonts must use Noto Sans or Noto Serif families, including appropriate CJK variants, and Noto Color
    Emoji for all emoji. Support at least English and Chinese/Japanese/Korean glyphs. Use Noto Sans for ordinary
    UI; choose Noto Serif only where the content benefits from serif typography. The Google Fonts
@@ -27,13 +30,18 @@ Read AGENTS.md, the project design contract, scripts, compiler config and framew
    intentional emoji use Noto Color Emoji. Audit these distinctions during consumer source migrations.
 3. Validate unknown runtime input using the existing schema mechanism. Preserve retry and input; do not expand a boundary improvement into an unrelated client/server rewrite.
 4. Normalize supported preferences and render deterministic SSR defaults. Apply [preferences and localization](references/preferences-i18n.md) to hydration, persistence, errors and dialogs.
-5. Preserve framework exports and native browser fallback. Run the compiler/build alongside strict ESLint; lint alone cannot validate routing or Worker deployment.
+5. Preserve framework exports and native browser fallback. Run the compiler/build alongside strict ESLint; lint alone cannot validate routing or Worker deployment. The optional `verification` Skill covers aggregate native gate order, budgets and evidence limits; this Skill requires no sibling installation.
    Construct GitHub Actions with the [workflow contribution contract](references/github-actions.md).
    Keep the common Verify → Deploy order and project-owned extension points; retain required native
    checks, the failure-evidence probe and automatic main deployment within existing authorization.
 6. Report changed decisions, affected states, exact checks and uncertainty. Visual baselines and performance budgets are deferred.
 
 ## Generic shared shell
+
+This section is the single source for the shell contract. `ui-design` and
+`verification` route here when a change depends on shared chrome; a project that
+consumes none of it does not need it. Do not restate the contract in another
+Skill.
 
 The `@ztd-me/ui` source item provides reusable chrome, validated non-sensitive appearance/UI locale and explicit persistence mechanisms. Its defaults are Neutral + System and six palettes. Consumers supply their own brand, footer/repository/contact content, cookie name/domain/Secure choice, optional storage notification key and business slots. Tools must not select policy through project names or hostnames, enforce a repository-host allowlist, or carry legacy storage mappings. Remove rejected legacy mappings entirely rather than moving them into consumers; old business/auth storage stays untouched. Shared domain cookies are untrusted UI input. Consumers own development/preview isolation, deployment, authentication, account state and business navigation. Generic shell guidance grants no sync ownership over project components or production files. Preserve native strict gates and upstream licenses. The owner reviews and merges upstream changes. Final source integration requires a full approved source SHA and fresh public installation before consumer acceptance; local source/packed evidence or a local-font Cloud preview does not verify actual Google Fonts loading. Consumers own installed source and reviewed updates; no automatic overwrite or new synchronization service is provided.
 

@@ -80,23 +80,23 @@ func TestLoadSelectionReadsOnlyTheGlobalSkillSelection(t *testing.T) {
 	if names, found, err := LoadSelection(dir); err != nil || found || names != nil {
 		t.Fatalf("missing global config: %v %v %v", names, found, err)
 	}
-	put(`{"schemaVersion":1,"skills":["ui-web","go-testing"]}`)
+	put(`{"schemaVersion":1,"skills":["ui-design","verification"]}`)
 	names, found, err := LoadSelection(dir)
-	if err != nil || !found || strings.Join(names, ",") != "ui-web,go-testing" {
+	if err != nil || !found || strings.Join(names, ",") != "ui-design,verification" {
 		t.Fatalf("unexpected selection: %v %v %v", names, found, err)
 	}
 	for _, rejected := range []struct{ data, want string }{
 		{`{"schemaVersion":1,"skills":[]}`, "selects no Skill"},
 		{`{"schemaVersion":1,"skills":null}`, "selects no Skill"},
-		{`{"schemaVersion":2,"skills":["ui-web"]}`, "unsupported schemaVersion"},
-		{`{"schemaVersion":1,"skills":["ui-web","ui-web"]}`, "duplicate"},
-		{`{"schemaVersion":1,"skills":["UI-Web"]}`, "invalid"},
-		{`{"schemaVersion":1,"skills":["ui-web"],"unexpected":true}`, "unknown field"},
-		{`{"schemaVersion":1,"skills":["ui-web"],"modules":[]}`, "unknown field"},
-		{`{"schemaVersion":1,"skills":["ui-web"],"modules":null}`, "unknown field"},
-		{`{"schemaVersion":1,"skills":["ui-web"],"lint":{}}`, "unknown field"},
-		{`{"schemaVersion":1,"skills":["ui-web"],"modules":[{"id":"web","path":".","stack":"js-ts"}]}`, "unknown field"},
-		{`{"schemaVersion":1,"skills":["ui-web"],"lint":{"js-ts":"@ztd-me/eslint"}}`, "unknown field"},
+		{`{"schemaVersion":2,"skills":["ui-design"]}`, "unsupported schemaVersion"},
+		{`{"schemaVersion":1,"skills":["ui-design","ui-design"]}`, "duplicate"},
+		{`{"schemaVersion":1,"skills":["UI-Design"]}`, "invalid"},
+		{`{"schemaVersion":1,"skills":["ui-design"],"unexpected":true}`, "unknown field"},
+		{`{"schemaVersion":1,"skills":["ui-design"],"modules":[]}`, "unknown field"},
+		{`{"schemaVersion":1,"skills":["ui-design"],"modules":null}`, "unknown field"},
+		{`{"schemaVersion":1,"skills":["ui-design"],"lint":{}}`, "unknown field"},
+		{`{"schemaVersion":1,"skills":["ui-design"],"modules":[{"id":"web","path":".","stack":"js-ts"}]}`, "unknown field"},
+		{`{"schemaVersion":1,"skills":["ui-design"],"lint":{"js-ts":"@ztd-me/eslint"}}`, "unknown field"},
 	} {
 		put(rejected.data)
 		if _, _, err := LoadSelection(dir); err == nil || !strings.Contains(err.Error(), rejected.want) {

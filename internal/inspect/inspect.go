@@ -143,7 +143,7 @@ func (c *collector) add(name, evidence string) {
 }
 
 func (c *collector) inspectGo() {
-	c.walk(func(path, relative string) {
+	c.walkWithPrune(func(path, relative string) {
 		if !strings.HasSuffix(path, "_test.go") {
 			return
 		}
@@ -182,6 +182,18 @@ func (c *collector) inspectGo() {
 				c.add("fuzz", relative+":"+name)
 			}
 		}
+	}, func(path, relative string, entry os.DirEntry) bool {
+		// Go ignores these directories during package discovery, so their tests are not evidence.
+		name := entry.Name()
+		if strings.HasPrefix(name, ".") || strings.HasPrefix(name, "_") || name == "testdata" {
+			return true
+		}
+		if path != c.root && regular(filepath.Join(path, "go.mod")) {
+			c.warnings = append(c.warnings, fmt.Sprintf("nested Go module %s: declare it in zt.json for a complete inventory", relative))
+			c.incomplete = true
+			return true
+		}
+		return false
 	})
 	if regular(filepath.Join(c.root, ".golangci.yml")) || regular(filepath.Join(c.root, ".golangci.yaml")) {
 		c.add("lint", ".golangci.yml/.yaml")
@@ -326,6 +338,10 @@ func (c *collector) inspectTextRecipes(name string) {
 }
 
 func (c *collector) walk(visit func(path, relative string)) {
+	c.walkWithPrune(visit, nil)
+}
+
+func (c *collector) walkWithPrune(visit func(path, relative string), prune func(path, relative string, entry os.DirEntry) bool) {
 	const maxFiles = 100000
 	count := 0
 	err := filepath.WalkDir(c.root, func(path string, entry os.DirEntry, err error) error {
@@ -335,6 +351,15 @@ func (c *collector) walk(visit func(path, relative string)) {
 		if entry.IsDir() {
 			if path != c.root && excludedDir(entry.Name()) {
 				return filepath.SkipDir
+			}
+			if path != c.root && prune != nil {
+				relative, err := filepath.Rel(c.root, path)
+				if err != nil {
+					return err
+				}
+				if prune(path, filepath.ToSlash(relative), entry) {
+					return filepath.SkipDir
+				}
 			}
 			return nil
 		}

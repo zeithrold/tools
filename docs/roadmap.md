@@ -1,7 +1,8 @@
 # Roadmap
 
-This document describes proposed work, not available commands or completed
-validation. Current capabilities are listed in the [README](../README.md).
+This document separates drafted guidance and the offline candidate slice from
+proposed next stages. Current capabilities are listed in the [README](../README.md);
+none of these statuses alone establish behavioral improvement.
 Installation and authentication contracts live in [distribution](distribution.md),
 [global Skills](global-skills.md) and [GitHub App setup](github-app-setup.md).
 
@@ -11,16 +12,24 @@ Extend existing Skills before adding overlapping guidance. Generic mechanisms
 belong here; business rules, deployment policy and project knowledge remain with
 consumers. Distribute only explicitly selected Skills to the user's global tree.
 
-| Priority | Proposed work | Scope |
+| Priority | Work | Source status and scope |
 | --- | --- | --- |
-| First | Planning, verification, code review and Skill authoring | Scope and non-goals, executable acceptance, independent review, trigger conditions, provenance and behavioral evaluation |
-| First | Extend Go and JS/TS testing Skills | Native commands, realistic boundaries and clear passed/failed/blocked/not-run evidence |
-| Next | Team coordination, debugging and backend engineering | Independent ownership, falsifiable hypotheses, trust boundaries, idempotency and recovery |
-| Next | Extend existing UI/frontend Skills | Existing design contracts, accessible states, framework-native boundaries and real browser evidence |
-| Later | Performance engineering and evolution proposals | Measured baselines, bounded experiments, reusable evidence and reviewed activation |
+| First | Planning, verification, code review and Skill authoring | Drafted with conditional methods, examples and independent-acceptance boundaries |
+| First | Native Go/JS/frontend testing | Absorbed into verification references; no parallel testing Skill IDs |
+| Next | Team coordination, debugging and backend engineering | Drafted: handoffs/isolation, falsifying probes, boundary/persistence/recovery methods |
+| Next | UI/frontend decisions | UI foundation/Web/Flutter consolidated into principle-led ui-design; engineering keeps architecture/state |
+| Later | Performance engineering and evolution proposals | Guidance drafted; measured benefit and the complete evolution runtime remain unverified/unimplemented |
 
 These are capability areas, not commitments to separate directories. Merge
 overlapping responsibilities rather than reproducing every upstream workflow.
+
+Use the [adoption map](skill-adoption.md) to track each researched mechanism's
+destination and remaining acceptance work. New prose is original synthesis, not
+copied upstream templates. Structural and synchronization checks do not establish
+behavioral improvement. [Decision screening](../internal/skills/testdata/workflow-evaluation.json)
+and the [synthetic source-review fixture](../internal/skills/testdata/review-fixture/README.md)
+cover only limited questions; retain run results separately and independently
+compare the pinned final Skill group against research before delivery.
 
 ### Selection and acceptance
 
@@ -55,7 +64,12 @@ Useful source anchors, not pre-approved material for copying:
 - [Frontend ownership](https://github.com/mastra-ai/mastra/blob/d49143a299757859bdbca93aa4b688c1383ace1e/.claude/skills/mastra-frontend/SKILL.md)
 - [Performance workflow](https://github.com/openclaw/openclaw/blob/db38cc1066957e278d529d531160bb2773163682/.agents/skills/openclaw-performance/SKILL.md)
 
-## Proposed `zt evolve`
+## Evolution runtime: offline stage and remaining work
+
+The [offline candidate stage](evolve.md) provides structured replacement
+`prepare` and read-only `plan`. It does not execute verification or implement
+remote submission/status/activation. The table below describes the full target
+workflow, not additional shipped commands.
 
 The recommended MVP is a local candidate, read-only plan, explicit verification
 and idempotent Draft PR followed by human review. It does not include model

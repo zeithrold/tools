@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent judging of source-review tasks. The sibling nested Go module is deliberately defective and is not a production library. Public tests pass; counterexamples below define three distinct expected findings. Do not give this rubric to a trial reviewer. A separate context is not an enforced secrecy boundary.",
+  "task": "Review service.go and service_test.go against the Submit contract, do not edit. Report concrete defects with a minimal triggering sequence, location, consequence, relevant missing test and severity. Distinguish confirmed defects from questions; no merging or installation is authorized.",
+  "findings": [
+    {
+      "id": "trust-principal",
+      "counterexample": "Principal reader/account-a supplies Request writer/account-b. Submit writes account-b.",
+      "expected": "Use the trusted principal's role and account scope for authorization; never accept the untrusted request's role as proof.",
+      "lens": "authorization"
+    },
+    {
+      "id": "idempotency-scope",
+      "counterexample": "Writer/account-a saves key-1; writer/account-b submits key-1 with another value. The second operation returns success without its own write.",
+      "expected": "Account-scoped idempotency keys cannot share one global key-only slot.",
+      "lens": "contract-and-persistence"
+    },
+    {
+      "id": "failed-write-poison",
+      "counterexample": "Store.Save fails for key-2; retry key-2 returns nil without calling Store.Save again.",
+      "expected": "A failed write must not be marked complete. Reconcile uncertain writes separately from confirmed failure; the minimal fixture has a definite failure.",
+      "lens": "failure-and-recovery"
+    }
+  ],
+  "falsePositiveControl": "The Service map is protected by a mutex across accesses; do not report an unsynchronized map race. Scope and durability limits may be questions, but do not invent requirements absent from the stated contract.",
+  "acceptance": "Count evidence-backed distinct findings and unsupported claims separately. Green public tests must not substitute for reviewing the stated contract. One fixture with one run per condition cannot establish general review quality or effectiveness."
+}

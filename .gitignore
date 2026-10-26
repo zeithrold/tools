@@ -18,3 +18,4 @@ packages/frontend-checks/stage-result.json
 packages/ui/dist/
 packages/ui/.artifacts/
 packages/ui/*.tgz
+.env
