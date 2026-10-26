@@ -3,9 +3,10 @@ package evolve
 // Publication and observation states. There is deliberately no ready state: this
 // slice cannot verify a candidate, and a declaration is not evidence.
 const (
-	publicationNotReady = "not_ready"
-	checkNotRun         = "not_run"
-	declaredUnverified  = "declared_not_verified"
+	publicationNotReady  = "not_ready"
+	publicationSubmitted = "submitted"
+	checkNotRun          = "not_run"
+	declaredUnverified   = "declared_not_verified"
 )
 
 // missingEvidence names the independent evidence every candidate still needs.

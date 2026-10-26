@@ -48,6 +48,12 @@ var _ authService = (*githubauth.Client)(nil)
 // on first use. The factory is deferred to auth subcommands, so no other
 // command constructs either dependency.
 func newAuthService(host string) (authService, error) {
+	return newAuthClient(host)
+}
+
+// newAuthClient is the concrete client behind both the auth subcommands and the
+// evolve submit/status --remote API seam.
+func newAuthClient(host string) (*githubauth.Client, error) {
 	store, err := keystore.Open(keystore.Options{Service: authServiceName})
 	if err != nil {
 		return nil, fmt.Errorf("open OS keystore: %w", err)
@@ -61,6 +67,27 @@ func newAuthService(host string) (authService, error) {
 		Locker:       locker,
 		AllowedHosts: []string{host},
 	}, nil
+}
+
+// newOpenAPI opens an authenticated GitHub REST endpoint for one target. The
+// returned value carries no token: the transport adds it per request and refuses
+// any request outside the selected repository. Only evolve submit and evolve
+// status --remote use it.
+func newOpenAPI(ctx context.Context, host, clientID, profile, repository string) (githubauth.API, error) {
+	client, err := newAuthClient(host)
+	if err != nil {
+		return githubauth.API{}, err
+	}
+	api, err := client.OpenAPI(ctx, githubauth.Options{
+		Host:             host,
+		ClientID:         clientID,
+		Profile:          profile,
+		TargetRepository: repository,
+	})
+	if err != nil {
+		return githubauth.API{}, wrapAuthError(err)
+	}
+	return api, nil
 }
 
 func newAuthCommand(a *app) *cobra.Command {

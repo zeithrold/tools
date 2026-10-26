@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -214,38 +213,17 @@ func Run(ctx context.Context, options Options) (Report, error) {
 
 func execute(ctx context.Context, planned plan.Step, timeout time.Duration, directory, relativeLog string) Step {
 	step := Step{Argv: planned.Argv, Dir: planned.Dir, Status: "blocked", ExitCode: -1, Log: filepath.ToSlash(relativeLog)}
-	log, err := os.OpenFile(filepath.Join(directory, relativeLog), os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0644)
-	if err != nil {
-		step.Detail = err.Error()
-		return step
-	}
-	defer log.Close()
-	childContext, cancel := context.WithTimeout(ctx, timeout)
-	defer cancel()
-	command := exec.CommandContext(childContext, planned.Argv[0], planned.Argv[1:]...)
-	command.Dir = planned.Dir
-	command.Env = append(os.Environ(), "ZT_ARTIFACTS_DIR="+directory, "pnpm_config_verify_deps_before_run=error")
-	command.Stdout, command.Stderr = log, log
-	command.WaitDelay = 2 * time.Second
-	configureProcess(command)
-	start := time.Now()
-	err = command.Run()
-	step.DurationMS = time.Since(start).Milliseconds()
-	if command.ProcessState != nil {
-		step.ExitCode = command.ProcessState.ExitCode()
-	}
-	if err == nil {
-		step.Status = "passed"
-	} else {
-		if command.ProcessState != nil {
-			step.Status = "failed"
-		}
-		step.Detail = err.Error()
-		if childContext.Err() != nil {
-			step.Status = "failed"
-			step.Detail = childContext.Err().Error()
-		}
-	}
+	result := RunProcess(ctx, ProcessRequest{
+		Argv:    planned.Argv,
+		Dir:     planned.Dir,
+		LogPath: filepath.Join(directory, relativeLog),
+		Env:     append(os.Environ(), "ZT_ARTIFACTS_DIR="+directory, "pnpm_config_verify_deps_before_run=error"),
+		Timeout: timeout,
+	})
+	step.Status = result.Status
+	step.ExitCode = result.ExitCode
+	step.DurationMS = result.DurationMS
+	step.Detail = result.Detail
 	return step
 }
 

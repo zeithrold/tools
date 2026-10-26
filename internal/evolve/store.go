@@ -27,9 +27,12 @@ const (
 
 // Store is the owned candidate tree below one workspace. Every operation is
 // relative to an os.Root handle, so a path component swapped for a symlink between
-// a check and a write cannot redirect it.
+// a check and a write cannot redirect it. dir is the resolved absolute path of the
+// same directory: a verification workspace must hand a real path to a native
+// command, and the caller may not derive it from an unresolved argument.
 type Store struct {
 	evolve *os.Root
+	dir    string
 }
 
 // openStore opens the owned artifact tree below workspace, creating it when it
@@ -80,7 +83,7 @@ func openStore(workspace string) (*Store, error) {
 	for _, opened := range handles[:len(handles)-1] {
 		_ = opened.Close()
 	}
-	return &Store{evolve: handles[len(handles)-1]}, nil
+	return &Store{evolve: handles[len(handles)-1], dir: filepath.Join(root, filepath.FromSlash(artifactRoot))}, nil
 }
 
 // openChild opens name inside parent, creating the directory when it does not

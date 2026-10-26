@@ -2,8 +2,11 @@
 
 `zt auth` uses GitHub App Device Flow user tokens and native OS credential
 storage. It accepts no App private key, client secret, PAT, `gh auth` state or
-environment token. Offline `zt evolve prepare/plan` need no authentication;
-remote evolution submission remains [planned](roadmap.md), not implemented.
+environment token. Offline `zt evolve prepare/plan` need no authentication.
+Development after `v0.1.1` adds reviewed Draft PR submission through the same
+GitHub App and OS-keystore path; independent acceptance and an explicitly
+authorized live submission remain separate gates. The published `v0.1.1`
+binary does not include that lifecycle. See the [roadmap](roadmap.md).
 
 ## Create and install the App
 

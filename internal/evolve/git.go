@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Repo is a read-only handle on one local upstream Git repository.
@@ -395,6 +396,14 @@ func (r *Repo) DirectoryNames(ctx context.Context, commit, dir string) ([]string
 // Blob reads one base file, refusing anything above the per-file bound before it
 // is read.
 func (r *Repo) Blob(ctx context.Context, entry Entry) ([]byte, error) {
+	return r.ReadEntry(ctx, entry, maxFileBytes, "replacement bound")
+}
+
+// ReadEntry reads one base file with an explicit bound and a label naming which
+// bound applied. Verification workspaces use a larger bound than preimage checking
+// because they materialise the whole tree, but the size is still known before any
+// byte is read.
+func (r *Repo) ReadEntry(ctx context.Context, entry Entry, limit int64, bound string) ([]byte, error) {
 	out, err := r.output(ctx, 64, "cat-file", "-s", entry.SHA)
 	if err != nil {
 		return nil, err
@@ -403,10 +412,10 @@ func (r *Repo) Blob(ctx context.Context, entry Entry) ([]byte, error) {
 	if err != nil || size < 0 {
 		return nil, fmt.Errorf("local git reported an invalid size for %s", safeQuote(entry.Path))
 	}
-	if size > maxFileBytes {
-		return nil, fmt.Errorf("base file %s is %d bytes, above the %d byte replacement bound", safeQuote(entry.Path), size, maxFileBytes)
+	if size > limit {
+		return nil, fmt.Errorf("base file %s is %d bytes, above the %d byte %s", safeQuote(entry.Path), size, limit, bound)
 	}
-	data, err := r.output(ctx, maxFileBytes, "cat-file", "blob", entry.SHA)
+	data, err := r.output(ctx, limit, "cat-file", "blob", entry.SHA)
 	if err != nil {
 		return nil, err
 	}
@@ -469,8 +478,17 @@ func gitEnv() []string {
 // --no-replace-objects is a main option, so a replacement ref cannot substitute
 // the pinned commit's tree for the object the policy names.
 func (r *Repo) output(ctx context.Context, limit int64, args ...string) ([]byte, error) {
+	return r.outputWithInput(ctx, limit, nil, args...)
+}
+
+// outputWithInput is output with an optional bounded standard input, for the one
+// plumbing command that hashes bytes without writing them.
+func (r *Repo) outputWithInput(ctx context.Context, limit int64, input []byte, args ...string) ([]byte, error) {
 	command := exec.CommandContext(ctx, r.git, append([]string{"--no-replace-objects", "--no-pager", "-C", r.dir}, args...)...)
 	command.Env = gitEnv()
+	if input != nil {
+		command.Stdin = bytes.NewReader(input)
+	}
 	stdout := &boundedBuffer{limit: limit}
 	stderr := &boundedBuffer{limit: 8 << 10}
 	command.Stdout, command.Stderr = stdout, stderr
@@ -514,4 +532,129 @@ func (b *boundedBuffer) String() string {
 		return b.buf.String() + "..."
 	}
 	return b.buf.String()
+}
+
+// maxCommitObjectBytes bounds the one commit object zt parses. A commit header is
+// tiny; only a pathological message could approach this.
+const maxCommitObjectBytes = 256 << 10
+
+// CommitInfo is the pinned-base metadata zt reads locally: the tree a candidate
+// applies to and the committer instant every submission derived from this base
+// shares.
+type CommitInfo struct {
+	Tree        string
+	CommittedAt time.Time
+}
+
+// CommitInfo reads the pinned commit object. The committer instant is used to
+// date a submitted commit, so a submission of one base is reproducible from the
+// pinned base alone and never from mutable local state such as the wall clock or
+// an approval's own timestamp.
+func (r *Repo) CommitInfo(ctx context.Context, commit string) (CommitInfo, error) {
+	data, err := r.output(ctx, maxCommitObjectBytes, "cat-file", "commit", commit)
+	if err != nil {
+		return CommitInfo{}, err
+	}
+	info, err := parseCommitObject(string(data))
+	if err != nil {
+		return CommitInfo{}, fmt.Errorf("pinned base %s: %w", commit, err)
+	}
+	return info, nil
+}
+
+// parseCommitObject reads the tree id and committer instant from one commit
+// object. The instant is normalized to UTC, so two identical commits keep one
+// rendered date regardless of the offset the author recorded.
+func parseCommitObject(text string) (CommitInfo, error) {
+	header, _, _ := strings.Cut(text, "\n\n")
+	var info CommitInfo
+	committer := ""
+	for _, line := range strings.Split(header, "\n") {
+		switch {
+		case strings.HasPrefix(line, "tree "):
+			info.Tree = strings.TrimSpace(strings.TrimPrefix(line, "tree "))
+		case strings.HasPrefix(line, "committer "):
+			committer = strings.TrimPrefix(line, "committer ")
+		}
+	}
+	if _, ok := fullCommitID(info.Tree); !ok {
+		return CommitInfo{}, fmt.Errorf("has no readable tree header")
+	}
+	if committer == "" {
+		return CommitInfo{}, fmt.Errorf("has no committer header")
+	}
+	fields := strings.Fields(committer)
+	if len(fields) < 3 {
+		return CommitInfo{}, fmt.Errorf("has a malformed committer header")
+	}
+	seconds, err := strconv.ParseInt(fields[len(fields)-2], 10, 64)
+	if err != nil {
+		return CommitInfo{}, fmt.Errorf("has a committer time that is not a Unix timestamp")
+	}
+	info.CommittedAt = time.Unix(seconds, 0).UTC()
+	return info, nil
+}
+
+// CompleteTree lists every non-tree entry of one commit. It is the input to a
+// verification workspace, which needs the whole pinned base and not only the files
+// a candidate replaces: a check that runs against a tree holding just the
+// replacements would test a repository that does not exist.
+func (r *Repo) CompleteTree(ctx context.Context, commit string) ([]Entry, error) {
+	out, err := r.output(ctx, maxGitOutputBytes, "ls-tree", "-r", "-z", "--full-tree", commit)
+	if err != nil {
+		return nil, err
+	}
+	entries := make([]Entry, 0, 64)
+	for _, record := range bytes.Split(out, []byte{0}) {
+		if len(record) == 0 {
+			continue
+		}
+		meta, value, ok := strings.Cut(string(record), "\t")
+		if !ok {
+			return nil, fmt.Errorf("local git returned an unexpected tree record")
+		}
+		fields := strings.Fields(meta)
+		if len(fields) != 3 || value == "" {
+			return nil, fmt.Errorf("local git returned an unexpected tree record")
+		}
+		if len(entries) >= maxBaseEntries {
+			return nil, fmt.Errorf("the pinned base tree has more than %d entries, which zt refuses to materialise", maxBaseEntries)
+		}
+		entries = append(entries, Entry{Path: value, Mode: fields[0], SHA: fields[2]})
+	}
+	return entries, nil
+}
+
+// BlobID reports the object id this repository would give content as a blob,
+// without writing an object. It is how zt checks a remote tree entry against the
+// exact candidate bytes instead of trusting a branch name or a PR title.
+func (r *Repo) BlobID(ctx context.Context, content []byte) (string, error) {
+	return r.objectID(ctx, "blob", content)
+}
+
+// CommitID reports the object id this repository would give a raw commit object,
+// without writing an object. A remote commit is verified against the exact Git
+// object zt can reconstruct, because a REST message view is not the raw bytes.
+func (r *Repo) CommitID(ctx context.Context, object []byte) (string, error) {
+	return r.objectID(ctx, "commit", object)
+}
+
+func (r *Repo) objectID(ctx context.Context, kind string, content []byte) (string, error) {
+	out, err := r.outputWithInput(ctx, 256, content, "hash-object", "-t", kind, "--stdin")
+	if err != nil {
+		return "", err
+	}
+	id := strings.TrimSpace(string(out))
+	length, ok := fullCommitID(id)
+	if !ok {
+		return "", fmt.Errorf("local git reported an unusable object id")
+	}
+	expected := 40
+	if r.format == "sha256" {
+		expected = 64
+	}
+	if length != expected {
+		return "", fmt.Errorf("local git reported a %d digit object id but the repository uses %s", length, r.format)
+	}
+	return id, nil
 }
