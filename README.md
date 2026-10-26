@@ -8,6 +8,7 @@
 - `zt plan CAPABILITY --module ID`: read-only command plan for Go and JS/TS. It prefers existing project recipes and package scripts. Generated Go fuzz commands have a 30-second budget per target.
 - `zt check --module ID --profile NAME`: executes reviewed native commands in an explicit ordered profile, stops after a required failure/blocker, and retains execution reports/logs/artifacts. It never installs dependencies or deploys.
 - `zt evolve prepare` / `zt evolve plan`: prepare immutable local Skill replacement candidates and revalidate their pinned policy/base without applying them, running checks or contacting GitHub. See [offline candidate format](docs/evolve.md).
+- Development after `v0.1.1`: `zt evolve check`, `submit` and `status` add explicit trusted-local verification, exact public-payload approval and a recoverable Draft PR workflow. These additions are development source and are not in the published `v0.1.1` binary. See the [lifecycle contract](docs/evolve.md).
 - `zt sync --plan`: read-only preview of user-global Skill directory changes.
 - `zt sync [--global] [--skills ID[,ID]]`: installs complete Skill directories into `~/.agents/skills/<id>` and records them in `~/.agents/zt.lock.json`. The selection is the `skills` list of the user-global `~/.agents/zt.json` or an explicit `--skills` list; zt never selects the whole catalog by default, and it refuses to overwrite unmanaged or locally edited Skill directories. Removal is intentionally manual in this slice.
 - `zt skills list` / `zt skills sync`: discover bundled Skills and use the same global distributor. `zt sync` remains an alias; neither manages project knowledge.
@@ -19,7 +20,7 @@
 - `packages/ui`: canonical editable UI source and private verification harness; no npm UI publication.
 - `registry.json` and `registry/`: `@ztd-me/ui` source delivery through the existing GitHub route. Consumers own installed source and reviewed updates; see the [registry recipe](registry/README.md). The owner reviews upstream changes; fresh public installation is required before consumer migrations.
 
-`zt run`, `zt doctor`, evolve verification/remote submission/activation, native command planning for the other four stacks, and lint distribution for other stacks are **not implemented yet**. The [roadmap](docs/roadmap.md) describes those next stages, not working PR submission commands. [v0.1.0](https://github.com/zeithrold/tools/releases/tag/v0.1.0) is the first versioned CLI release. This repository does not replace `ledger-tooling` or modify Ledger's current gates.
+`zt run`, `zt doctor`, evolve activation, native command planning for the other four stacks, and lint distribution for other stacks are **not implemented yet**. The [roadmap](docs/roadmap.md) separates development work from remaining acceptance; a local fixture workflow does not establish successful live GitHub submission. [v0.1.0](https://github.com/zeithrold/tools/releases/tag/v0.1.0) is the first versioned CLI release. This repository does not replace `ledger-tooling` or modify Ledger's current gates.
 
 See [contributor guidance](CONTRIBUTING.md) for maintained documentation, generated registry files and CI evidence.
 See [Release and mise distribution](docs/distribution.md) for native platform gates, checksums,

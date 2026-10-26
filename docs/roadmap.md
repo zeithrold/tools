@@ -64,22 +64,24 @@ Useful source anchors, not pre-approved material for copying:
 - [Frontend ownership](https://github.com/mastra-ai/mastra/blob/d49143a299757859bdbca93aa4b688c1383ace1e/.claude/skills/mastra-frontend/SKILL.md)
 - [Performance workflow](https://github.com/openclaw/openclaw/blob/db38cc1066957e278d529d531160bb2773163682/.agents/skills/openclaw-performance/SKILL.md)
 
-## Evolution runtime: offline stage and remaining work
+## Evolution runtime: development and remaining acceptance
 
-The [offline candidate stage](evolve.md) provides structured replacement
-`prepare` and read-only `plan`. It does not execute verification or implement
-remote submission/status/activation. The table below describes the full target
-workflow, not additional shipped commands.
+The published `v0.1.1` provides structured replacement `prepare` and read-only
+`plan`. Current [lifecycle development](evolve.md) adds `check`, reviewed Draft
+PR `submit`, and `status`; these additions are not yet released. Real-repository
+trials require approval for each exact public payload; acceptance of the
+implementation never authorizes a new candidate's publication. Activation is
+outside this MVP.
 
 The recommended MVP is a local candidate, read-only plan, explicit verification
 and idempotent Draft PR followed by human review. It does not include model
 training, automatic merging, deployment or package publication.
 
-| Proposed operation | Contract |
+| Operation | Contract |
 | --- | --- |
-| `prepare` | Accept an explicit upstream patch and reviewed evidence; write an immutable candidate only under owned artifacts |
+| `prepare` | Accept structured replacements, pinned policy/base and declared provenance/evidence; write an immutable candidate only under owned artifacts |
 | `plan` | Read the candidate, trusted policy and cached baseline without network, credentials, tests, installs or writes |
-| `check` | Run an explicit native profile in a reviewed trusted or isolated environment and bind results to candidate identity |
+| `check` | Run an operator-owned validation contract only after explicit trusted-local execution consent; bind results to the complete base/candidate tree and validation identity; do not claim an OS sandbox |
 | `submit` | Require authorization for the reviewed digest, target, base and public payload; create a dedicated branch and Draft PR |
 | `status` | Report local observations; use explicit remote reads to reconcile the PR, exact head and checks |
 
@@ -108,16 +110,21 @@ training, automatic merging, deployment or package publication.
 
 ### Delivery sequence
 
-1. Freeze candidate schema, trusted policy storage, allowed paths, authorization,
-   validation contract and publication budget.
-2. Implement offline prepare/plan with synthetic upstreams and negative tests.
-3. Bind native verification and independent review to exact candidate identity.
-4. Implement Git data/PR API submission with deterministic branches and a durable
-   journal. Reconcile unknown write outcomes through reads; never force-push,
-   overwrite unrelated work or blindly duplicate commits/PRs.
-5. Validate an explicitly authorized sandbox PR and its real head-specific checks.
-   A created PR is not proof that CI ran. Keep candidate execution separate from
-   write-token jobs; never execute an untrusted head in `pull_request_target`.
+1. Preserve the released v1 candidate/policy identity and offline guarantees.
+2. Integrate the trusted-local execution and reviewed submission implementation
+   with synthetic upstreams and faithful GitHub wire-contract fixtures.
+3. Close independent execution/credential and publication/recovery findings at
+   the exact integrated revision; passing fixtures alone is insufficient.
+4. Validate an explicitly authorized sandbox Draft PR and its real head-specific
+   checks. A created PR is not proof that CI ran. Keep candidate execution
+   separate from write-token jobs; never execute an untrusted head in
+   `pull_request_target`.
+5. Release only after the relevant source, native-platform and distribution gates.
+
+Submission journals target atomic visibility and recovery from process
+interruption, not a guarantee against machine power loss. Unknown remote write
+outcomes must be reconciled through reads; never force-push, overwrite unrelated
+work or blindly duplicate commits/PRs.
 
 If a matching PR already exists, return it without writes, even if the base has
 moved. If further writes are needed against a changed base, require renewed
