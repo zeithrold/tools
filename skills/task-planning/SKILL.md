@@ -1,6 +1,6 @@
 ---
 name: task-planning
-description: Use when work crosses a component, data, ownership or contract boundary, carries consequential risk, or has unclear dependencies and order. Covers scope contract, consumed and produced interfaces, observable acceptance and re-planning decisions. Skip contained low-risk edits; a plan-only request authorizes no execution.
+description: Use when work crosses a component, data, ownership or contract boundary, carries consequential risk, has unclear dependencies, or expands through proposed abstractions, dependencies, configuration or supporting infrastructure. Covers scope, complexity decisions, acceptance and re-planning. Skip contained low-risk edits and routine execution of a settled design unless new evidence reopens it; a plan-only request authorizes no execution.
 license: MIT
 ---
 
@@ -92,6 +92,41 @@ A proposal that has not been through this gate is a wish. The gate applies to ne
 fields, endpoints, events, modules, configuration and abstractions alike —
 anything that must be owned and operated after it ships.
 
+## Choose the smallest sufficient mechanism
+
+Prefer satisfying the authorized scope without a new mechanism, then existing
+project implementations, standard library/platform/framework capabilities,
+installed dependencies, and small direct code before a new dependency or
+abstraction. This is a decision preference, not a checklist to report. Do not
+research alternatives or dispatch another agent for an obvious direct fix.
+
+For new abstractions, dependencies, configuration, stored state or custom
+protocols, name the current problem and why the direct option is insufficient.
+Hypothetical reuse and unrequested flexibility are not requirements. Shared code
+should represent a rule that its consumers must change together, not merely code
+that looks alike. A single consumer can still justify a correctness boundary;
+neither call-site counts nor line counts decide abstraction.
+
+Apply the same burden to supporting work: test harnesses, reporters, migration
+maps, proof gates and agent coordination. They serve delivery, not a separate
+completeness goal. Prefer native tool results; propose a custom proof system
+separately rather than making it an implicit refactor prerequisite. Compare the
+places a normal change must update and the layers a failure must traverse.
+Moving complexity into mocks, metadata or configuration is not simplification.
+Do not add a scoring system, mandatory receipt or extra approval workflow for
+this comparison; explain a real tradeoff briefly where it arises.
+
+Existing tests, configurations and compatibility branches are evidence of past
+decisions, not automatically permanent requirements. If carrying all of them
+forward defeats the requested simplification, propose the narrower scope and its
+concrete risks for owner approval. Do not silently remove required behavior or
+coverage. Preserve security, data integrity, accessibility and explicit
+compatibility guarantees; after an approved reduction, do not rebuild the
+discarded obligations through a replacement framework.
+
+For source attribution when maintaining these rules, see
+[complexity sources](references/complexity-sources.md); it is not a task checklist.
+
 ## Complexity reset
 
 When adopting an existing framework, read its current task, configuration and
@@ -122,6 +157,12 @@ different modules are not. Record the reset, what triggered it, and which
 decisions are reopened — silently rewriting the plan mid-execution defeats the
 point of having one.
 
+When a self-built supporting mechanism repeatedly becomes the repair target,
+compare repairing it with reducing it or returning to native capabilities.
+State the strongest current reason to retain it, then choose against the
+authorized outcome and total maintenance burden, not sunk effort. Fixing the
+mechanism correctly does not by itself establish that it remains necessary.
+
 ## Execution
 
 When implementation is authorized, the plan is a commitment to be revised by
@@ -135,6 +176,12 @@ evidence, not defended:
   not-run and unknown distinct from passed;
 - a change existing is not acceptance evidence; the named check observing the
   expected result is.
+
+Stop expanding when the agreed acceptance conditions are met; unrelated
+improvements are follow-ups, not new prerequisites. If local milestones keep
+completing without the remaining delivery work converging, reopen scope or
+approach instead of reporting only that work is unblocked. A newly discovered
+correctness or safety issue must still be surfaced, not hidden to declare done.
 
 Escalate rather than decide alone when the open question is authorization,
 credential handling, data loss, an interface owned elsewhere, or a choice that
