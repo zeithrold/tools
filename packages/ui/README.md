@@ -124,10 +124,12 @@ The Select declaration compatibility patch is documented in [Radix compatibility
 
 All CSS gates invoke the installed official `@ztd-me/frontend-checks@0.1.4` CLI. The harness also pins
 `@ztd-me/eslint@0.1.5` for the strict type-alias policy and native JavaScript value-reference checks.
-The checker attaches its browser evidence by file path and records observational test timings; older
-published checker versions lack the Tailwind utility and text-role metadata contract and embed that
-evidence inline. Both versions require owner promotion and fresh registry verification before
-installation and frozen-lock updates. Do not patch the checker, replace
+The checker writes each Axe scan and capture to a file, attaches it by path and records observational
+test timings; `pnpm run test:evidence` rejects inline evidence, evidence from another run or a checker
+other than the pinned install. `0.1.3` already provided the Tailwind utility and text-role metadata,
+canonical string-import and utility token checks, but embedded its evidence inline and published no
+timings; earlier versions also lack those checks. Both current npm versions require owner promotion and
+fresh registry verification before installation and frozen-lock updates. Do not patch the checker, replace
 its CLI with sibling source, or add package extensions to provide its runtime dependencies. A
 disposable packed consumer verifies the private compiled exports; the registry consumer verifies the delivered source,
 including its strict declaration patch. After owner merge, verify the exact full public source SHA with

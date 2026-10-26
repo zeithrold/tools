@@ -35,6 +35,16 @@ func TestProcessHelper(t *testing.T) {
 			os.Exit(5)
 		}
 		os.Exit(0)
+	case "stream":
+		_, _ = os.Stdout.WriteString("stdout before exit\n")
+		_, _ = os.Stderr.WriteString("stderr before exit\n")
+		for deadline := time.Now().Add(3 * time.Second); time.Now().Before(deadline); {
+			if _, err := os.Stat(os.Getenv("ZT_PROCESS_RELEASE")); err == nil {
+				os.Exit(0)
+			}
+			time.Sleep(5 * time.Millisecond)
+		}
+		os.Exit(9)
 	default:
 		os.Exit(8)
 	}
@@ -67,6 +77,33 @@ func TestRunProcessPassesAndCapturesCombinedOutput(t *testing.T) {
 	}
 	if !strings.Contains(string(data), "stdout evidence") || !strings.Contains(string(data), "stderr evidence") {
 		t.Fatalf("combined log = %q", data)
+	}
+}
+
+type processOutputFunc func([]byte) (int, error)
+
+func (f processOutputFunc) Write(data []byte) (int, error) { return f(data) }
+
+func TestRunProcessStreamsBothChannelsBeforeExit(t *testing.T) {
+	directory := t.TempDir()
+	request := processHelperRequest(t, filepath.Join(directory, "stream.log"), "stream")
+	release := filepath.Join(directory, "release")
+	request.Env = append(request.Env, "ZT_PROCESS_RELEASE="+release)
+	var live bytes.Buffer
+	request.Output = processOutputFunc(func(data []byte) (int, error) {
+		n, err := live.Write(data)
+		if strings.Contains(live.String(), "stdout before exit") && strings.Contains(live.String(), "stderr before exit") {
+			err = os.WriteFile(release, nil, 0600)
+		}
+		return n, err
+	})
+	result := RunProcess(t.Context(), request)
+	if result.Status != "passed" {
+		t.Fatalf("child could not observe live output before exiting: %+v", result)
+	}
+	log, err := os.ReadFile(request.LogPath)
+	if err != nil || string(log) != live.String() {
+		t.Fatalf("log %q differs from live output %q: %v", log, live.String(), err)
 	}
 }
 
@@ -113,7 +150,10 @@ func TestRunProcessTimeoutIsFailed(t *testing.T) {
 
 func TestRunProcessBoundsAndMarksTruncatedLog(t *testing.T) {
 	logPath := filepath.Join(t.TempDir(), "large.log")
-	result := RunProcess(t.Context(), processHelperRequest(t, logPath, "large"))
+	request := processHelperRequest(t, logPath, "large")
+	var live bytes.Buffer
+	request.Output = &live
+	result := RunProcess(t.Context(), request)
 	if result.Status != "passed" {
 		t.Fatalf("result = %+v, want passed", result)
 	}
@@ -129,6 +169,9 @@ func TestRunProcessBoundsAndMarksTruncatedLog(t *testing.T) {
 	}
 	if len(data) != MaxProcessLogBytes+len(processLogTruncationMarker) {
 		t.Fatalf("log size = %d, want the full limit and marker (%d)", len(data), MaxProcessLogBytes+len(processLogTruncationMarker))
+	}
+	if live.Len() != MaxProcessLogBytes+2*(64<<10) || bytes.Contains(live.Bytes(), []byte(processLogTruncationMarker)) {
+		t.Fatalf("live output was truncated or contains the retained-log marker: %d bytes", live.Len())
 	}
 }
 

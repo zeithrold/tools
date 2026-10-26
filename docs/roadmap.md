@@ -1,8 +1,9 @@
 # Roadmap
 
-This document separates drafted guidance and the offline candidate slice from
-proposed next stages. Current capabilities are listed in the [README](../README.md);
-none of these statuses alone establish behavioral improvement.
+This document separates what the releases provide, the drafted guidance and the
+work that still needs acceptance or implementation. Current capabilities are
+listed in the [README](../README.md); none of these statuses alone establish
+behavioral improvement.
 Installation and authentication contracts live in [distribution](distribution.md),
 [global Skills](global-skills.md) and [GitHub App setup](github-app-setup.md).
 
@@ -18,7 +19,7 @@ consumers. Distribute only explicitly selected Skills to the user's global tree.
 | First | Native Go/JS/frontend testing | Absorbed into verification references; no parallel testing Skill IDs |
 | Next | Team coordination, debugging and backend engineering | Drafted: handoffs/isolation, falsifying probes, boundary/persistence/recovery methods |
 | Next | UI/frontend decisions | UI foundation/Web/Flutter consolidated into principle-led ui-design; engineering keeps architecture/state |
-| Later | Performance engineering and evolution proposals | Guidance drafted; measured benefit and the complete evolution runtime remain unverified/unimplemented |
+| Later | Performance engineering and evolution proposals | Guidance drafted; measured benefit is unverified and the evolution runtime's activation/rollback/revocation remain unimplemented |
 
 These are capability areas, not commitments to separate directories. Merge
 overlapping responsibilities rather than reproducing every upstream workflow.
@@ -64,14 +65,16 @@ Useful source anchors, not pre-approved material for copying:
 - [Frontend ownership](https://github.com/mastra-ai/mastra/blob/d49143a299757859bdbca93aa4b688c1383ace1e/.claude/skills/mastra-frontend/SKILL.md)
 - [Performance workflow](https://github.com/openclaw/openclaw/blob/db38cc1066957e278d529d531160bb2773163682/.agents/skills/openclaw-performance/SKILL.md)
 
-## Evolution runtime: development and remaining acceptance
+## Evolution runtime: released slice and remaining acceptance
 
-The published `v0.1.1` provides structured replacement `prepare` and read-only
-`plan`. Current [lifecycle development](evolve.md) adds `check`, reviewed Draft
-PR `submit`, and `status`; these additions are not yet released. Real-repository
-trials require approval for each exact public payload; acceptance of the
-implementation never authorizes a new candidate's publication. Activation is
-outside this MVP.
+[v0.2.0](https://github.com/zeithrold/tools/releases/tag/v0.2.0) releases the local
+lifecycle described in [the lifecycle contract](evolve.md): structured replacement
+`prepare`, read-only `plan`, explicit trusted-local `check`, reviewed Draft PR
+`submit` and local/remote `status`. A real-repository trial still requires
+approval for each exact public payload, and a release is not evidence that
+privacy, idempotency or recovery behaviour was accepted on a live submission;
+acceptance of the implementation never authorizes a new candidate's publication.
+Activation, rollback and revocation remain unimplemented.
 
 The recommended MVP is a local candidate, read-only plan, explicit verification
 and idempotent Draft PR followed by human review. It does not include model
@@ -110,9 +113,11 @@ training, automatic merging, deployment or package publication.
 
 ### Delivery sequence
 
-1. Preserve the released v1 candidate/policy identity and offline guarantees.
-2. Integrate the trusted-local execution and reviewed submission implementation
-   with synthetic upstreams and faithful GitHub wire-contract fixtures.
+1. Preserve the released v1 candidate/policy identity and the offline
+   `prepare`/`plan` guarantees.
+2. Trusted-local execution and reviewed submission are released with
+   synthetic-upstream and faithful GitHub wire-contract fixtures; keep those
+   fixtures green as the surface changes.
 3. Close independent execution/credential and publication/recovery findings at
    the exact integrated revision; passing fixtures alone is insufficient.
 4. Validate an explicitly authorized sandbox Draft PR and its real head-specific
@@ -133,6 +138,27 @@ automatically.
 
 The MVP is complete only after a real authorized prepare → check → submit →
 status flow demonstrates privacy, idempotency, failure recovery and CI behavior.
-Unattended submission, Issue integration and model-driven candidate generation
-remain later work. Sandbox target, execution isolation and evaluation budget
-must be decided before implementation; this roadmap authorizes none of them.
+Unattended submission, Issue tracking integration and model-driven candidate
+generation remain unimplemented. Sandbox target, execution isolation and
+evaluation budget must be decided before implementation; this roadmap authorizes
+none of them.
+
+## Tracked follow-ups
+
+`zt run` is deliberately not planned. Deferred capabilities and audit findings
+are tracked below rather than treated as prerequisites for ordinary native checks.
+Each issue needs its own scoped design and authorization; opening it does not
+authorize publication, activation or consumer migration.
+
+| Work | Issue |
+| --- | --- |
+| Scoped read-only environment readiness (`doctor`) | [#28](https://github.com/zeithrold/tools/issues/28) |
+| Conservative native planning for the remaining stacks | [#29](https://github.com/zeithrold/tools/issues/29) |
+| Recoverable activation, rollback and revocation | [#30](https://github.com/zeithrold/tools/issues/30) |
+| Optional isolated verification for untrusted candidates | [#31](https://github.com/zeithrold/tools/issues/31) |
+| Bounded evidence-based candidate generation | [#32](https://github.com/zeithrold/tools/issues/32) |
+| Issue integration and controlled orchestration | [#33](https://github.com/zeithrold/tools/issues/33) |
+| Stage-only npm OIDC migration and duplicate prevention | [#34](https://github.com/zeithrold/tools/issues/34) |
+| CI notice layout and Go dependency-license coverage | [#35](https://github.com/zeithrold/tools/issues/35) |
+| Reproduce and correct replacement-file mode discrepancy | [#36](https://github.com/zeithrold/tools/issues/36) |
+| Broader natural-activation, revision and workflow/UI evaluation coverage | [#37](https://github.com/zeithrold/tools/issues/37) |

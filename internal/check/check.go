@@ -19,6 +19,7 @@ import (
 type Options struct {
 	Root, Module, Profile, Output string
 	Timeout                       time.Duration // Per native command; includes child processes on Unix.
+	Progress                      io.Writer     // Optional live combined command output.
 }
 
 type Execution struct {
@@ -143,7 +144,7 @@ func Run(ctx context.Context, options Options) (Report, error) {
 			execution.Status = "passed"
 			for j, planned := range plans[i].Steps {
 				log := filepath.Join("logs", fmt.Sprintf("%02d-%s-%02d.log", i, capability, j))
-				step := execute(ctx, planned, options.Timeout, directory, log)
+				step := execute(ctx, planned, options.Timeout, directory, log, options.Progress)
 				execution.Steps = append(execution.Steps, step)
 				report.Artifacts = append(report.Artifacts, filepath.ToSlash(log))
 				if step.Status != "passed" {
@@ -211,7 +212,7 @@ func Run(ctx context.Context, options Options) (Report, error) {
 	return report, nil
 }
 
-func execute(ctx context.Context, planned plan.Step, timeout time.Duration, directory, relativeLog string) Step {
+func execute(ctx context.Context, planned plan.Step, timeout time.Duration, directory, relativeLog string, progress io.Writer) Step {
 	step := Step{Argv: planned.Argv, Dir: planned.Dir, Status: "blocked", ExitCode: -1, Log: filepath.ToSlash(relativeLog)}
 	result := RunProcess(ctx, ProcessRequest{
 		Argv:    planned.Argv,
@@ -219,6 +220,7 @@ func execute(ctx context.Context, planned plan.Step, timeout time.Duration, dire
 		LogPath: filepath.Join(directory, relativeLog),
 		Env:     append(os.Environ(), "ZT_ARTIFACTS_DIR="+directory, "pnpm_config_verify_deps_before_run=error"),
 		Timeout: timeout,
+		Output:  progress,
 	})
 	step.Status = result.Status
 	step.ExitCode = result.ExitCode

@@ -106,7 +106,7 @@ func TestTimeoutAndMissingExecutableAreNotPasses(t *testing.T) {
 	if err != nil || report.Status != "failed" || !strings.Contains(report.Checks[0].Steps[0].Detail, "deadline") {
 		t.Fatalf("%+v %v", report, err)
 	}
-	step := execute(context.Background(), plan.Step{Dir: options.Root, Argv: []string{"zt-nonexistent-test-runner"}}, time.Second, report.ArtifactDir, "logs/missing.log")
+	step := execute(context.Background(), plan.Step{Dir: options.Root, Argv: []string{"zt-nonexistent-test-runner"}}, time.Second, report.ArtifactDir, "logs/missing.log", nil)
 	if step.Status != "blocked" || step.ExitCode != -1 {
 		t.Fatalf("%+v", step)
 	}

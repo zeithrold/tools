@@ -21,6 +21,7 @@ type ProcessRequest struct {
 	LogPath string        // created with O_CREATE|O_EXCL; stdout and stderr both go here
 	Env     []string      // complete child environment, not merged with os.Environ
 	Timeout time.Duration // per command, covering the process group on Unix
+	Output  io.Writer     // optional live combined stdout/stderr; independent of the log cap
 }
 
 // ProcessResult is what zt observed, never what the command claimed.
@@ -63,7 +64,11 @@ func RunProcess(ctx context.Context, request ProcessRequest) ProcessResult {
 	command.Dir = request.Dir
 	command.Env = request.Env
 	output := &limitedProcessLog{file: log}
-	command.Stdout, command.Stderr = output, output
+	var stream io.Writer = output
+	if request.Output != nil {
+		stream = io.MultiWriter(output, request.Output)
+	}
+	command.Stdout, command.Stderr = stream, stream
 	command.WaitDelay = 2 * time.Second
 	configureProcess(command)
 

@@ -65,7 +65,7 @@ CI and summarize remaining gaps in the handoff.
 | X1 | Facts versus procedures; correct existing rules, not incident accumulation — HE, CL-X | Draft: [evolution-proposals](../skills/evolution-proposals/SKILL.md) | An unresolved failure or private user fact is not promoted into a reliable generic procedure |
 | X2 | Source lineage, trust, expiry/revocation and contamination retention — CL-X, LM | [Envelope](../skills/evolution-proposals/references/candidate-envelope.md); runtime enforcement deferred | A source change/revocation invalidates dependent proposals; summaries cannot launder trust |
 | X3 | Independent permissions/data/evidence; safety before mean score — GP, OH | [Evaluation](../skills/evolution-proposals/references/evaluation.md); evaluator enforcement deferred | Candidate development cannot alter the evaluator or read sealed answers; no benefit offsets a safety violation |
-| X4 | Candidate identity, reviewed activation, recoverable versions and bounded budgets — HE, CL-X | [Activation](../skills/evolution-proposals/references/activation.md); offline evolve slice only, remote lifecycle deferred | Exact-content approval, recoverable activation and host-enforced cost/capability limits |
+| X4 | Candidate identity, reviewed activation, recoverable versions and bounded budgets — HE, CL-X | [Activation](../skills/evolution-proposals/references/activation.md); `zt evolve` prepare/plan/check/submit/status released in v0.2.0, activation deferred | Digest-bound approval ships; live acceptance requires run-specific evidence. Recoverable activation and a complete isolated evaluation budget/capability boundary remain unimplemented |
 
 ## Deliberate exclusions and deferrals
 
@@ -80,9 +80,11 @@ CI and summarize remaining gaps in the handoff.
   automatic merge/deployment.
 - Host prompt-cache internals, file permissions and budget enforcement need host
   interfaces, not universal instructions pretending to enforce them.
-- Full candidate evaluation, sandboxed execution, remote Draft PR submission,
-  activation/revocation and offline search remain separate runtime stages.
-  A working auth adapter or safe Skill sync does not complete those stages.
+- Full independent candidate evaluation, sandboxed execution,
+  activation/rollback/revocation and offline search remain separate runtime
+  stages. The released `zt evolve` lifecycle covers local verification and Draft
+  PR submission; a working auth adapter, safe Skill sync or a merged submission
+  does not complete the remaining stages.
 
 ## Fixed source anchors
 

@@ -38,17 +38,21 @@ workflow engine. Apply the project's own instructions when they are stricter.
    baseline. Freeze cases, criteria, permissions, trial count and budget before
    trials, use the same cases for every condition and run, include permission
    negatives, and add held-out task families before generalizing. Read
-   [evaluation design](references/evaluation-design.md).
+   [evaluation design](references/evaluation-design.md). For executed comparisons,
+   use [task evaluation](references/task-evaluation.md) to separate natural
+   activation, prompted use, version regression and benchmark selection.
 7. Apply the hard safety gate before quality: an unauthorized action, changed
    evaluation asset, sealed-data access or budget overrun rejects the candidate
    regardless of score. Keep static checks separate from behavioral evidence:
    frontmatter, links, license and line-level clarity are static checks, and they
    do not show activation or changed behavior. Run each frozen case in a fresh
-   context for every condition; a fresh context is not isolation. If an isolated,
-   credential-free environment is unavailable, report execution as blocked, not
-   permission to run on the host. Compare outcomes, cost, false activation and
-   missed activation rather than prose. Writing evaluation instructions does not
-   itself prove efficacy.
+   context for every condition; a fresh context is not isolation. Use an isolated
+   environment with only the explicitly authorized task capabilities. Model
+   inference access may use the host's documented credential route when approved;
+   it does not authorize unrelated credentials, host mounts or publication.
+   Missing required isolation is blocked, not permission to run on the host.
+   Compare outcomes, cost, false activation and missed activation rather than
+   prose. Writing evaluation instructions does not itself prove efficacy.
 8. Budget development and acceptance separately. Set revision and trial limits
    before tuning and stop at them rather than adding cases after seeing results;
    do not keep editing after improvement stalls, and a change that only fits the

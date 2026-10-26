@@ -38,6 +38,8 @@ Select only relevant guidance. Workflows do not authorize actions or require
 loading every neighboring Skill. Reusable behavioral screening cases
 live in [workflow-evaluation.json](../internal/skills/testdata/workflow-evaluation.json);
 they require independent trials and are not an automated model-quality gate.
+For real task comparisons, use the [native evaluation baseline](skill-evaluation.md);
+it separates natural activation, prompted use and old/new regression experiments.
 
 ### Catalog, installation and activation are different
 
@@ -115,9 +117,11 @@ only; it does not carry a global Skill selection.
   `~/.agents/zt.lock.json`. Only the selected `~/.agents/skills/<id>/`
   directories and that lock are managed.
 - Actions are `install`, `update`, `restore`, `adopt` and `unchanged`. An
-  existing directory `zt` does not manage, or a managed directory whose content
-  no longer matches the lock, is reported as `conflict` and aborts the write
-  instead of being overwritten.
+  existing unmanaged directory whose content already matches the bundle is
+  `adopt`: its content digest is recorded without rewriting anything. An unmanaged
+  directory with different content, or a managed directory whose content no
+  longer matches the lock, is reported as `conflict` and aborts the write instead
+  of being overwritten.
 - A previously managed Skill that is no longer selected produces a warning. `zt`
   never deletes it automatically.
 - Apply plans again while holding a guard lock, then stages each directory and

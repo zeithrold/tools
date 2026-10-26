@@ -160,11 +160,11 @@ successful receipt with `publicInstallationVerified: true` satisfies the post-me
 All CSS gates use the installed official `@ztd-me/frontend-checks@0.1.4` CLI, and the harness pins
 `@ztd-me/eslint@0.1.5` for its strict type-alias policy. Both npm versions require owner promotion and
 fresh registry verification before installation and frozen-lock updates. Its Playwright helper writes
-the complete Axe scan and each capture to a file and attaches them by path, and records observational
-test timings. Older checker versions lack the required metadata, string-import and utility checks, and
-embed evidence inline. Do not patch the checker, replace its CLI with a local checkout, or add package
-extensions to supply runtime dependencies. A local source installation pass is not public release
-approval.
+the complete Axe scan and each capture to a file, attaches them by path and records observational
+test timings. `0.1.3` already supplied the required metadata, string-import and utility checks but
+embedded evidence inline and published no timings; earlier versions lack those checks. Do not patch
+the checker, replace its CLI with a local checkout, or add package extensions to supply runtime
+dependencies. A local source installation pass is not public release approval.
 
 The delivered `foundation.md` describes generic primitives and the host-injected i18n adapter. Configure
 application `@/*` aliases against its declared source root (normally `src`), and match compiler/bundler/

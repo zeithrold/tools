@@ -17,6 +17,12 @@ this file; a team that has one uses its own tooling and records the version.
 A decision-only screen that avoids all unsafe proposals is useful and remains a
 screen. Do not describe it as task performance or pass rates.
 
+For real tool-use trials, [task evaluation](task-evaluation.md) owns the
+operational design: native execution first, separate activation and efficacy
+questions, benchmark fit, version comparisons and scheduled paired cohorts.
+Use a decision screen when it answers the question, not as a mandatory extra
+stage before every authorized task trial.
+
 ## Choose conditions that isolate the variable
 
 | Condition | Receives | Answers |

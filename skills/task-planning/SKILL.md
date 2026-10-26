@@ -94,6 +94,15 @@ anything that must be owned and operated after it ships.
 
 ## Complexity reset
 
+When adopting an existing framework, read its current task, configuration and
+lifecycle documentation and run the smallest authorized native workflow before
+building adapters. Separate required constraints from optional hardening; do not
+silently turn a stronger threat model into a prerequisite for a bounded pilot.
+Prefer documented configuration for a demonstrated gap. If integration starts
+owning transport, scheduling or cleanup that the framework already owns, reopen
+the approach instead of adding another control layer. This does not authorize
+unsafe execution or waive an explicit constraint.
+
 The plan stops being the right artifact when the change stops having a shape.
 Signals, in order of how early they appear:
 
