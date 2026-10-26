@@ -5,11 +5,13 @@ installation through [mise](https://mise.jdx.dev/). It does not authorize a
 release: creating a `v*` tag and publishing the GitHub release remain explicit
 owner actions.
 
-**Current status:** no release exists yet, no `v*` tag has been pushed for this
-contract, and the workflow has not been executed for a release. The native build
-and credential gates below are defined but are not evidence of a passing native
-run until each target job actually executes. `examples/mise.toml` therefore uses
-an example version.
+The first published version is [v0.1.0](https://github.com/zeithrold/tools/releases/tag/v0.1.0).
+It provides the six native archives and `SHA256SUMS` described below.
+[`examples/mise.toml`](../examples/mise.toml) pins that available version.
+Each subsequent release must independently pass the native build, credential,
+packaging and provenance gates; a previous release's success is not evidence
+for a new tag. Release verification and CI receipts remain with the release
+and its Actions run, not this maintained installation contract.
 
 ## Release assets
 
