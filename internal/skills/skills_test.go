@@ -33,27 +33,27 @@ func TestGlobalTargetKeepsConfigAndLockSeparate(t *testing.T) {
 		t.Fatalf("empty selection was accepted: %v", err)
 	}
 	relative := Target{Root: "relative", SkillsDir: "a", LockPath: "b"}
-	if _, err := Plan(relative, []string{"ui-web"}); err == nil {
+	if _, err := Plan(relative, []string{"ui-design"}); err == nil {
 		t.Fatal("relative target accepted")
 	}
 }
 
 func TestPlanIsReadOnly(t *testing.T) {
 	target, home := newTarget(t)
-	plan, err := Plan(target, []string{"ui-web"})
+	plan, err := Plan(target, []string{"ui-design"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(plan.Actions) != 1 || plan.Actions[0].Action != "install" {
 		t.Fatalf("unexpected plan: %+v", plan)
 	}
-	if want := ".agents/skills/ui-web"; plan.Actions[0].Target != want {
+	if want := ".agents/skills/ui-design"; plan.Actions[0].Target != want {
 		t.Fatalf("target %q, want %q", plan.Actions[0].Target, want)
 	}
 	if _, err := os.Stat(filepath.Join(home, ".agents")); !os.IsNotExist(err) {
 		t.Fatalf("plan created the global tree: %v", err)
 	}
-	if _, err := Apply(target, []string{"ui-web"}); err != nil {
+	if _, err := Apply(target, []string{"ui-design"}); err != nil {
 		t.Fatal(err)
 	}
 	lockPath := filepath.Join(home, ".agents", "zt.lock.json")
@@ -62,7 +62,7 @@ func TestPlanIsReadOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 	for i := 0; i < 2; i++ {
-		plan, err := Plan(target, []string{"ui-web"})
+		plan, err := Plan(target, []string{"ui-design"})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -130,10 +130,10 @@ func TestSyncInstallsCompleteDirectoryAndPreservesUnmanagedSkills(t *testing.T) 
 	if err := os.WriteFile(unmanaged, []byte("project owns this"), 0644); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := Apply(target, []string{"ui-foundation"}); err != nil {
+	if _, err := Apply(target, []string{"ui-design"}); err != nil {
 		t.Fatal(err)
 	}
-	managed := filepath.Join(target.SkillsDir, "ui-foundation")
+	managed := filepath.Join(target.SkillsDir, "ui-design")
 	for _, name := range []string{"SKILL.md", "references/review-matrix.md"} {
 		if _, err := os.Stat(filepath.Join(managed, name)); err != nil {
 			t.Fatalf("missing bundled file %s: %v", name, err)
@@ -146,11 +146,11 @@ func TestSyncInstallsCompleteDirectoryAndPreservesUnmanagedSkills(t *testing.T) 
 	if err := os.WriteFile(custom, []byte("local edit"), 0644); err != nil {
 		t.Fatal(err)
 	}
-	plan, err := Plan(target, []string{"ui-foundation"})
+	plan, err := Plan(target, []string{"ui-design"})
 	if err != nil || plan.Actions[0].Action != "conflict" {
 		t.Fatalf("local edit not detected: %+v, %v", plan, err)
 	}
-	if _, err := Apply(target, []string{"ui-foundation"}); err == nil || !strings.Contains(err.Error(), "local edits") {
+	if _, err := Apply(target, []string{"ui-design"}); err == nil || !strings.Contains(err.Error(), "local edits") {
 		t.Fatalf("expected conflict, got %v", err)
 	}
 	if data, err := os.ReadFile(custom); err != nil || string(data) != "local edit" {
@@ -160,17 +160,17 @@ func TestSyncInstallsCompleteDirectoryAndPreservesUnmanagedSkills(t *testing.T) 
 
 func TestConflictAbortsTheWholeRun(t *testing.T) {
 	target, _ := newTarget(t)
-	unmanaged := filepath.Join(target.SkillsDir, "ui-web", "SKILL.md")
+	unmanaged := filepath.Join(target.SkillsDir, "ui-design", "SKILL.md")
 	if err := os.MkdirAll(filepath.Dir(unmanaged), 0755); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(unmanaged, []byte("not zt managed"), 0644); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := Apply(target, []string{"ui-web", "go-testing"}); err == nil || !strings.Contains(err.Error(), "not managed") {
+	if _, err := Apply(target, []string{"ui-design", "verification"}); err == nil || !strings.Contains(err.Error(), "not managed") {
 		t.Fatalf("expected unmanaged conflict, got %v", err)
 	}
-	if _, err := os.Stat(filepath.Join(target.SkillsDir, "go-testing")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(target.SkillsDir, "verification")); !os.IsNotExist(err) {
 		t.Fatalf("conflicting run installed another Skill: %v", err)
 	}
 	if _, err := os.Stat(target.LockPath); !os.IsNotExist(err) {
@@ -183,10 +183,10 @@ func TestConflictAbortsTheWholeRun(t *testing.T) {
 
 func TestExistingIdenticalDirectoryIsAdoptedNotOverwritten(t *testing.T) {
 	target, _ := newTarget(t)
-	if _, err := Apply(target, []string{"ui-foundation"}); err != nil {
+	if _, err := Apply(target, []string{"ui-design"}); err != nil {
 		t.Fatal(err)
 	}
-	managed := filepath.Join(target.SkillsDir, "ui-foundation")
+	managed := filepath.Join(target.SkillsDir, "ui-design")
 	if err := os.Remove(target.LockPath); err != nil {
 		t.Fatal(err)
 	}
@@ -194,18 +194,18 @@ func TestExistingIdenticalDirectoryIsAdoptedNotOverwritten(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	plan, err := Plan(target, []string{"ui-foundation"})
+	plan, err := Plan(target, []string{"ui-design"})
 	if err != nil || plan.Actions[0].Action != "adopt" {
 		t.Fatalf("expected adopt: %+v, %v", plan, err)
 	}
-	if _, err := Apply(target, []string{"ui-foundation"}); err != nil {
+	if _, err := Apply(target, []string{"ui-design"}); err != nil {
 		t.Fatal(err)
 	}
 	after, err := os.ReadFile(filepath.Join(managed, "SKILL.md"))
 	if err != nil || !bytes.Equal(before, after) {
 		t.Fatalf("adoption rewrote the directory: %v", err)
 	}
-	plan, err = Plan(target, []string{"ui-foundation"})
+	plan, err = Plan(target, []string{"ui-design"})
 	if err != nil || plan.Actions[0].Action != "unchanged" {
 		t.Fatalf("adopted Skill is not managed afterwards: %+v, %v", plan, err)
 	}
@@ -217,10 +217,10 @@ func TestSymlinkedTargetIsRejected(t *testing.T) {
 	if err := os.Symlink(outside, filepath.Join(home, ".agents")); err != nil {
 		t.Skipf("symlinks unavailable: %v", err)
 	}
-	if _, err := Plan(target, []string{"ui-web"}); err == nil || !strings.Contains(err.Error(), "symlink") {
+	if _, err := Plan(target, []string{"ui-design"}); err == nil || !strings.Contains(err.Error(), "symlink") {
 		t.Fatalf("symlinked .agents was accepted: %v", err)
 	}
-	if _, err := Apply(target, []string{"ui-web"}); err == nil || !strings.Contains(err.Error(), "symlink") {
+	if _, err := Apply(target, []string{"ui-design"}); err == nil || !strings.Contains(err.Error(), "symlink") {
 		t.Fatalf("symlinked .agents was written: %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(outside, "skills")); !os.IsNotExist(err) {
@@ -234,7 +234,7 @@ func TestSymlinkedTargetIsRejected(t *testing.T) {
 	if err := os.Symlink(outside, single.SkillsDir); err != nil {
 		t.Skipf("symlinks unavailable: %v", err)
 	}
-	if _, err := Apply(single, []string{"ui-web"}); err == nil || !strings.Contains(err.Error(), "symlink") {
+	if _, err := Apply(single, []string{"ui-design"}); err == nil || !strings.Contains(err.Error(), "symlink") {
 		t.Fatalf("symlinked skills directory was accepted: %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(home, ".agents", "zt.lock.json")); !os.IsNotExist(err) {
@@ -244,35 +244,38 @@ func TestSymlinkedTargetIsRejected(t *testing.T) {
 
 func TestDeselectedManagedSkillIsNotRemoved(t *testing.T) {
 	target, _ := newTarget(t)
-	if _, err := Apply(target, []string{"ui-web", "go-testing"}); err != nil {
+	if _, err := Apply(target, []string{"ui-design", "verification"}); err != nil {
 		t.Fatal(err)
 	}
-	plan, err := Plan(target, []string{"ui-web"})
+	plan, err := Plan(target, []string{"ui-design"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(plan.Warnings) != 1 || !strings.Contains(plan.Warnings[0], "go-testing") {
+	if len(plan.Warnings) != 1 || !strings.Contains(plan.Warnings[0], "verification") {
 		t.Fatalf("expected a removal warning: %+v", plan)
 	}
-	if _, err := Apply(target, []string{"ui-web"}); err != nil {
+	if _, err := Apply(target, []string{"ui-design"}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := os.Stat(filepath.Join(target.SkillsDir, "go-testing")); err != nil {
+	if _, err := os.Stat(filepath.Join(target.SkillsDir, "verification")); err != nil {
 		t.Fatalf("deselected Skill was removed: %v", err)
 	}
 }
 
-func TestFrontendSkillsIncludeReusableReferences(t *testing.T) {
+func TestSkillBundlesIncludeReusableReferences(t *testing.T) {
 	target, _ := newTarget(t)
-	if _, err := Apply(target, []string{"ui-foundation", "ui-web", "frontend-engineering", "frontend-verification"}); err != nil {
+	if _, err := Apply(target, []string{"ui-design", "frontend-engineering", "verification"}); err != nil {
 		t.Fatal(err)
 	}
 	for _, name := range []string{
-		"ui-foundation/references/design-contract.md",
-		"ui-web/references/browser-review.md",
+		"ui-design/references/design-contract.md",
+		"ui-design/references/web-browser-review.md",
+		"ui-design/references/flutter.md",
 		"frontend-engineering/references/preferences-i18n.md",
-		"frontend-verification/references/gates.md",
-		"frontend-verification/references/evidence.md",
+		"verification/references/frontend-gates.md",
+		"verification/references/frontend-evidence.md",
+		"verification/references/go.md",
+		"verification/references/js-ts-checks.md",
 	} {
 		data, err := os.ReadFile(filepath.Join(target.SkillsDir, name))
 		if err != nil || len(data) == 0 {
@@ -360,7 +363,7 @@ func TestStagedExchangeCannotBeRedirectedOutside(t *testing.T) {
 		}
 		hookErr = os.Rename(filepath.Join(target.SkillsDir+"-moved", stage), filepath.Join(outside, stage))
 	})
-	_, err := Apply(target, []string{"ui-web"})
+	_, err := Apply(target, []string{"ui-design"})
 	if hookErr != nil {
 		t.Fatal(hookErr)
 	}
@@ -372,11 +375,11 @@ func TestStagedExchangeCannotBeRedirectedOutside(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, entry := range entries {
-		if entry.Name() == "ui-web" || entry.Name() == "SKILL.md" {
+		if entry.Name() == "ui-design" || entry.Name() == "SKILL.md" {
 			t.Fatalf("Skill content written outside the managed tree: %s", entry.Name())
 		}
 	}
-	if _, err := os.Stat(filepath.Join(target.SkillsDir+"-moved", "ui-web")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(target.SkillsDir+"-moved", "ui-design")); !os.IsNotExist(err) {
 		t.Fatalf("Skill directory was installed in the moved tree: %v", err)
 	}
 	if _, err := os.Stat(target.LockPath); !os.IsNotExist(err) {
@@ -388,7 +391,7 @@ func TestStagedExchangeCannotBeRedirectedOutside(t *testing.T) {
 func TestLocalEditDuringStagingIsRefused(t *testing.T) {
 	target, _ := newTarget(t)
 	old := map[string][]byte{"SKILL.md": []byte("old version")}
-	prepareManagedSkill(t, target, "ui-foundation", old)
+	prepareManagedSkill(t, target, "ui-design", old)
 	lockBefore, err := os.ReadFile(target.LockPath)
 	if err != nil {
 		t.Fatal(err)
@@ -398,16 +401,16 @@ func TestLocalEditDuringStagingIsRefused(t *testing.T) {
 		if point != "staged" || hookErr != nil {
 			return
 		}
-		hookErr = os.WriteFile(filepath.Join(target.SkillsDir, "ui-foundation", "SKILL.md"), []byte("LOCAL EDIT DURING STAGING"), 0644)
+		hookErr = os.WriteFile(filepath.Join(target.SkillsDir, "ui-design", "SKILL.md"), []byte("LOCAL EDIT DURING STAGING"), 0644)
 	})
-	_, err = Apply(target, []string{"ui-foundation"})
+	_, err = Apply(target, []string{"ui-design"})
 	if hookErr != nil {
 		t.Fatal(hookErr)
 	}
 	if err == nil || !strings.Contains(err.Error(), "changed after planning") {
 		t.Fatalf("expected the stale plan to be refused, got %v", err)
 	}
-	data, err := os.ReadFile(filepath.Join(target.SkillsDir, "ui-foundation", "SKILL.md"))
+	data, err := os.ReadFile(filepath.Join(target.SkillsDir, "ui-design", "SKILL.md"))
 	if err != nil || string(data) != "LOCAL EDIT DURING STAGING" {
 		t.Fatalf("local edit was overwritten: %q, %v", data, err)
 	}
@@ -424,7 +427,7 @@ func TestLocalEditDuringStagingIsRefused(t *testing.T) {
 // in the meantime and restore the previous managed version.
 func TestRollbackPreservesEditsMadeAfterTheExchange(t *testing.T) {
 	target, _ := newTarget(t)
-	prepareManagedSkill(t, target, "ui-foundation", map[string][]byte{"SKILL.md": []byte("old version")})
+	prepareManagedSkill(t, target, "ui-design", map[string][]byte{"SKILL.md": []byte("old version")})
 	lockBefore, err := os.ReadFile(target.LockPath)
 	if err != nil {
 		t.Fatal(err)
@@ -434,17 +437,17 @@ func TestRollbackPreservesEditsMadeAfterTheExchange(t *testing.T) {
 	var hookErr error
 	edited := false
 	setHook(t, func(point, skill, stage string) {
-		if point != "staged" || skill != "go-testing" || edited || hookErr != nil {
+		if point != "staged" || skill != "verification" || edited || hookErr != nil {
 			return
 		}
 		edited = true
-		if hookErr = os.WriteFile(filepath.Join(target.SkillsDir, "ui-foundation", "SKILL.md"), []byte("EDIT AFTER FIRST INSTALL"), 0644); hookErr != nil {
+		if hookErr = os.WriteFile(filepath.Join(target.SkillsDir, "ui-design", "SKILL.md"), []byte("EDIT AFTER FIRST INSTALL"), 0644); hookErr != nil {
 			return
 		}
 		// Make the final lock write fail.
 		hookErr = os.Chmod(agentsDir, 0555)
 	})
-	_, applyErr := Apply(target, []string{"ui-foundation", "go-testing"})
+	_, applyErr := Apply(target, []string{"ui-design", "verification"})
 	if hookErr != nil {
 		t.Fatal(hookErr)
 	}
@@ -454,7 +457,7 @@ func TestRollbackPreservesEditsMadeAfterTheExchange(t *testing.T) {
 	if applyErr == nil {
 		t.Fatal("the lock write should have failed")
 	}
-	data, readErr := os.ReadFile(filepath.Join(target.SkillsDir, "ui-foundation", "SKILL.md"))
+	data, readErr := os.ReadFile(filepath.Join(target.SkillsDir, "ui-design", "SKILL.md"))
 	if readErr != nil || string(data) != "old version" {
 		t.Fatalf("previous managed version was not restored: %q, %v", data, readErr)
 	}
@@ -486,13 +489,13 @@ func TestRollbackPreservesEditsMadeAfterTheExchange(t *testing.T) {
 // from the plan that was made before the guard.
 func TestContentChangedBeforeTheGuardIsNotAdopted(t *testing.T) {
 	target, _ := newTarget(t)
-	files, err := bundledFiles("ui-web")
+	files, err := bundledFiles("ui-design")
 	if err != nil {
 		t.Fatal(err)
 	}
 	// The directory already equals the bundle, so an unlocked plan adopts it.
 	for name, data := range files {
-		path := filepath.Join(target.SkillsDir, "ui-web", filepath.FromSlash(name))
+		path := filepath.Join(target.SkillsDir, "ui-design", filepath.FromSlash(name))
 		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 			t.Fatal(err)
 		}
@@ -507,9 +510,9 @@ func TestContentChangedBeforeTheGuardIsNotAdopted(t *testing.T) {
 			return
 		}
 		hookRan = true
-		hookErr = os.WriteFile(filepath.Join(target.SkillsDir, "ui-web", "SKILL.md"), []byte("LOCAL EDIT BEFORE THE GUARD"), 0644)
+		hookErr = os.WriteFile(filepath.Join(target.SkillsDir, "ui-design", "SKILL.md"), []byte("LOCAL EDIT BEFORE THE GUARD"), 0644)
 	})
-	_, err = Apply(target, []string{"ui-web"})
+	_, err = Apply(target, []string{"ui-design"})
 	if hookErr != nil {
 		t.Fatal(hookErr)
 	}
@@ -522,7 +525,7 @@ func TestContentChangedBeforeTheGuardIsNotAdopted(t *testing.T) {
 	if _, err := os.Stat(target.LockPath); !os.IsNotExist(err) {
 		t.Fatalf("adoption was recorded despite the edit: %v", err)
 	}
-	data, err := os.ReadFile(filepath.Join(target.SkillsDir, "ui-web", "SKILL.md"))
+	data, err := os.ReadFile(filepath.Join(target.SkillsDir, "ui-design", "SKILL.md"))
 	if err != nil || string(data) != "LOCAL EDIT BEFORE THE GUARD" {
 		t.Fatalf("edit was overwritten: %q, %v", data, err)
 	}
@@ -532,17 +535,17 @@ func TestContentChangedBeforeTheGuardIsNotAdopted(t *testing.T) {
 // restored, and the moved-aside copy must not be deleted as zt's own.
 func TestEditBetweenRecheckAndExchangeIsPreserved(t *testing.T) {
 	target, _ := newTarget(t)
-	prepareManagedSkill(t, target, "ui-foundation", map[string][]byte{"SKILL.md": []byte("old version")})
+	prepareManagedSkill(t, target, "ui-design", map[string][]byte{"SKILL.md": []byte("old version")})
 	var hookErr error
 	hookRan := false
 	setHook(t, func(point, skill, stage string) {
-		if point != "before-exchange" || skill != "ui-foundation" || hookRan || hookErr != nil {
+		if point != "before-exchange" || skill != "ui-design" || hookRan || hookErr != nil {
 			return
 		}
 		hookRan = true
-		hookErr = os.WriteFile(filepath.Join(target.SkillsDir, "ui-foundation", "SKILL.md"), []byte("EDIT IN THE EXCHANGE WINDOW"), 0644)
+		hookErr = os.WriteFile(filepath.Join(target.SkillsDir, "ui-design", "SKILL.md"), []byte("EDIT IN THE EXCHANGE WINDOW"), 0644)
 	})
-	_, applyErr := Apply(target, []string{"ui-foundation"})
+	_, applyErr := Apply(target, []string{"ui-design"})
 	if hookErr != nil {
 		t.Fatal(hookErr)
 	}
@@ -552,7 +555,7 @@ func TestEditBetweenRecheckAndExchangeIsPreserved(t *testing.T) {
 	if applyErr == nil || !strings.Contains(applyErr.Error(), "changed during the exchange") {
 		t.Fatalf("edit inside the exchange window was accepted: %v", applyErr)
 	}
-	data, readErr := os.ReadFile(filepath.Join(target.SkillsDir, "ui-foundation", "SKILL.md"))
+	data, readErr := os.ReadFile(filepath.Join(target.SkillsDir, "ui-design", "SKILL.md"))
 	if readErr != nil || string(data) != "EDIT IN THE EXCHANGE WINDOW" {
 		t.Fatalf("edit inside the exchange window was deleted: %q, %v", data, readErr)
 	}
@@ -585,11 +588,11 @@ func TestConcurrentApplyIsRefusedByTheGuard(t *testing.T) {
 		done := make(chan struct{})
 		go func() {
 			defer close(done)
-			_, innerErr = Apply(target, []string{"go-testing"})
+			_, innerErr = Apply(target, []string{"verification"})
 		}()
 		<-done
 	})
-	if _, err := Apply(target, []string{"ui-foundation"}); err != nil {
+	if _, err := Apply(target, []string{"ui-design"}); err != nil {
 		t.Fatalf("outer sync failed: %v", err)
 	}
 	if hookErr != nil {
@@ -602,7 +605,7 @@ func TestConcurrentApplyIsRefusedByTheGuard(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(lock.Skills) != 1 || lock.Skills["ui-foundation"].SHA256 == "" {
+	if len(lock.Skills) != 1 || lock.Skills["ui-design"].SHA256 == "" {
 		t.Fatalf("interleaved run changed the lock: %+v", lock)
 	}
 	if _, err := os.Stat(filepath.Join(filepath.Dir(target.SkillsDir), guardName)); !os.IsNotExist(err) {
@@ -611,7 +614,7 @@ func TestConcurrentApplyIsRefusedByTheGuard(t *testing.T) {
 	if left := transientEntries(t, target); len(left) != 0 {
 		t.Fatalf("successful run left content behind: %v", left)
 	}
-	if _, err := Apply(target, []string{"go-testing"}); err != nil {
+	if _, err := Apply(target, []string{"verification"}); err != nil {
 		t.Fatalf("follow-up sync failed: %v", err)
 	}
 }

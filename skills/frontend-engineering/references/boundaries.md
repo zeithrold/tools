@@ -10,4 +10,9 @@ Distinguish asynchronous loading, missing data, validation/service failure and s
 
 Keep semantic variants with components and semantic roles with tokens. Preserve local font loading and language fallback. Use native links/buttons/forms/dialogs and supported fallback paths.
 
+The design-system owner defines component appearance and supported variants;
+features compose layout and supply content. If an appearance variant is missing,
+request or add it at its owner rather than layering a conflicting feature-local
+override. Do not turn this boundary into a prohibition on ordinary layout classes.
+
 Pin pnpm and retain release-age, trust and dependency-build policies. Do not broaden exceptions or force unsupported dependency majors. Separate dev-server evidence, built-Worker tests and main-only deployment verification; none proves the others.

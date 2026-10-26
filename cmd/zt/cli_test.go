@@ -73,7 +73,7 @@ func TestSkillsListComesFromTheEmbeddedTree(t *testing.T) {
 	if stderr != "" {
 		t.Fatalf("skills list wrote to stderr: %q", stderr)
 	}
-	for _, id := range []string{"go-testing", "ui-web", "frontend-engineering"} {
+	for _, id := range []string{"verification", "ui-design", "frontend-engineering"} {
 		if !strings.Contains(stdout, id) {
 			t.Fatalf("skills list omits %q:\n%s", id, stdout)
 		}

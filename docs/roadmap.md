@@ -11,16 +11,24 @@ Extend existing Skills before adding overlapping guidance. Generic mechanisms
 belong here; business rules, deployment policy and project knowledge remain with
 consumers. Distribute only explicitly selected Skills to the user's global tree.
 
-| Priority | Proposed work | Scope |
+| Priority | Work | Source status and scope |
 | --- | --- | --- |
-| First | Planning, verification, code review and Skill authoring | Scope and non-goals, executable acceptance, independent review, trigger conditions, provenance and behavioral evaluation |
-| First | Extend Go and JS/TS testing Skills | Native commands, realistic boundaries and clear passed/failed/blocked/not-run evidence |
-| Next | Team coordination, debugging and backend engineering | Independent ownership, falsifiable hypotheses, trust boundaries, idempotency and recovery |
-| Next | Extend existing UI/frontend Skills | Existing design contracts, accessible states, framework-native boundaries and real browser evidence |
-| Later | Performance engineering and evolution proposals | Measured baselines, bounded experiments, reusable evidence and reviewed activation |
+| First | Planning, verification, code review and Skill authoring | Drafted with conditional methods, examples and independent-acceptance boundaries |
+| First | Native Go/JS/frontend testing | Absorbed into verification references; no parallel testing Skill IDs |
+| Next | Team coordination, debugging and backend engineering | Drafted: handoffs/isolation, falsifying probes, boundary/persistence/recovery methods |
+| Next | UI/frontend decisions | UI foundation/Web/Flutter consolidated into principle-led ui-design; engineering keeps architecture/state |
+| Later | Performance engineering and evolution proposals | Guidance drafted; measured benefit and the complete evolution runtime remain unverified/unimplemented |
 
 These are capability areas, not commitments to separate directories. Merge
 overlapping responsibilities rather than reproducing every upstream workflow.
+
+Use the [adoption map](skill-adoption.md) to track each researched mechanism's
+destination and remaining acceptance work. New prose is original synthesis, not
+copied upstream templates. Structural and synchronization checks do not establish
+behavioral improvement. [Decision screening](../internal/skills/testdata/workflow-evaluation.json)
+and the [synthetic source-review fixture](../internal/skills/testdata/review-fixture/README.md)
+cover only limited questions; retain run results separately and independently
+compare the pinned final Skill group against research before delivery.
 
 ### Selection and acceptance
 

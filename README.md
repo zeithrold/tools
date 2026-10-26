@@ -58,7 +58,7 @@ To try Skill distribution, copy the [example global config](examples/zt-global.j
 
 ```sh
 go run ./cmd/zt sync --plan
-go run ./cmd/zt sync --skills ui-foundation,go-testing
+go run ./cmd/zt sync --skills ui-design,verification
 go run ./cmd/zt sync
 ```
 
@@ -93,7 +93,7 @@ Skill selection has a separate config at `~/.agents/zt.json`. It contains only `
 ```json
 {
   "schemaVersion": 1,
-  "skills": ["go-testing"]
+  "skills": ["verification"]
 }
 ```
 
@@ -101,7 +101,7 @@ Skill selection has a separate config at `~/.agents/zt.json`. It contains only `
 
 Supported stack IDs are `go`, `jvm`, `js-ts`, `flutter`, `rust`, and `python`. `expect` is advisory in `inspect`; `zt check` enforces it for entries in the selected explicit profile. If no `zt.json` exists, `inspect` detects a manifest at the root and reports without changing the project.
 
-The complete Skill catalog currently contains `go-testing`, `js-ts-testing`, `ui-foundation`, `ui-web`, `ui-flutter`, `frontend-engineering`, and `frontend-verification`. Shared UI guidance describes information hierarchy, states, accessibility, reflow, and evidence. Colors, typography, component libraries, and product-specific interactions stay in each project's design contract.
+Run `zt skills list` for the embedded catalog. Native Go/JS/frontend testing is part of `verification`; Web/Flutter design guidance is part of `ui-design`. Other entries own distinct workflows and frontend/backend decisions; see [selection and ownership](docs/global-skills.md#bundled-skills) and the [research adoption map](docs/skill-adoption.md). Catalog size, installed selection and task-time loading are separate: load only what the current task and stage need. Colors, typography, component libraries, and product-specific interactions stay in each project's design contract.
 
 ## Evidence boundary
 

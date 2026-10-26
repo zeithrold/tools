@@ -119,7 +119,7 @@ func syncSelection(cmd *cobra.Command, o *syncOptions, agentsDir string) ([]stri
 		return nil, err
 	}
 	if !found {
-		return nil, fmt.Errorf("sync: no Skills selected: %s does not exist; create it with {\"schemaVersion\": 1, \"skills\": [\"ui-foundation\"]} or pass --skills ID[,ID]", configPath)
+		return nil, fmt.Errorf("sync: no Skills selected: %s does not exist; create it with {\"schemaVersion\": 1, \"skills\": [\"ui-design\"]} or pass --skills ID[,ID]", configPath)
 	}
 	return names, nil
 }
