@@ -8,9 +8,12 @@ The private `packages/ui` source harness pins pnpm 11.22.0, React 19.3.0, TypeSc
 Vite 8.3.1, Playwright 1.62.0, `@ztd-me/eslint` 0.1.5 and `@ztd-me/frontend-checks` 0.1.4. These npm
 versions require owner promotion and fresh registry verification before installation and frozen-lock
 updates. The harness CSS gate and both local and public source consumers invoke the installed official
-`ztd-css` CLI; no sibling source CLI or checker patch is used. CI repeats
-complete checks on Node 22 and 24 for the PR's exact source SHA. The already published frontend 0.2.0
-remains unchanged and available; this source transition is not a new npm UI release.
+`ztd-css` CLI; no sibling source CLI or checker patch is used. CI layers these gates instead of
+repeating the full matrix on every runner: Node 22 and 24 both run the static checks (lint, CSS, types,
+build and unit cases), while Node 24 also runs the complete packed and source browser consumers against
+the PR's exact source SHA and keeps the public source-install gate. The browser and public-install gates
+are the expensive ones and run only for changes that reach the paths they cover. The already published
+frontend 0.2.0 remains unchanged and available; this source transition is not a new npm UI release.
 
 ## Native and consumer checks
 
@@ -19,8 +22,8 @@ remains unchanged and available; this source transition is not a new npm UI rele
   i18n boundaries, footer URLs, retained browser evidence and the reproduced/patched Select declaration
   defect.
 - A fresh consumer installs the actual packed artifact using pnpm, reinstalls with a frozen lock,
-  imports all exports, validates Google Fonts CSS and six complete OFL notices plus MIT without font binaries,
-  rejects invalid typed API usage, and builds real React SSR and client assets.
+  imports all exports, validates remote Google Fonts CSS and the shipped MIT notices while rejecting any
+  bundled font binary or OFL copy, rejects invalid typed API usage, and builds real React SSR and client assets.
 - A separate source consumer uses the real pinned shadcn CLI to preview/install the item, compares all
   installed file bytes, confirms no npm UI runtime dependency, applies the documented declaration
   patch and runs strict lint/CSS/types, fourteen consumer units, SSR/client build and the complete browser
@@ -49,6 +52,14 @@ each Axe scan and capture to a file and attaches it by path, and its reporter wr
 `test-timings.json` for the run. The evidence gate requires those files in both consumer runs, a complete
 Axe scan, and timings matching the same run's cases; an inline payload, a missing file or a checker other
 than the pinned install fails it.
+
+Retained evidence can carry real font software: a failure trace records the `*.woff2` responses the
+browser fetched, and the explicit local preview caches the files it downloads. `test/font-notices/`
+therefore keeps the four original Noto OFL texts covering the requested families. CI copies
+that directory unchanged to `.artifacts/font-notices/` and uploads it with the browser evidence, which
+stays as recorded rather than having its font responses scrubbed; a manual local-preview export carries
+the same four notices. Those files belong to neither the npm package nor the registry item, which
+deliver only the four MIT notices in `third-party/`.
 
 Axe's CSSOM preloader copies CSS into a temporary document. The fixture adapter gives those analysis
 styles the existing response nonce only while the scan runs. Its CSSOM reader also reuses the exact

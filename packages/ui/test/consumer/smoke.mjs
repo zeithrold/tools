@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFile } from 'node:fs/promises'
+import { readFile, readdir } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import { DEFAULT_PREFERENCES, resolveInitialPreferences } from '@ztd-me/ui'
@@ -28,17 +28,17 @@ assert.equal(fonts.length, 0)
 assert.ok(source.includes('https://fonts.googleapis.com/css2?family=Noto+Sans'))
 assert.ok(source.includes('family=Noto+Color+Emoji&display=swap'))
 assert.equal(source.includes('family=Noto+Emoji'), false)
-for (const family of [
-  'SANS',
-  'SANS-SC',
-  'SANS-JP',
-  'SANS-KR',
-  'EMOJI',
-  'COLOR-EMOJI',
-]) {
-  const license = path.join(path.dirname(css), `assets/NOTO-${family}-OFL.txt`)
-  assert.ok((await readFile(license, 'utf8')).includes('SIL OPEN FONT LICENSE Version 1.1'))
+// Font software stays with Google; the package ships one original MIT notice per copied or patched
+// dependency and no OFL copy or font binary of its own.
+const assets = path.join(path.dirname(css), 'assets')
+assert.deepEqual((await readdir(assets)).sort(), [
+  'RADIX-MIT.txt',
+  'REACT-REMOVE-SCROLL-BAR-MIT.txt',
+  'SHADCN-MIT.txt',
+  'VAUL-MIT.txt',
+])
+for (const notice of await readdir(assets)) {
+  assert.ok((await readFile(path.join(assets, notice), 'utf8')).includes('MIT License'), notice)
 }
-assert.ok((await readFile(path.join(path.dirname(css), 'assets/SHADCN-MIT.txt'), 'utf8')).includes('MIT'))
 const client = await readFile(new URL(import.meta.resolve('@ztd-me/ui/client')), 'utf8')
 assert.ok(client.startsWith("'use client'"))

@@ -6,9 +6,72 @@ import path from 'node:path'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { assertSourceLicense } from './license-coverage.mjs'
+import { thirdPartyNotices } from './release-contract.mjs'
 
 const repository = fileURLToPath(new URL('../', import.meta.url))
 const read = file => readFile(path.join(repository, file), 'utf8')
+
+function assertReviewedModules(modules, declaration, notices) {
+  const rows = new Map()
+  for (const line of declaration.split('\n')) {
+    const match = /^\| `([^`@]+@[^`@]+)` \|/u.exec(line)
+    if (match) {
+      rows.set(match[1], line)
+    }
+  }
+  for (const module of modules) {
+    const row = rows.get(module)
+    assert.ok(row, `Linked module needs manual license review in docs/licensing.md: ${module}`)
+    const files = [
+      ...row.matchAll(/`(third-party\/[^`]+)`/gu),
+    ].map(match => match[1])
+    assert.ok(files.length > 0, `No retained original mapped for ${module}`)
+    for (const file of files) {
+      assert.ok(notices.has(file), `Missing retained original for ${module}: ${file}`)
+    }
+  }
+}
+
+test('linked host CLI modules have manually reviewed declarations and retained originals', async () => {
+  const output = execFileSync('go', [
+    'list',
+    '-deps',
+    '-f',
+    '{{with .Module}}{{if .Version}}{{.Path}}@{{.Version}}{{end}}{{end}}',
+    './cmd/zt',
+  ], { cwd: repository, encoding: 'utf8' })
+  const modules = new Set(output.split('\n').filter(Boolean))
+  assert.ok(modules.size > 0, 'Native go list must discover linked dependencies')
+  const declaration = await read('docs/licensing.md')
+  const notices = new Set(thirdPartyNotices())
+  assertReviewedModules(modules, declaration, notices)
+  const unreviewed = new Set(modules).add('example.invalid/unreviewed@v1.0.0')
+  assert.throws(
+    () => assertReviewedModules(unreviewed, declaration, notices),
+    /needs manual license review.*example\.invalid\/unreviewed@v1\.0\.0/u,
+  )
+  assert.throws(
+    () => assertReviewedModules(modules, declaration, new Set()),
+    /Missing retained original/u,
+  )
+})
+
+test('font evidence retains manual originals outside the public source payload', async () => {
+  for (const notice of [
+    'NOTO-SANS-OFL.txt',
+    'NOTO-SANS-SC-OFL.txt',
+    'NOTO-SERIF-SC-OFL.txt',
+    'NOTO-COLOR-EMOJI-OFL.txt',
+  ]) {
+    const original = await read(`packages/ui/test/font-notices/${notice}`)
+    assert.match(original, /SIL OPEN FONT LICENSE Version 1\.1/u, notice)
+  }
+  const payload = JSON.parse(await read('registry/ui.json'))
+  assert.ok(
+    payload.files.every(file => !file.path.includes('/font-notices/')),
+    'private originals stay out of UI source delivery',
+  )
+})
 
 test('first-party packages and independently copied Skills retain complete MIT grants', async () => {
   const license = await read('LICENSE')
@@ -47,7 +110,7 @@ test('registry payload retains canonical source and all original upstream notice
   }
 })
 
-test('all six CLI archive layouts preserve MIT and Go BSD notices', async () => {
+test('all six CLI archive layouts preserve every manually retained notice', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'zt-license-archives-'))
   try {
     for (const platform of [
@@ -81,7 +144,7 @@ test('all six CLI archive layouts preserve MIT and Go BSD notices', async () => 
         for (const file of [
           'LICENSE',
           'THIRD_PARTY_NOTICES.md',
-          'third-party/GO-BSD.txt',
+          ...thirdPartyNotices(),
         ]) {
           assert.equal(unpack(file), await read(file), `${platform}/${arch}: ${file}`)
         }

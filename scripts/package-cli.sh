@@ -20,8 +20,8 @@ if [[ -f "$directory/zt.exe" ]]; then binary=zt.exe; fi
 # bit before archiving; tar then records it and the archive is runnable.
 if [[ "$binary" != zt.exe ]]; then chmod +x "$directory/$binary"; fi
 files=("$binary" LICENSE THIRD_PARTY_NOTICES.md)
-# Ship every notice under third-party/, including licenses for new Go runtime
-# dependencies, rather than a fixed list that silently drops additions.
+# Ship all manually retained originals. Reviewing new dependencies and updating
+# docs/licensing.md remains a maintainer responsibility, not a packaging step.
 while IFS= read -r notice; do files+=("$notice"); done \
   < <(cd "$directory" && find third-party -type f | LC_ALL=C sort)
 

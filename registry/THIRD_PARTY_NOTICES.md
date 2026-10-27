@@ -12,12 +12,18 @@ The delivered self-owned source is MIT licensed; see `LICENSE`. This does not re
   Its original upstream Anton Korzunov notice is preserved in `third-party/REACT-REMOVE-SCROLL-BAR-MIT.txt`.
   Source: [upstream LICENSE](https://github.com/theKashey/react-remove-scroll-bar/blob/7301c160fda44cb8cf2b9fdfde61efad35736196/LICENSE).
 - The stylesheet loads Noto Sans, Noto Sans SC/JP/KR and Noto Color Emoji directly through the Google
-  Fonts API. These fonts retain SIL Open Font License 1.1. Their complete copyright and license notices
-  are delivered as `third-party/NOTO-*-OFL.txt`, including the Color Emoji notice. The earlier monochrome
-  notice is retained too, for six complete notices. No font binaries are redistributed in the item.
+  Fonts API. Those families are SIL Open Font License 1.1 software served by Google, not redistributed
+  in this item: no font binary, vendored font package or OFL copy is delivered, and `third-party/`
+  carries none. Their upstream notices stay at
+  [Google Fonts `ofl`](https://github.com/google/fonts/tree/main/ofl), for example
+  [Noto Sans](https://github.com/google/fonts/blob/main/ofl/notosans/OFL.txt),
+  [Noto Sans SC](https://github.com/google/fonts/blob/main/ofl/notosanssc/OFL.txt) and
+  [Noto Color Emoji](https://github.com/google/fonts/blob/main/ofl/notocoloremoji/OFL.txt). The
+  repository [licensing boundary](https://github.com/zeithrold/tools/blob/main/docs/licensing.md)
+  records which third-party material must ship a notice.
 
-Sources: [shadcn/ui](https://github.com/shadcn-ui/ui), [Noto Sans](https://github.com/notofonts/latin-greek-cyrillic),
-[Noto CJK](https://github.com/notofonts/noto-cjk), and [Noto Emoji](https://github.com/googlefonts/noto-emoji).
+Sources: [shadcn/ui](https://github.com/shadcn-ui/ui) and
+[Google Fonts](https://github.com/google/fonts).
 
 The primitive foundation also preserves Radix's MIT notice (`third-party/RADIX-MIT.txt`, copyright 2022 WorkOS).
 Individual Radix packages remain separately installed dependencies; preserve their upstream notices.
@@ -31,5 +37,6 @@ reviewed static behavioral CSS retains the native presence, drag and snap-point 
 components layer. It fixes the upstream invalid hitarea selector, removes a duplicate selector and
 uses semantic handle color and scoped keyframe names. No CSP policy is weakened.
 
-Noto Serif, Noto Serif SC, Noto Serif JP and Noto Serif KR are opt-in Google Fonts families, each with
-its upstream SIL OFL 1.1 notice retained. UI defaults remain Noto Sans with CJK and Color Emoji.
+Noto Serif, Noto Serif SC, Noto Serif JP and Noto Serif KR are opt-in Google Fonts families under the
+same upstream SIL OFL 1.1 terms, delivered as request-only CSS rather than as bundled font software.
+UI defaults remain Noto Sans with CJK and Color Emoji.

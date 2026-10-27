@@ -36,7 +36,9 @@ stands and the packaging test compares the archive with the committed files, so 
 notice present in the checkout cannot be silently dropped from an archive.
 It does not detect a newly added dependency or author its notice: adding a Go
 dependency still requires adding the corresponding notice under `third-party/`
-and the `THIRD_PARTY_NOTICES.md` entry in the same change. `SHA256SUMS` lists all
+and updating the manually maintained [license index](licensing.md) in the same change.
+The CI binary artifact carries the same notice set and checksums each file.
+`SHA256SUMS` lists all
 six assets in byte order.
 
 Release binaries are built from the tagged commit with

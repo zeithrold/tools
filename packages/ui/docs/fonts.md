@@ -75,10 +75,25 @@ compression/cache headers differ. Default CI and public source acceptance requir
 
 ## Licensing and evidence
 
-The five loaded Noto families use SIL Open Font License 1.1. Complete copyright/license notices are
-delivered in `third-party/NOTO-*-OFL.txt`, including `NOTO-COLOR-EMOJI-OFL.txt`. The earlier monochrome
-notice is also retained; preserve these six notices with the source. Fonts are served by Google, rather than
-redistributed as registry or npm assets. The shadcn MIT notice remains separate and intact.
+Noto Sans, Noto Sans SC/JP/KR and Noto Color Emoji are SIL Open Font License 1.1 software served to the
+browser by Google; the optional Noto Serif families use the same upstream terms. The package and the
+registry item distribute no font software, so they deliver no OFL copy and `dist/assets/` holds only the
+MIT notices for code copied or patched. The upstream notices are
+[Google Fonts `ofl/noto*`](https://github.com/google/fonts/tree/main/ofl), for example
+[Noto Sans](https://github.com/google/fonts/blob/main/ofl/notosans/OFL.txt),
+[Noto Sans SC](https://github.com/google/fonts/blob/main/ofl/notosanssc/OFL.txt) and
+[Noto Color Emoji](https://github.com/google/fonts/blob/main/ofl/notocoloremoji/OFL.txt). The repository
+[licensing boundary](https://github.com/zeithrold/tools/blob/main/docs/licensing.md) records the rule.
+The shadcn MIT notice remains separate and intact.
+
+Two evidence-only paths can hold font software outside the package and registry item. The authorized local
+preview caches the woff2 files its test server downloads under `.artifacts/local-noto-preview/`, and a
+retained browser failure trace stores the font responses it recorded as `.woff2` entries inside its
+trace archive. CI keeps those traces as recorded and uploads the four original Noto OFL texts
+from `test/font-notices/` as `.artifacts/font-notices/` beside them. That directory belongs to no
+package or registry item, which still deliver only the four MIT notices; a manual local-preview export
+must carry the same four notices with its evidence. The default `pack` and `source` gates request fonts
+from Google's origins rather than a local cache.
 
 The browser specimen checks real rendered font usage through Chromium's
 [CSS.getPlatformFontsForNode](https://chromedevtools.github.io/devtools-protocol/tot/CSS/#method-getPlatformFontsForNode),

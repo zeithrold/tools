@@ -18,22 +18,12 @@ async function candidates(directory) {
   return groups.flat()
 }
 await mkdir('dist/assets', { recursive: true })
-for (const license of [
-  'SHADCN-MIT.txt',
-  'RADIX-MIT.txt',
-  'REACT-REMOVE-SCROLL-BAR-MIT.txt',
-  'VAUL-MIT.txt',
-  'NOTO-SANS-OFL.txt',
-  'NOTO-SANS-SC-OFL.txt',
-  'NOTO-SANS-JP-OFL.txt',
-  'NOTO-SANS-KR-OFL.txt',
-  'NOTO-SERIF-OFL.txt',
-  'NOTO-SERIF-SC-OFL.txt',
-  'NOTO-SERIF-JP-OFL.txt',
-  'NOTO-SERIF-KR-OFL.txt',
-  'NOTO-EMOJI-OFL.txt',
-  'NOTO-COLOR-EMOJI-OFL.txt',
-]) { await copyFile(`third-party/${license}`, `dist/assets/${license}`) }
+// third-party/ is the single source of truth for shipped notices: it holds one original license
+// per copied or patched dependency, and holds nothing for work served by its upstream host.
+// scripts/pack-smoke.mjs asserts each of these files reaches the packed artifact unchanged.
+for (const notice of await readdir('third-party')) {
+  await copyFile(`third-party/${notice}`, `dist/assets/${notice}`)
+}
 const compiler = await compile('@import "tailwindcss";\n@import "./src/tailwind.css";', {
   base: process.cwd(),
   onDependency: () => {},
