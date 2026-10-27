@@ -95,7 +95,7 @@ for native links and fixtures. Body width, content and layout remain project-own
 its actual declaration file as a `tokenFiles` source in the existing CSS checker when business CSS
 references its tokens; do not exempt arbitrary unknown variables. The current source uses Google Fonts
 Noto Sans with Chinese/Japanese/Korean variants and Noto Color Emoji for all emoji. Read [typography](docs/fonts.md)
-for the additional API style/font CSP origins, third-party requests and preserved OFL notices.
+for the additional API style/font CSP origins, third-party requests and the font licensing boundary.
 
 ## Preferences and boundaries
 

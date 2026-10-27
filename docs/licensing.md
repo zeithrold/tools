@@ -1,50 +1,102 @@
-# Licensing and distribution contract
+# License declarations
 
-All first-party code and documentation in this checkout use MIT with the existing
-`Copyright (c) 2026 Zeithrold` notice. The root `LICENSE` is the canonical full text. SPDX package and
-Skill metadata use `MIT`. Preserve complete licenses with copies or substantial portions, including
-consumer-owned adaptations. Third-party terms are listed separately in
-[the upstream licensing boundary](../THIRD_PARTY_NOTICES.md).
+This is the **manually maintained** licensing index. Keep declarations,
+attribution and upstream links here, not copies of complete license texts.
+There is no license-document generator. Dependency or distribution changes
+require a human review of this index and the necessary retained notices.
 
-| First-party component | License coverage | Distribution checks |
+## First-party work
+
+First-party code and documentation are MIT, copyright 2026 Zeithrold:
+see the canonical [LICENSE](../LICENSE). Package metadata and Skill frontmatter
+declare `MIT`. That grant does not relicense dependencies.
+
+The full MIT notice in each npm package, standalone Skill directory and UI
+source delivery is intentional: those units are copied independently of this
+checkout. Keep it with copies and adaptations. Do not add license copies to
+ordinary source directories that are not independent distribution units.
+
+## CLI dependencies
+
+`zt` binaries contain the Go runtime and the applicable modules below.
+The `third-party/` files are distribution materials, not documentation:
+their unmodified originals are embedded in `zt license` and accompany both
+release archives and CI binary artifacts. A link alone does not replace them.
+
+| Pinned module | License and upstream source | Retained original, relative to repository root |
 | --- | --- | --- |
-| Root Go module, `cmd/zt`, `internal/*`, examples, scripts, workflows and documentation | Root `LICENSE`; CLI embeds MIT, the original Go BSD notice and every linked Go module's own license text | `go test ./...`, `go vet ./...`, `zt license`; CLI archive coverage test |
-| `@ztd-me/eslint` | `packages/eslint-config/LICENSE`, `license: MIT`, explicit npm `files` inclusion | `pnpm run test:pack` checks packed license bytes and metadata before fresh consumer verification |
-| `@ztd-me/frontend-checks` | `packages/frontend-checks/LICENSE`, `license: MIT`, explicit npm `files` inclusion | `pnpm run test:pack` checks packed license bytes and metadata before fresh consumer verification |
-| `@ztd-me/ui` source/components/styles and private harness | `packages/ui/LICENSE`, `license: MIT`; original shadcn, Radix, scroll-bar dependency and Noto notices preserved | Private `test:pack` checks MIT and every notice under `packages/ui/third-party`; UI harness remains private |
-| Root registry inventory and generated UI payload | `meta.license: MIT`; full `LICENSE` delivered beside `THIRD_PARTY_NOTICES.md` and every notice under `packages/ui/third-party` | Registry coverage test compares every delivered file to canonical source; source-install smoke checks copied notices |
-| Every bundled Skill under `skills/`; see the [catalog](global-skills.md#bundled-skills) | Each complete directory includes `LICENSE` and `license: MIT` frontmatter | Embedded Skill sync test verifies licenses in every installed directory and repeat-sync idempotence |
-| UI consumer templates and reusable references | Root MIT grant; distributed registry README includes the boundary; Skill references travel with their directory license | Registry and Skill delivery checks |
-| Private compiled UI test fixtures uploaded as CI evidence | Fixture MIT license and original UI notices; Vite emits full actual bundled-dependency license texts | Packed and source consumer builds assert nonempty complete dependency license records |
-| CLI release archives | MIT text, Go BSD notice, third-party boundary and every linked Go module's original license text beside the binary | Release uses `scripts/package-cli.sh`, which copies the committed `third-party/` notices; tar/zip coverage test exercises all six targets |
-| `zt` binary copied into CI artifacts | The same notice set embedded in the executable and readable through `zt license` from any distribution of that binary | For license coverage the frontend CI artifact places only `LICENSE`, `THIRD_PARTY_NOTICES.md` and `third-party/GO-BSD.txt` beside its `zt`; that narrower adjacent file set is a packaging difference, not a missing-notice claim about the executable |
+| Go runtime / standard library | [BSD-3-Clause, The Go Authors](https://go.googlesource.com/go/+/refs/tags/go1.24.13/LICENSE) | `third-party/GO-BSD.txt` |
+| `github.com/spf13/cobra@v1.10.2` | [Apache-2.0, The Cobra Authors](https://github.com/spf13/cobra/blob/v1.10.2/LICENSE.txt) | `third-party/COBRA-APACHE-2.0.txt` |
+| `github.com/spf13/pflag@v1.0.9` | [BSD-3-Clause, Alex Ogier / The Go Authors](https://github.com/spf13/pflag/blob/v1.0.9/LICENSE) | `third-party/PFLAG-BSD-3-CLAUSE.txt` |
+| `github.com/inconshreveable/mousetrap@v1.1.0` | [Apache-2.0, Alan Shreve](https://github.com/inconshreveable/mousetrap/blob/v1.1.0/LICENSE) | `third-party/MOUSETRAP-APACHE-2.0.txt` |
+| `github.com/99designs/keyring@v1.2.2` | [MIT, 99designs](https://github.com/99designs/keyring/blob/v1.2.2/LICENSE) | `third-party/KEYRING-MIT.txt` |
+| `github.com/99designs/go-keychain@v0.0.0-20191008050251-8e49817e8af4` | [MIT, Keybase](https://github.com/99designs/go-keychain/blob/8e49817e8af4/LICENSE) | `third-party/GO-KEYCHAIN-MIT.txt` |
+| `github.com/danieljoos/wincred@v1.1.2` | [MIT, Daniel Joos](https://github.com/danieljoos/wincred/blob/v1.1.2/LICENSE) | `third-party/WINCRED-MIT.txt` |
+| `github.com/gsterjov/go-libsecret@v0.0.0-20161001094733-a6f4afe4910c` | [MIT, Goran Sterjov](https://github.com/gsterjov/go-libsecret/blob/a6f4afe4910c/LICENSE) | `third-party/GO-LIBSECRET-MIT.txt` |
+| `github.com/godbus/dbus@v0.0.0-20190726142602-4481cbc300e2` | [BSD-2-Clause, Georg Reinke](https://github.com/godbus/dbus/blob/4481cbc300e2/LICENSE) | `third-party/GODBUS-DBUS-BSD-2-CLAUSE.txt` |
+| `github.com/dvsekhvalnov/jose2go@v1.5.0` | [MIT, upstream copyright 2014](https://github.com/dvsekhvalnov/jose2go/blob/v1.5.0/LICENSE) | `third-party/JOSE2GO-MIT.txt` |
+| `github.com/mtibben/percent@v0.2.1` | [MIT, Michael Tibben](https://github.com/mtibben/percent/blob/v0.2.1/LICENSE) | `third-party/PERCENT-MIT.txt` |
+| `golang.org/x/sys@v0.3.0` | [BSD-3-Clause and patent grant, The Go Authors](https://go.googlesource.com/sys/+/refs/tags/v0.3.0/LICENSE) | `third-party/X-SYS-BSD-3-CLAUSE.txt`, `third-party/X-SYS-PATENTS.txt` |
+| `golang.org/x/term@v0.3.0` | [BSD-3-Clause and patent grant, The Go Authors](https://go.googlesource.com/term/+/refs/tags/v0.3.0/LICENSE) | `third-party/X-SYS-BSD-3-CLAUSE.txt`, `third-party/X-SYS-PATENTS.txt` |
 
-The `zt` binary is not a single-license artifact. Root MIT covers first-party code and the Go runtime
-is BSD-3-Clause. The linked libraries keep their own terms: `99designs/keyring` and its pure-Go
-helpers are MIT, cobra and mousetrap are Apache-2.0, pflag, `golang.org/x/sys` and
-`golang.org/x/term` are BSD-3-Clause, and `godbus/dbus` (the module path keyring requires, without
-`/v5`) is BSD-2-Clause. keyring compiles every backend into one package per platform, so its file,
-prompt and Linux D-Bus code is in the binary even though `zt` allows only the OS backends; the notice
-set is therefore wider than the three selected backends, and it lists nothing that is not compiled.
-`go-libsecret` is pure Go over D-Bus, so no C `libsecret` or other LGPL library is linked by that
-name. The complete unmodified texts live in `third-party/` and are embedded through `LicenseFiles`,
-so `zt license` reproduces them from any distribution of the binary and does not depend on this
-checkout. The boundary, pinned versions and per-module purpose are described in
-[the upstream notice](../THIRD_PARTY_NOTICES.md); the root MIT grant does not convert those terms.
+`x/sys` and `x/term` have byte-identical license and patent files at these
+versions; one shared pair retains both originals without duplicate files.
+Platform-specific modules stay in this index because the CLI ships for Linux,
+macOS and Windows. Keyring compiles additional backends even when zt does not
+select them; `go-libsecret` is pure Go over D-Bus, not the C LGPL library.
+Cobra's documentation-generator modules are not compiled into `zt`.
 
-Run the repository-level coverage checks with:
+The existing license tests compare `go list -deps` for the host CLI with this
+reviewed table and check that each mapped original exists. They neither author
+the table nor decide whether its legal attribution is correct. A new linked
+module or version without a reviewed row fails; human review must supply it.
+Other-platform additions still require review on their native platform.
 
-```sh
-node --test scripts/*.test.mjs
-go test ./...
-go vet ./...
-```
+## UI source and separately installed dependencies
 
-Run the native package checks in each package after a frozen pnpm install. The source payload is
-generated with the pinned command in [contributor guidance](../CONTRIBUTING.md). Local packing and
-source installation validate candidate content. An approved full SHA and fresh public installation
-remain required before consumer acceptance; local checks cannot establish that public gate.
+Keep the original MIT notices for copied shadcn composition and the Radix / Vaul
+patches, plus the react-remove-scroll-bar supplement missing from its npm
+archive. These are the four files in `packages/ui/third-party/`.
 
-Previously published npm artifacts and existing consumer copies are not rewritten by this change.
-Their archived license metadata and upstream notices remain as shipped. Future publication and
-consumer migration are separate owner actions; this contract does not authorize either.
+| Material | Terms / source |
+| --- | --- |
+| shadcn/ui composition | [MIT, shadcn](https://github.com/shadcn-ui/ui/blob/main/LICENSE.md) |
+| Radix patch context | [MIT, WorkOS](https://github.com/radix-ui/primitives/blob/main/LICENSE) |
+| Vaul patch context | [MIT, Emil Kowalski](https://github.com/emilkowalski/vaul/blob/v1.1.2/LICENSE.md) |
+| react-remove-scroll-bar supplement | [MIT, Anton Korzunov](https://github.com/theKashey/react-remove-scroll-bar/blob/7301c160fda44cb8cf2b9fdfde61efad35736196/LICENSE) |
+| Noto Sans / Serif families | [OFL-1.1, Noto Project Authors](https://github.com/notofonts/latin-greek-cyrillic) |
+| Noto CJK variants | [OFL-1.1, Adobe; Reserved Font Name Source](https://github.com/notofonts/noto-cjk) |
+| Noto Color Emoji | [OFL-1.1, Google](https://github.com/googlefonts/noto-emoji/blob/main/fonts/LICENSE) |
+
+Font binaries are fetched from Google Fonts, not bundled or vendored here.
+Keep the font declaration and links, not duplicate OFL texts for unshipped
+fonts. A consumer that starts self-hosting must retain the notices and comply
+with the licenses of the font binaries it actually distributes.
+
+Private preview caches and browser failure traces can contain font binaries.
+The four manually retained originals in `packages/ui/test/font-notices/`
+cover those families without repeated identical copies. CI carries them with
+the evidence, not in the npm package or registry item; manual evidence exports
+must do the same. Keep the original traces, rather than stripping font responses.
+
+Ordinary npm dependencies remain separate upstream packages, not MIT code
+owned by tools. In particular, eslint-plugin-sonarjs declares LGPL-3.0-only,
+axe-core declares MPL-2.0, and lucide-react declares ISC. Consumers must review
+their installed versions and redistribution obligations. The private UI test
+fixtures bundle dependencies; their existing bundler license records retain
+actual notices with CI evidence. Those records do not generate this document.
+
+## Maintenance and verification
+
+When changing dependencies or distribution:
+
+1. Review the actual code/assets shipped and upstream terms at the pinned version.
+2. Update this index manually; retain required originals, reusing byte-identical
+   notices only when their provenance is explicit. Do not rewrite copyright lines.
+3. Run `node --test scripts/*.test.mjs`, `go test ./...`, `go vet ./...` and
+   the affected package's native pack/source checks. These verify delivery,
+   not legal clearance or license compatibility.
+
+Published artifacts and existing consumer copies are not rewritten by this
+cleanup. Publication, replacement of dependencies and consumer migration remain
+separate owner decisions.

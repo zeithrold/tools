@@ -469,16 +469,22 @@ type treeFile struct {
 
 func expectedTree(ctx context.Context, repo *Repo, baseEntries []Entry, candidate Candidate) (map[string]treeFile, error) {
 	replaced := make(map[string]bool, len(candidate.Files))
-	expected := make(map[string]treeFile, len(baseEntries)+len(candidate.Files))
 	for _, file := range candidate.Files {
 		replaced[file.Path] = true
 	}
+	base := make(map[string]Entry, len(baseEntries))
+	for _, entry := range baseEntries {
+		// Every base entry is checked, including a replaced one: a replacement inherits
+		// its base mode, so the mode must be one zt is willing to publish.
+		if entry.Mode != "100644" && entry.Mode != "100755" {
+			return nil, fmt.Errorf("pinned base entry %s has mode %s, which zt refuses to reason about when verifying a remote tree", safeQuote(entry.Path), entry.Mode)
+		}
+		base[entry.Path] = entry
+	}
+	expected := make(map[string]treeFile, len(baseEntries)+len(candidate.Files))
 	for _, entry := range baseEntries {
 		if replaced[entry.Path] {
 			continue
-		}
-		if entry.Mode != "100644" && entry.Mode != "100755" {
-			return nil, fmt.Errorf("pinned base entry %s has mode %s, which zt refuses to reason about when verifying a remote tree", safeQuote(entry.Path), entry.Mode)
 		}
 		expected[entry.Path] = treeFile{Mode: entry.Mode, SHA: entry.SHA}
 	}
@@ -491,7 +497,11 @@ func expectedTree(ctx context.Context, repo *Repo, baseEntries []Entry, candidat
 			return nil, err
 		}
 		mode := "100644"
-		if existing, ok := expected[file.Path]; ok {
+		if existing, ok := base[file.Path]; ok {
+			// A replacement carries content only, so it keeps the mode the pinned base
+			// used; a new path keeps the existing 100644 default. The verification workspace
+			// applies the same rule, so the tree zt submits and the tree it materialised
+			// for the checks cannot disagree about a replaced file's mode.
 			mode = existing.Mode
 		}
 		expected[file.Path] = treeFile{Mode: mode, SHA: blob}

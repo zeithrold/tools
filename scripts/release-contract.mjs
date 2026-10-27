@@ -20,8 +20,8 @@ export const targets = [
 // The archive root deliberately keeps the license next to the executable.
 export const archiveFiles = ['LICENSE', 'THIRD_PARTY_NOTICES.md']
 
-// Every notice shipped under third-party/ belongs in each archive, so a new Go
-// runtime dependency cannot be distributed without its license text.
+// Preserve the manually reviewed notices; inventory copying does not establish
+// that a new dependency has been reviewed. See docs/licensing.md.
 export function thirdPartyNotices(root = repository) {
   const base = path.join(root, 'third-party')
   const walk = relative => readdirSync(path.join(base, relative), { withFileTypes: true })

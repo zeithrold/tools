@@ -33,6 +33,7 @@
     "test": "node --test test/*.test.mjs",
     "test:browser": "playwright test",
     "test:pack": "node scripts/pack-smoke.mjs",
+    "test:pack:static": "node scripts/pack-smoke.mjs --static",
     "check": "pnpm run lint && pnpm run typecheck && pnpm test && pnpm run test:browser && pnpm run test:pack",
     "prepublishOnly": "pnpm run check",
     "test:registry": "node scripts/registry-smoke.mjs"

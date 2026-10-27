@@ -69,14 +69,24 @@ type submitHarness struct {
 // a test starts from a submission that is actually allowed to proceed.
 func newSubmitHarness(t *testing.T, fullName string) *submitHarness {
 	t.Helper()
+	return newSubmitHarnessWithModes(t, fullName, nil)
+}
+
+// newSubmitHarnessWithModes is newSubmitHarness with explicit base file modes, so a
+// fixture can pin an executable base entry that a candidate replaces by content only.
+// The local upstream and the fake remote must agree on the mode, because their base
+// commit object ids have to match.
+func newSubmitHarnessWithModes(t *testing.T, fullName string, modes map[string]string) *submitHarness {
+	t.Helper()
 	files := baseFileSet()
 	remote := newFakeGitHub(t, fakeGHOptions{
 		FullName:      fullName,
 		DefaultBranch: "main",
 		BaseFiles:     files,
+		BaseModes:     modes,
 		Token:         testRemoteToken,
 	})
-	upstream, commit := upstreamMatchingRemote(t, files, remote)
+	upstream, commit := upstreamMatchingRemote(t, files, modes, remote)
 	h := &harness{
 		t:         t,
 		upstream:  upstream,
@@ -98,7 +108,7 @@ func newSubmitHarness(t *testing.T, fullName string) *submitHarness {
 
 // upstreamMatchingRemote builds a real local repository whose HEAD commit is exactly
 // the fake remote's base commit, so prepare, plan and JSON reads describe one tree.
-func upstreamMatchingRemote(t *testing.T, files map[string]string, remote *fakeGitHub) (string, string) {
+func upstreamMatchingRemote(t *testing.T, files, modes map[string]string, remote *fakeGitHub) (string, string) {
 	t.Helper()
 	dir := t.TempDir()
 	runGit(t, dir, "init", "--quiet")
@@ -106,6 +116,7 @@ func upstreamMatchingRemote(t *testing.T, files map[string]string, remote *fakeG
 		writeFile(t, filepath.Join(dir, filepath.FromSlash(name)), content)
 	}
 	runGit(t, dir, "add", "--all")
+	pinIndexModes(t, dir, modes)
 	name, email := remote.BaseCommitIdentity()
 	date := remote.BaseCommittedAt().UTC().Format("2006-01-02T15:04:05-07:00")
 	command := exec.Command("git", "-C", dir,
@@ -122,6 +133,22 @@ func upstreamMatchingRemote(t *testing.T, files map[string]string, remote *fakeG
 		t.Fatalf("local fixture commit %s does not match the fake remote base %s", commit, remote.BaseCommit())
 	}
 	return dir, commit
+}
+
+// pinIndexModes records a declared executable mode in the Git index explicitly.
+// os.Chmod is not used: with core.filemode=false — the usual setting on Windows
+// hosts — Git ignores the physical executable bit, so a chmod-based fixture would
+// silently describe a 100644 base instead of the 100755 base a mode regression needs.
+// Paths must already be in the index; this runs after git add.
+func pinIndexModes(t *testing.T, dir string, modes map[string]string) {
+	t.Helper()
+	for name, mode := range modes {
+		flag := "--chmod=-x"
+		if mode == "100755" {
+			flag = "--chmod=+x"
+		}
+		runGit(t, dir, "update-index", flag, "--", name)
+	}
 }
 
 // candidateFile prepares again (idempotently) and returns the stored candidate path.

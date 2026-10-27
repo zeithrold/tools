@@ -45,7 +45,11 @@ type fakeGHOptions struct {
 	FullName      string
 	DefaultBranch string
 	BaseFiles     map[string]string
-	Token         string
+	// BaseModes optionally declares the Git mode of a base file. An undeclared path
+	// is 100644; only the regular-file modes zt reasons about are accepted, so a
+	// fixture cannot describe a tree the command surface would refuse.
+	BaseModes map[string]string
+	Token     string
 }
 
 // The seeded root commit is "Initial commit" by zt fixture at this fixed UTC instant.
@@ -175,16 +179,28 @@ func newFakeGitHub(t *testing.T, options fakeGHOptions) *fakeGitHub {
 		baseFiles:     make(map[string]string, len(options.BaseFiles)),
 	}
 
+	for name := range options.BaseModes {
+		if _, ok := options.BaseFiles[name]; !ok {
+			t.Fatalf("fake GitHub base mode names %q, which is not a base file", name)
+		}
+	}
 	baseFiles := make(map[string]fakeGHTreeEntry, len(options.BaseFiles))
 	for name, content := range options.BaseFiles {
 		if !fakeGHValidTreePath(name) {
 			t.Fatalf("invalid fake GitHub base file path %q", name)
 		}
+		mode := "100644"
+		if declared, ok := options.BaseModes[name]; ok {
+			if declared != "100644" && declared != "100755" {
+				t.Fatalf("fake GitHub base file %q has mode %q; only regular-file modes are supported", name, declared)
+			}
+			mode = declared
+		}
 		g.baseFiles[name] = content
 		data := []byte(content)
 		sha := fakeGHObjectSHA("blob", data)
 		g.blobs[sha] = append([]byte(nil), data...)
-		baseFiles[name] = fakeGHTreeEntry{Mode: "100644", Type: "blob", SHA: sha}
+		baseFiles[name] = fakeGHTreeEntry{Mode: mode, Type: "blob", SHA: sha}
 	}
 
 	treeSHA, trees, err := fakeGHBuildTrees(baseFiles)
@@ -261,6 +277,23 @@ func (g *fakeGitHub) TreeSHA(commit string) (string, bool) {
 	defer g.mu.Unlock()
 	record, ok := g.commits[commit]
 	return record.Tree, ok
+}
+
+// TreeFiles returns the flattened entries of a stored tree, so a test can read the
+// modes and object ids a submission actually sent instead of the expected set it
+// compared itself with.
+func (g *fakeGitHub) TreeFiles(treeSHA string) (map[string]fakeGHTreeEntry, bool) {
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	tree, ok := g.trees[treeSHA]
+	if !ok {
+		return nil, false
+	}
+	files := make(map[string]fakeGHTreeEntry, len(tree.Files))
+	for name, entry := range tree.Files {
+		files[name] = entry
+	}
+	return files, true
 }
 
 func (g *fakeGitHub) CommitExists(sha string) bool {

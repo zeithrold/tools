@@ -83,7 +83,12 @@ async function assertTimingReport(consumer, directory, status, expectedCases) {
   }
 }
 
-export async function consumerSmoke(spec, label) {
+/**
+ * Install a consumer for one package spec and verify its public surface. With
+ * `browser: false` the native CSS, type and package checks stay, and the
+ * skipped browser evidence is recorded instead of reported as verified.
+ */
+export async function consumerSmoke(spec, label, { browser = true } = {}) {
   const consumer = await mkdtemp(path.join(os.tmpdir(), 'ztd-frontend-consumer-'))
   await writeConsumerFiles(consumer, spec)
   execFileSync('pnpm', ['install'], { cwd: consumer, stdio: 'inherit' })
@@ -96,10 +101,15 @@ export async function consumerSmoke(spec, label) {
   ], { cwd: consumer, encoding: 'utf8' }))
   assert.equal(report.status, 'passed')
   await checkTypes(consumer)
-  await checkBrowserPass(consumer)
-  await checkBrowserFailure(consumer)
-  process.stdout.write(`${label} imports, types, CSS CLI and browser pass/failure evidence verified in ${consumer}\n`)
-  return consumer
+  if (browser) {
+    await checkBrowserPass(consumer)
+    await checkBrowserFailure(consumer)
+    process.stdout.write(`${label} imports, types, CSS CLI and browser pass/failure evidence verified in ${consumer}\n`)
+  }
+  else {
+    process.stdout.write(`${label} imports, types and CSS CLI verified in ${consumer}; browser evidence skipped\n`)
+  }
+  return { consumer, browserEvidence: browser ? 'verified' : 'skipped' }
 }
 
 async function writeConsumerFiles(consumer, spec) {

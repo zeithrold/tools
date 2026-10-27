@@ -11,8 +11,9 @@ migrations. The owner reviews upstream changes; consumers review their own sourc
 No automatic updater or production migration is included.
 
 First-party source and documentation are MIT licensed (`meta.license: MIT`). Keep the delivered
-`LICENSE` and `THIRD_PARTY_NOTICES.md` with copied source and adaptations. shadcn and the Radix patch
-retain their original MIT notices in `third-party/`; Noto fonts retain OFL-1.1. Installed dependencies
+`LICENSE` and `THIRD_PARTY_NOTICES.md` with copied source and adaptations. shadcn, Radix, Vaul and the
+supplied react-remove-scroll-bar notice are delivered as their original MIT texts in `third-party/`.
+Noto fonts stay with Google under OFL-1.1 upstream and no OFL copy is delivered. Installed dependencies
 keep their upstream licenses. An MIT item license does not relicense those third-party materials.
 
 ## Install a pinned source revision
@@ -84,7 +85,7 @@ layout is compiled from delivered TSX. Optional Serif is `styles/fonts-serif.css
 patch prevents module-load style injection; its static behavior CSS is already included. Fonts load directly from the Google Fonts API, with English/CJK Noto Sans and Noto Color
 Emoji for all emoji. There are no font binaries or Fontsource dependencies. Read the delivered `fonts.md` for
 language-specific glyphs, weights, third-party requests, CSP, privacy and remote-font mutability.
-Preserve the delivered MIT and Noto OFL notices.
+Preserve the delivered MIT notices; the Noto OFL-1.1 terms are the upstream families' own.
 
 Use the installed Lucide components for action, navigation and status icons, with consistent size,
 stroke and alignment by role. Give icon-only controls an accessible name; decorative SVGs use
