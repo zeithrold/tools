@@ -10,7 +10,7 @@ synthesis, not redistributed upstream templates, code or scripts. This map does
 not certify upstream file licenses: copying or adapting protected expression
 still requires a file/version-specific rights check and applicable notices.
 
-For every row below, the material identity is **original conceptual synthesis**,
+For every row in the mechanism table below, the material identity is **original conceptual synthesis**,
 not a copied or translated upstream artifact. Source terms have **not been
 re-audited for redistribution**; that is an explicit unknown, not licensing
 clearance or a claim that copying would be allowed. Mechanisms were selected
@@ -66,6 +66,33 @@ CI and summarize remaining gaps in the handoff.
 | X2 | Source lineage, trust, expiry/revocation and contamination retention — CL-X, LM | [Envelope](../skills/evolution-proposals/references/candidate-envelope.md); runtime enforcement deferred | A source change/revocation invalidates dependent proposals; summaries cannot launder trust |
 | X3 | Independent permissions/data/evidence; safety before mean score — GP, OH | [Evaluation](../skills/evolution-proposals/references/evaluation.md); evaluator enforcement deferred | Candidate development cannot alter the evaluator or read sealed answers; no benefit offsets a safety violation |
 | X4 | Candidate identity, reviewed activation, recoverable versions and bounded budgets — HE, CL-X | [Activation](../skills/evolution-proposals/references/activation.md); `zt evolve` prepare/plan/check/submit/status released in v0.2.0, activation deferred | Digest-bound approval ships; live acceptance requires run-specific evidence. Recoverable activation and a complete isolated evaluation budget/capability boundary remain unimplemented |
+
+## Complexity decision synthesis
+
+This extension belongs to `task-planning`, not a new universally triggered Skill.
+It applies when a design introduces maintenance surface or supporting work starts
+expanding the task; ordinary direct fixes and settled execution remain excluded.
+The source mechanisms below are conceptually adopted in original prose, without
+copying or translating upstream text, examples, templates or scripts.
+
+| Pinned source and terms | Mechanism and destination | Adaptation |
+| --- | --- | --- |
+| [Karpathy Guidelines](https://github.com/multica-ai/andrej-karpathy-skills/blob/2c606141936f1eeef17fa3043a72095b4765b9c2/skills/karpathy-guidelines/SKILL.md), sections 2–4; file declares MIT (repository license endpoint unavailable) | Current scope and direct solutions; `task-planning/SKILL.md`, “Choose the smallest sufficient mechanism” and “Execution” | No rigid line-count or single-use abstraction ban; preserve necessary boundaries and stop scope expansion at acceptance |
+| [Boring Engineering](https://github.com/alvindemesadev/boring-engineering/blob/34dae8cd569039f544c34f9553ff33a45a6ce70f/SKILL.md), requirement/reuse/simplicity/abstraction steps; MIT | Reuse preference and common-change justification; “Choose the smallest sufficient mechanism” | No mandatory step report, compact-formatting rule or numerical abstraction threshold |
+| [Lazy Senior](https://github.com/kiku-jw/codex-skills/blob/8cca6d0585623fa6a78275d213d9f5f19d7b4e9c/lazy-senior/SKILL.md), decision ladder and safety floor; repository MIT | Prefer existing capabilities and justify new surface; “Choose the smallest sufficient mechanism” | No automatic external research, worker, receipt, debt ledger or line-count escalation; scope reductions require authorization |
+| [Simplicity Review](https://github.com/eliias/skills/blob/59fd8ea95d49ef8083c4db588a040f3860c95d55/plugins/great-code/skills/simplicity-review/SKILL.md), complexity separation and counterarguments; repository MIT | Maintenance burden and strongest retention rationale; “Choose the smallest sufficient mechanism” and “Complexity reset” | No seven-phase review, mental-hop score or mandatory report; compare repair, reduction and native replacement |
+
+Internal synthesis adds the application to supporting infrastructure, historical
+obligations and non-converging delivery. An owner-requested retrospective supplied
+the failure hypothesis; no private transcript, consumer-specific policy or source
+code is redistributed here. One retrospective does not establish general efficacy.
+
+Status: **unevaluated guidance candidate**. GPT-6.1-Sol authored the synthesis;
+the owner authorized a GitHub PR with verification deferred, not global
+installation or behavioral acceptance. No static validation, native-task trials,
+activation comparisons or independent acceptance review were run for this
+extension. Revisit these rules if they cause unnecessary planning, research or
+removal of required safeguards; behavioral acceptance remains open.
 
 ## Deliberate exclusions and deferrals
 
