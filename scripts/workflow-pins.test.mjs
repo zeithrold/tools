@@ -2,6 +2,21 @@ import assert from 'node:assert/strict'
 import { readdir, readFile } from 'node:fs/promises'
 import { test } from 'node:test'
 
+test('Go and frontend CI are separate workflows without a custom selector', async () => {
+  const base = new URL('../.github/workflows/', import.meta.url)
+  const go = await readFile(new URL('ci.yml', base), 'utf8')
+  const frontend = await readFile(new URL('frontend-ci.yml', base), 'utf8')
+  assert.ok(!go.includes('playwright'), 'Go CI does not install or invoke browsers')
+  assert.ok(go.includes('go test ./...'))
+  assert.ok(frontend.includes('    paths:'), 'GitHub selects frontend changes natively')
+  assert.ok(frontend.includes('if: matrix.node == 24'))
+  for (const workflow of [go, frontend]) {
+    assert.ok(!workflow.includes('workflow-selection'))
+    assert.ok(!workflow.includes('VERIFY_FRONTEND'))
+    assert.ok(!workflow.includes('  scope:'))
+  }
+})
+
 test('external Actions use consistent full commit SHA pins and version comments', async () => {
   const directory = new URL('../.github/workflows/', import.meta.url)
   const pins = new Map()
