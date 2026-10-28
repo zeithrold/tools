@@ -73,6 +73,12 @@ A brief missing any of these produces work that looks finished and cannot be
 trusted. [Handoff](references/handoff.md) has each field in detail plus a full
 worked example.
 
+When seeking coordination advice after scope growth or repeated blockers, ask
+whether the work still serves the user's authorized outcome, not only how to
+continue within technical bounds. Present the original outcome and the decision
+still open; an implementation coordinator's or parent agent's technical approval
+is not evidence that the user accepted the expanded scope.
+
 ## Shared files and interfaces get one owner
 
 Parallel work fails predictably at the shared file. The rule is one owner, not
