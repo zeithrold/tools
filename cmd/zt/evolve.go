@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/zeithrold/tools/internal/evolve"
+	"github.com/zeithrold/tools/internal/skills"
 )
 
 // evolveLong states the contract of this slice: a structured replacement
@@ -25,6 +26,10 @@ prepare validates a proposal against a trusted operator policy and a pinned loca
 upstream commit, then writes only .zt/artifacts/evolve/<content-id>/candidate.json
 below --root. plan re-reads such a candidate and repeats every one of those checks;
 both are offline and read-only beyond prepare's own artifact directory.
+
+from-installed derives replacements from one edited managed global Skill after
+matching its entire pinned base Skill to the installation lock digest. It uses
+prepare's candidate rules without modifying the installation or fetching objects.
 
 check runs the trusted validation contract against a complete materialised pinned
 base with the candidate applied. It only executes with --trusted-local-execution:
@@ -51,11 +56,54 @@ func newEvolveCommand(a *app) *cobra.Command {
 	}
 	cmd.AddCommand(
 		newEvolvePrepareCommand(a),
+		newEvolveFromInstalledCommand(a),
 		newEvolvePlanCommand(a),
 		newEvolveCheckCommand(a),
 		newEvolveSubmitCommand(a),
 		newEvolveStatusCommand(a),
 	)
+	return cmd
+}
+
+func newEvolveFromInstalledCommand(a *app) *cobra.Command {
+	options := evolve.FromInstalledOptions{}
+	var asJSON bool
+	cmd := &cobra.Command{
+		Use:   "from-installed",
+		Short: "Prepare a candidate from one modified managed global Skill",
+		Long: "from-installed compares one managed global Skill with an explicitly supplied pinned local base. " +
+			"The complete base Skill must match its installation lock digest. It derives replacements and preimage hashes, " +
+			"then uses the same candidate validation and storage as prepare. It never modifies the installation, " +
+			"fetches objects, merges changes, runs checks or approves publication. Deletions and out-of-scope changes are refused.",
+		Args: noPositionalArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := requireEvolveFlags(cmd, "skill", "policy", "upstream", "source-repository", "source-commit", "license", "reason"); err != nil {
+				return err
+			}
+			home, err := a.homeDir()
+			if err != nil {
+				return fmt.Errorf("resolve home directory: %w", err)
+			}
+			options.Installed = skills.GlobalTarget(home)
+			result, err := evolve.FromInstalled(cmd.Context(), options)
+			if err != nil {
+				return err
+			}
+			if asJSON {
+				return writeJSON(a.stdout, result)
+			}
+			return renderPrepare(a.stdout, result)
+		},
+	}
+	cmd.Flags().StringVar(&options.Skill, "skill", "", "one managed global Skill id")
+	cmd.Flags().StringVar(&options.Policy, "policy", "", "trusted operator policy JSON file")
+	cmd.Flags().StringVar(&options.Upstream, "upstream", "", "local Git repository holding the pinned installation baseline")
+	cmd.Flags().StringVar(&options.Root, "root", ".", "existing local workspace that owns .zt/artifacts/evolve")
+	cmd.Flags().StringVar(&options.Provenance.Repository, "source-repository", "", "declared source of the proposed material as owner/name")
+	cmd.Flags().StringVar(&options.Provenance.Commit, "source-commit", "", "declared full lowercase source commit of the proposed material")
+	cmd.Flags().StringVar(&options.Provenance.License, "license", "", "declared redistribution license as one SPDX identifier")
+	cmd.Flags().StringVar(&options.Provenance.Reason, "reason", "", "why the Skill should change")
+	cmd.Flags().BoolVar(&asJSON, "json", false, "machine-readable result")
 	return cmd
 }
 

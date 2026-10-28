@@ -2,15 +2,16 @@
 
 `zt evolve` implements the local candidate stage, an explicit trusted-local
 verification stage, and an idempotent draft pull request stage:
-`prepare`, `plan`, `check`, `submit` and `status`. It never merges, publishes,
+`prepare`, `from-installed`, `plan`, `check`, `submit` and `status`. It never merges, publishes,
 activates, force-updates a ref or reopens a closed pull request, and it never
-generates a candidate. The [proposal Skill](../skills/evolution-proposals/SKILL.md)
+generates guidance with a model. The [proposal Skill](../skills/evolution-proposals/SKILL.md)
 explains the wider method; activation, rollback and revocation remain outside
 this command surface.
 
 | Command | What it does | Effects |
 | --- | --- | --- |
 | `prepare` | Validates a proposal against the trusted policy and a pinned local base, writes one immutable candidate | Writes only `.zt/artifacts/evolve/<content-id>/candidate.json` |
+| `from-installed` | Derives replacements from one edited managed global Skill after matching the complete pinned Skill to its installation lock digest, then prepares a candidate | Same candidate-only writes as `prepare`; installation and lock remain untouched |
 | `plan` | Re-reads and re-validates a stored candidate | None: no write, credential, network or execution |
 | `check` | Runs the trusted validation contract against a complete materialised pinned base with the candidate applied | Executes native commands, but only with `--trusted-local-execution`; writes its own result, logs and workspace |
 | `submit` | Requires a passed local verification and an approval naming the exact candidate, target, base, validation contract and public payload, then opens one draft pull request, returns an exact existing one, or completes a verified branch missing only its pull request | Remote writes only through the GitHub App credential; a serialised, monotone local journal records each step |
@@ -76,6 +77,56 @@ this slice; the license field accepts a single identifier.
 
 Optional `evidence` entries contain only `label` and a SHA-256 `digest`; they are
 opaque declarations, never dereferenced local paths or URLs.
+
+## Prepare from an installed Skill
+
+For a managed Skill edited under `~/.agents/skills`, the CLI can derive the
+replacement set and preimage hashes instead of requiring a proposal JSON:
+
+```sh
+zt evolve from-installed --skill example-skill \
+  --policy policy.json --upstream /path/to/local/upstream \
+  --root /path/to/workspace \
+  --source-repository example/source --source-commit FULL_LOWERCASE_SOURCE_COMMIT \
+  --license MIT --reason "Clarify the failure and recovery path" --json
+```
+
+The operator still supplies the trusted policy and declares the proposed
+material's source, license and reason. Those declarations do not become verified
+provenance or redistribution rights. This convenience command does not generate
+wording, evidence, validation results or approval; use `prepare` for a proposal
+carrying explicit evidence references.
+
+The current installation lock records a version and an aggregate content digest,
+not a repository or immutable source commit. `from-installed` therefore requires
+an explicit local repository and a policy pin whose **entire selected Skill**
+matches that recorded digest. It never resolves a version label as a Git ref or
+guesses an upstream from the current CLI version. This also supports old managed
+installations when the operator supplies a content-matching base. Matching proves
+content correspondence, not the repository's ownership or the truth of source
+declarations.
+
+Only the selected managed Skill is read. Changed and new files become complete
+replacements; unchanged files are excluded. No change, a missing management
+record, mismatched base, deletion, symlink, non-regular file, executable base file,
+unsupported changed path or exceeded bound refuses the operation without writing
+a candidate. Reads are bounded to 4096 entries, 4 MiB per file and 32 MiB total
+for each installed/base Skill snapshot; generated replacements retain the
+existing eight-file, UTF-8 and content-size limits.
+
+Local edits are the input, not an installation conflict to overwrite. The command
+does not change the installed directory, its lock, the upstream worktree or index.
+It does not fetch, merge or rebase. If the target base's Skill differs from the
+installed baseline, use a matching pinned base or explicitly review replacements
+for `prepare`; do not resync over edits to make this command work.
+
+The output is the same immutable candidate/result as `prepare`, so continue with
+`plan`, `check` and exact-payload approval and submission below. Identical inputs
+produce the same candidate as an equivalent explicit proposal. Network object
+caching, automatic installation-source recording and multiple Skills per
+candidate remain separate follow-ups.
+
+## Proposal encoding
 
 Field names are case-sensitive and required fields must be present with their
 declared types. Duplicate/unknown keys, `null`, malformed UTF-8 and unpaired
