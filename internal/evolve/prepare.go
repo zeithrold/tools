@@ -46,6 +46,12 @@ func Prepare(ctx context.Context, options PrepareOptions) (PrepareResult, error)
 	if err != nil {
 		return PrepareResult{}, err
 	}
+	return prepareProposal(ctx, repo, policy, value, options.Root)
+}
+
+// prepareProposal is the common candidate validation and storage path for
+// explicit proposals and replacements derived from an installed snapshot.
+func prepareProposal(ctx context.Context, repo *Repo, policy Policy, value proposal, root string) (PrepareResult, error) {
 	candidate, err := value.toCandidate(policy)
 	if err != nil {
 		return PrepareResult{}, err
@@ -67,7 +73,7 @@ func Prepare(ctx context.Context, options PrepareOptions) (PrepareResult, error)
 	if err := ctx.Err(); err != nil {
 		return PrepareResult{}, err
 	}
-	store, err := openStore(options.Root)
+	store, err := openStore(root)
 	if err != nil {
 		return PrepareResult{}, err
 	}
