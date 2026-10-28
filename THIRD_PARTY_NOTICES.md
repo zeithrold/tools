@@ -8,10 +8,16 @@ distribution boundaries are in
 [docs/licensing.md](https://github.com/zeithrold/tools/blob/main/docs/licensing.md).
 
 CLI distributions retain the Go runtime's BSD notice and the applicable
-Apache-2.0, BSD and MIT module originals in `third-party/`. Those files are
-also embedded in the executable and readable with `zt license`; the root
-MIT grant does not replace them. The identical x/sys and x/term BSD/patent
-notices share the `X-SYS-*` files.
+Apache-2.0, BSD, BSD-2-Clause and MIT module originals in `third-party/`.
+Those files are also embedded in the executable and readable with `zt license`;
+the root MIT grant does not replace them. The Go 1.26.0 runtime and pinned
+x/net, x/sys and x/term license texts are byte-identical and share
+`GO-BSD.txt`; their identical patent grants share `X-SYS-PATENTS.txt`.
+
+`filepath-securejoin` has a mixed, file-level BSD-3-Clause/MPL-2.0 upstream
+license. The selected platform file lists include only its BSD-3-Clause files;
+both the original `LICENSE.BSD` and upstream `COPYING.md` are retained. The
+index documents the exact scope without asserting legal clearance.
 
 UI deliveries retain required copied-code and patch notices. Remote Google
 Fonts are not bundled; their OFL terms and upstream links are documented in

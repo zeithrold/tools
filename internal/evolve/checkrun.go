@@ -142,7 +142,7 @@ func Verify(ctx context.Context, options CheckOptions) (CheckResult, error) {
 	if err != nil {
 		return CheckResult{}, err
 	}
-	repo, err := OpenRepo(ctx, options.Upstream)
+	repo, err := resolveUpstream(ctx, options.Upstream, options.Root, policy)
 	if err != nil {
 		return CheckResult{}, err
 	}

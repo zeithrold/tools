@@ -25,7 +25,7 @@ release archives and CI binary artifacts. A link alone does not replace them.
 
 | Pinned module | License and upstream source | Retained original, relative to repository root |
 | --- | --- | --- |
-| Go runtime / standard library | [BSD-3-Clause, The Go Authors](https://go.googlesource.com/go/+/refs/tags/go1.24.13/LICENSE) | `third-party/GO-BSD.txt` |
+| Go runtime / standard library, minimum Go 1.26.0 | [BSD-3-Clause, The Go Authors](https://go.googlesource.com/go/+/refs/tags/go1.26.0/LICENSE) | `third-party/GO-BSD.txt` |
 | `github.com/spf13/cobra@v1.10.2` | [Apache-2.0, The Cobra Authors](https://github.com/spf13/cobra/blob/v1.10.2/LICENSE.txt) | `third-party/COBRA-APACHE-2.0.txt` |
 | `github.com/spf13/pflag@v1.0.9` | [BSD-3-Clause, Alex Ogier / The Go Authors](https://github.com/spf13/pflag/blob/v1.0.9/LICENSE) | `third-party/PFLAG-BSD-3-CLAUSE.txt` |
 | `github.com/inconshreveable/mousetrap@v1.1.0` | [Apache-2.0, Alan Shreve](https://github.com/inconshreveable/mousetrap/blob/v1.1.0/LICENSE) | `third-party/MOUSETRAP-APACHE-2.0.txt` |
@@ -36,11 +36,35 @@ release archives and CI binary artifacts. A link alone does not replace them.
 | `github.com/godbus/dbus@v0.0.0-20190726142602-4481cbc300e2` | [BSD-2-Clause, Georg Reinke](https://github.com/godbus/dbus/blob/4481cbc300e2/LICENSE) | `third-party/GODBUS-DBUS-BSD-2-CLAUSE.txt` |
 | `github.com/dvsekhvalnov/jose2go@v1.5.0` | [MIT, upstream copyright 2014](https://github.com/dvsekhvalnov/jose2go/blob/v1.5.0/LICENSE) | `third-party/JOSE2GO-MIT.txt` |
 | `github.com/mtibben/percent@v0.2.1` | [MIT, Michael Tibben](https://github.com/mtibben/percent/blob/v0.2.1/LICENSE) | `third-party/PERCENT-MIT.txt` |
-| `golang.org/x/sys@v0.3.0` | [BSD-3-Clause and patent grant, The Go Authors](https://go.googlesource.com/sys/+/refs/tags/v0.3.0/LICENSE) | `third-party/X-SYS-BSD-3-CLAUSE.txt`, `third-party/X-SYS-PATENTS.txt` |
-| `golang.org/x/term@v0.3.0` | [BSD-3-Clause and patent grant, The Go Authors](https://go.googlesource.com/term/+/refs/tags/v0.3.0/LICENSE) | `third-party/X-SYS-BSD-3-CLAUSE.txt`, `third-party/X-SYS-PATENTS.txt` |
+| `github.com/cyphar/filepath-securejoin@v0.6.1` | [BSD-3-Clause for compiled files, LICENSE.BSD](https://github.com/cyphar/filepath-securejoin/blob/v0.6.1/LICENSE.BSD); [upstream aggregate BSD-3-Clause AND MPL-2.0, COPYING.md](https://github.com/cyphar/filepath-securejoin/blob/v0.6.1/COPYING.md) | `third-party/FILEPATH-SECUREJOIN-BSD-3-CLAUSE.txt`, `third-party/FILEPATH-SECUREJOIN-COPYING.md` |
+| `github.com/go-git/gcfg@v1.5.1-0.20230307220236-3a3c6141e376` | [BSD-3-Clause, Péter Surányi / The Go Authors](https://github.com/go-git/gcfg/blob/3a3c6141e376c06bf6ca92f0450e974250b4367a/LICENSE) | `third-party/GCFG-BSD-3-CLAUSE.txt` |
+| `github.com/go-git/go-billy/v5@v5.9.2` | [Apache-2.0, go-billy contributors](https://github.com/go-git/go-billy/blob/v5.9.2/LICENSE) | `third-party/GO-BILLY-APACHE-2.0.txt` |
+| `github.com/go-git/go-git/v5@v5.19.3` | [Apache-2.0, go-git contributors](https://github.com/go-git/go-git/blob/v5.19.3/LICENSE) | `third-party/GO-GIT-APACHE-2.0.txt` |
+| `github.com/golang/groupcache@v0.0.0-20241129210726-2c02b8208cf8` | [Apache-2.0, Google](https://github.com/golang/groupcache/blob/2c02b8208cf8c02a3e358cb1d9b60950647543fc/LICENSE) | `third-party/GROUPCACHE-APACHE-2.0.txt` |
+| `github.com/jbenet/go-context@v0.0.0-20150711004518-d14ea06fba99` | [MIT, Juan Batiz-Benet](https://github.com/jbenet/go-context/blob/d14ea06fba99/LICENSE) | `third-party/GO-CONTEXT-MIT.txt` |
+| `github.com/pjbgf/sha1cd@v0.7.0` | [Apache-2.0, pjbgf](https://github.com/pjbgf/sha1cd/blob/v0.7.0/LICENSE) | `third-party/SHA1CD-APACHE-2.0.txt` |
+| `golang.org/x/net@v0.57.0` | [BSD-3-Clause](https://go.googlesource.com/net/+/refs/tags/v0.57.0/LICENSE) and [patent grant](https://go.googlesource.com/net/+/refs/tags/v0.57.0/PATENTS), The Go Authors | `third-party/GO-BSD.txt`, `third-party/X-SYS-PATENTS.txt` |
+| `golang.org/x/sys@v0.47.0` | [BSD-3-Clause](https://go.googlesource.com/sys/+/refs/tags/v0.47.0/LICENSE) and [patent grant](https://go.googlesource.com/sys/+/refs/tags/v0.47.0/PATENTS), The Go Authors | `third-party/GO-BSD.txt`, `third-party/X-SYS-PATENTS.txt` |
+| `golang.org/x/term@v0.45.0` | [BSD-3-Clause](https://go.googlesource.com/term/+/refs/tags/v0.45.0/LICENSE) and [patent grant](https://go.googlesource.com/term/+/refs/tags/v0.45.0/PATENTS), The Go Authors | `third-party/GO-BSD.txt`, `third-party/X-SYS-PATENTS.txt` |
+| `gopkg.in/warnings.v0@v0.1.2` | [BSD-2-Clause, Péter Surányi](https://github.com/go-warnings/warnings/blob/v0.1.2/LICENSE) | `third-party/WARNINGS-BSD-2-CLAUSE.txt` |
 
-`x/sys` and `x/term` have byte-identical license and patent files at these
-versions; one shared pair retains both originals without duplicate files.
+The Go 1.26.0 runtime `LICENSE` and the pinned `x/net`, `x/sys`, and `x/term`
+`LICENSE` files are byte-identical; `GO-BSD.txt` retains that shared original.
+Their `PATENTS` files are also byte-identical and share `X-SYS-PATENTS.txt`.
+The added Apache-2.0 module originals differ byte-for-byte, so each is retained
+separately with its own upstream attribution text.
+
+`filepath-securejoin@v0.6.1` declares the project-wide SPDX expression
+`BSD-3-Clause AND MPL-2.0`, but its upstream `COPYING.md` assigns licenses per
+file and says file headers take precedence. For the selected go-git import set,
+`go list -deps -json` on darwin/amd64, linux/amd64, and windows/amd64 selects only
+`filepath-securejoin/doc.go`, `join.go`, `vfs.go`, and
+`internal/consts/consts.go` from that module; each has a BSD-3-Clause header.
+No `pathrs-lite` package appears in those target selections. Both the unmodified
+upstream `LICENSE.BSD` and `COPYING.md` are retained; `COPYING.md` includes the
+full MPL-2.0 text as context for the module's other files. This records
+file-level attribution and package selection, not legal clearance.
+
 Platform-specific modules stay in this index because the CLI ships for Linux,
 macOS and Windows. Keyring compiles additional backends even when zt does not
 select them; `go-libsecret` is pure Go over D-Bus, not the C LGPL library.

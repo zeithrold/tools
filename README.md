@@ -28,7 +28,7 @@ installation/rollback, and removing an old mise Go-backend installation before a
 
 ## Try it locally
 
-With Go 1.25 or newer (required for handle-relative Skill directory mutations):
+With Go 1.26 or newer (required by the authenticated Git fetch dependency):
 
 ```sh
 go test ./...
@@ -55,7 +55,7 @@ If an older mise Go-backend installation already provides `zt`, follow the
 to remove its global request and installation after verifying the replacement.
 Upgrading the binary does not synchronize global Skills.
 
-Alternatively, build the tagged source with Go 1.25 or newer:
+Alternatively, build the tagged source with Go 1.26 or newer:
 
 ```sh
 go install github.com/zeithrold/tools/cmd/zt@v0.2.0

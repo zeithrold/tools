@@ -91,7 +91,7 @@ func openStore(workspace string) (*Store, error) {
 func openChild(parent *os.Root, name, display string) (*os.Root, error) {
 	info, err := parent.Lstat(name)
 	if errors.Is(err, os.ErrNotExist) {
-		if err := parent.Mkdir(name, 0755); err != nil {
+		if err := parent.Mkdir(name, 0755); err != nil && !errors.Is(err, os.ErrExist) {
 			return nil, fmt.Errorf("create %s: %w", display, err)
 		}
 		if info, err = parent.Lstat(name); err != nil {

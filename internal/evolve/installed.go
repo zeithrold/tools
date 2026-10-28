@@ -54,7 +54,7 @@ func FromInstalled(ctx context.Context, options FromInstalledOptions) (PrepareRe
 	if err != nil {
 		return PrepareResult{}, fmt.Errorf("from-installed: %w", err)
 	}
-	repo, err := OpenRepo(ctx, options.Upstream)
+	repo, err := resolveUpstream(ctx, options.Upstream, options.Root, policy)
 	if err != nil {
 		return PrepareResult{}, err
 	}

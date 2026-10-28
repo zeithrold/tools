@@ -47,6 +47,10 @@ type app struct {
 	// selected host and repository. Only `evolve submit` and `evolve status
 	// --remote` call it, so no other command reaches the keystore or the network.
 	openAPI func(ctx context.Context, host, clientID, profile, repository string) (githubauth.API, error)
+
+	// openGit is used only by the explicit evolve upstream fetch command.
+	// Offline cache discovery and consumption never construct a credential.
+	openGit func(ctx context.Context, host, clientID, profile, repository string) (githubauth.GitEndpoint, error)
 }
 
 func newApp(stdout, stderr io.Writer) *app {
@@ -61,6 +65,7 @@ func newApp(stdout, stderr io.Writer) *app {
 	a.isTTY = func() bool { return isTerminal(a.stdout) || isTerminal(a.stderr) }
 	a.newAuth = newAuthService
 	a.openAPI = newOpenAPI
+	a.openGit = newOpenGit
 	return a
 }
 

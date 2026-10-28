@@ -42,7 +42,7 @@ func Prepare(ctx context.Context, options PrepareOptions) (PrepareResult, error)
 	if !policy.allows(value.Skill) {
 		return PrepareResult{}, fmt.Errorf("proposal: skill %s is not allowed by the operator policy", safeQuote(value.Skill))
 	}
-	repo, err := OpenRepo(ctx, options.Upstream)
+	repo, err := resolveUpstream(ctx, options.Upstream, options.Root, policy)
 	if err != nil {
 		return PrepareResult{}, err
 	}
