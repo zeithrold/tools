@@ -90,6 +90,20 @@ func newOpenAPI(ctx context.Context, host, clientID, profile, repository string)
 	return api, nil
 }
 
+func newOpenGit(ctx context.Context, host, clientID, profile, repository string) (githubauth.GitEndpoint, error) {
+	client, err := newAuthClient(host)
+	if err != nil {
+		return githubauth.GitEndpoint{}, err
+	}
+	endpoint, err := client.OpenGit(ctx, githubauth.Options{
+		Host: host, ClientID: clientID, Profile: profile, TargetRepository: repository,
+	})
+	if err != nil {
+		return githubauth.GitEndpoint{}, wrapAuthError(err)
+	}
+	return endpoint, nil
+}
+
 func newAuthCommand(a *app) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "auth",

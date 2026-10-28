@@ -211,13 +211,13 @@ func TestEvolveRegistersNoPatchFlag(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, required := range []string{"policy", "upstream"} {
+	for _, required := range []string{"policy", "upstream", "root"} {
 		if planned.Flags().Lookup(required) == nil {
 			t.Fatalf("evolve plan is missing --%s", required)
 		}
 	}
-	if planned.Flags().Lookup("root") != nil {
-		t.Fatal("evolve plan accepted --root; it must only read the candidate it is given")
+	if planned.Flags().Lookup("root").DefValue != "." {
+		t.Fatal("evolve plan must default to the current workspace's read-only cache")
 	}
 }
 

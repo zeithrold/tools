@@ -2,7 +2,7 @@
 
 `zt evolve` implements the local candidate stage, an explicit trusted-local
 verification stage, and an idempotent draft pull request stage:
-`prepare`, `from-installed`, `plan`, `check`, `submit` and `status`. It never merges, publishes,
+`prepare`, `from-installed`, `plan`, `check`, `submit`, `status` and `upstream`. It never merges, publishes,
 activates, force-updates a ref or reopens a closed pull request, and it never
 generates guidance with a model. The [proposal Skill](../skills/evolution-proposals/SKILL.md)
 explains the wider method; activation, rollback and revocation remain outside
@@ -16,6 +16,76 @@ this command surface.
 | `check` | Runs the trusted validation contract against a complete materialised pinned base with the candidate applied | Executes native commands, but only with `--trusted-local-execution`; writes its own result, logs and workspace |
 | `submit` | Requires a passed local verification and an approval naming the exact candidate, target, base, validation contract and public payload, then opens one draft pull request, returns an exact existing one, or completes a verified branch missing only its pull request | Remote writes only through the GitHub App credential; a serialised, monotone local journal records each step |
 | `status` | Reports local state; `--remote` additionally reads the pull request and GitHub's checks | Local reads only unless `--remote` is passed |
+| `upstream status` | Reports whether the complete pinned baseline is locally usable | No write, credential, network or validation execution |
+| `upstream fetch` | Acquires exact Git objects through the stored GitHub App credential with `--allow-network`, or reuses a complete cache | Writes only a staged then verified bare cache under `.zt/artifacts/evolve/upstreams/`; no remote writes |
+
+## Managed upstream baseline (no user checkout)
+
+An explicit local `--upstream` is still supported. Alternatively, populate a
+workspace-owned bare cache once, then omit `--upstream` from the existing stages:
+
+```sh
+# Local readiness only. Missing or damaged objects do not trigger a download.
+zt evolve upstream status --policy policy.json --root /path/to/workspace --json
+
+# Explicit network/credential operation. The policy supplies host, repo and commit.
+zt evolve upstream fetch --policy policy.json --root /path/to/workspace \
+  --allow-network --client-id Iv1.example --profile default --json
+
+zt evolve from-installed --skill example-skill --policy policy.json \
+  --root /path/to/workspace \
+  --source-repository example/source --source-commit FULL_LOWERCASE_SOURCE_COMMIT \
+  --license MIT --reason "Clarify recovery" --json
+
+zt evolve plan CANDIDATE.json --policy policy.json --root /path/to/workspace --json
+zt evolve check CANDIDATE.json --policy policy.json --root /path/to/workspace \
+  --validation validation.json --trusted-local-execution --json
+```
+
+The cache key binds the host, repository and exact commit, not a mutable branch.
+It contains the original commit (including its original signature, parents,
+timestamps and message bytes), trees and all baseline blobs. A shallow history
+boundary is allowed; a partial/blobless baseline is not. Fetching never checks out
+files or changes a user's repository, worktree or index. It does not recursively
+fetch submodules, expand LFS pointers, approve publication or run validation.
+
+Downloads use an in-process `go-git` client and a separate repository-bound
+GitHub App HTTPS transport. The REST endpoint's permissions are unchanged.
+Only upload-pack discovery and reads are allowed; redirects, other repositories,
+receive-pack and non-HTTPS production endpoints are refused. The existing OS
+keystore and App credential refresh lifecycle are reused, with no PAT, environment
+token, plaintext credential or credential-bearing Git subprocess fallback.
+Tokens are never persisted in the bare repository's URL or configuration.
+
+Downloads are staged independently and published only after native object
+integrity/connectivity and complete baseline reads pass. Baselines retain the
+verification limits below (4096 tracked entries, 4 MiB per file, 32 MiB total)
+and regular-file mode restrictions. Discovery responses are capped at 1 MiB;
+packfile payloads at 128 MiB, with a 1 MiB allowance for preceding protocol
+headers and a five-minute fetch deadline. These are transfer and final baseline
+limits, not a sandbox or a bound on decompression/index memory while the Git
+library ingests objects. GitHub caching supports SHA-1 repositories;
+explicit local upstreams retain SHA-256 support. There is no automatic eviction
+or repair: a damaged existing cache is refused, not overwritten. Inspect the
+reported owned path before manually removing it, or supply an explicit upstream.
+An interrupted download is not a ready cache; normal error/cancellation paths
+remove their own staging directory, while process termination can leave a
+`.fetch-*` stage.
+
+`upstream status` distinguishes `ready`, `missing` and `blocked`, includes the
+next fetch command as an argument array, and reports authentication as
+`not_checked` and checks as `not_run`. It does not claim the App can access the
+repository or any validation passed. Existing-cache reuse also avoids credentials.
+This is baseline readiness, not a general-purpose doctor or publication-readiness
+report.
+
+All subsequent local stages consume the cache without credentials, network or
+cache writes. `plan` additionally accepts `--root` to select that workspace; it
+does not infer a cache from an unrelated candidate directory. Local commands
+never fill a missing cache automatically. A streaming Git request rejected with
+401 may refresh the stored credential but refuse a non-replayable request;
+rerunning the explicit fetch uses the refreshed credential without an unsafe
+automatic replay. App access is not publication approval.
 
 ## Why structured replacements
 
@@ -99,7 +169,7 @@ carrying explicit evidence references.
 
 The current installation lock records a version and an aggregate content digest,
 not a repository or immutable source commit. `from-installed` therefore requires
-an explicit local repository and a policy pin whose **entire selected Skill**
+an explicit local repository or managed cache and a policy pin whose **entire selected Skill**
 matches that recorded digest. It never resolves a version label as a Git ref or
 guesses an upstream from the current CLI version. This also supports old managed
 installations when the operator supplies a content-matching base. Matching proves
@@ -122,9 +192,9 @@ for `prepare`; do not resync over edits to make this command work.
 
 The output is the same immutable candidate/result as `prepare`, so continue with
 `plan`, `check` and exact-payload approval and submission below. Identical inputs
-produce the same candidate as an equivalent explicit proposal. Network object
-caching, automatic installation-source recording and multiple Skills per
-candidate remain separate follow-ups.
+produce the same candidate as an equivalent explicit proposal. Automatic
+installation-source recording and multiple Skills per candidate
+remain separate follow-ups. Managed upstream caching is described above.
 
 ## Proposal encoding
 

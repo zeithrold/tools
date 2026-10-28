@@ -118,7 +118,7 @@ func Submit(ctx context.Context, options SubmitOptions) (SubmitResult, error) {
 	if err != nil {
 		return SubmitResult{}, err
 	}
-	repo, err := OpenRepo(ctx, options.Upstream)
+	repo, err := resolveUpstream(ctx, options.Upstream, options.Root, policy)
 	if err != nil {
 		return SubmitResult{}, err
 	}

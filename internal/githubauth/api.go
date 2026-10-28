@@ -25,31 +25,9 @@ type API struct {
 // possible, and returns a token-free endpoint. Options.TargetRepository
 // (OWNER/NAME) is required.
 func (c *Client) OpenAPI(ctx context.Context, opts Options) (API, error) {
-	if opts.TargetRepository == "" {
-		return API{}, fmt.Errorf("%w: target repository is required (OWNER/NAME)", ErrInvalidOptions)
-	}
-	options, err := c.resolve(opts)
+	options, record, err := c.openCredential(ctx, opts)
 	if err != nil {
 		return API{}, err
-	}
-	if c.Store == nil {
-		return API{}, fmt.Errorf("%w", ErrStoreUnavailable)
-	}
-	record, found, err := c.load(ctx, options)
-	if err != nil {
-		return API{}, err
-	}
-	if !found {
-		return API{}, fmt.Errorf("%w", ErrNotLoggedIn)
-	}
-	if record.TargetRepository != "" && !strings.EqualFold(record.TargetRepository, options.targetRepository) {
-		return API{}, fmt.Errorf("%w: stored target repository does not match the requested repository", ErrAccountMismatch)
-	}
-	if !tokenValid(c.now(), timeFromUnix(record.TokenExpiresAt)) {
-		record, err = c.refresh(ctx, options, record)
-		if err != nil {
-			return API{}, err
-		}
 	}
 
 	baseURL, err := url.Parse(options.endpoints.APIBaseURL)
@@ -61,24 +39,87 @@ func (c *Client) OpenAPI(ctx context.Context, opts Options) (API, error) {
 	baseURL.RawQuery = ""
 	baseURL.Fragment = ""
 
-	var baseTransport http.RoundTripper = http.DefaultTransport
-	if c.httpClient != nil && c.httpClient.Transport != nil {
-		baseTransport = c.httpClient.Transport
-	}
 	transport := &apiTransport{
-		baseURL:    baseURL,
-		target:     options.targetRepository,
-		transport:  baseTransport,
-		client:     c,
-		options:    options,
-		credential: record,
+		tokenTransport: c.newTokenTransport(options, record, "GitHub API"),
+		baseURL:        baseURL,
+		target:         options.targetRepository,
 	}
 	return API{BaseURL: strings.TrimRight(baseURL.String(), "/"), Transport: transport}, nil
 }
 
+// openCredential is the entry shared by the token-free endpoints (OpenAPI and
+// OpenGit). It resolves the options, loads the stored credential, binds it to
+// the requested repository, and refreshes it when it has expired. It makes no
+// repository request of its own, so opening an endpoint never depends on GitHub
+// being reachable.
+func (c *Client) openCredential(ctx context.Context, opts Options) (resolvedOptions, credentialRecord, error) {
+	if opts.TargetRepository == "" {
+		return resolvedOptions{}, credentialRecord{}, fmt.Errorf("%w: target repository is required (OWNER/NAME)", ErrInvalidOptions)
+	}
+	options, err := c.resolve(opts)
+	if err != nil {
+		return resolvedOptions{}, credentialRecord{}, err
+	}
+	if c.Store == nil {
+		return resolvedOptions{}, credentialRecord{}, fmt.Errorf("%w", ErrStoreUnavailable)
+	}
+	record, found, err := c.load(ctx, options)
+	if err != nil {
+		return resolvedOptions{}, credentialRecord{}, err
+	}
+	if !found {
+		return resolvedOptions{}, credentialRecord{}, fmt.Errorf("%w", ErrNotLoggedIn)
+	}
+	if err := credentialBoundToTarget(record, options.targetRepository); err != nil {
+		return resolvedOptions{}, credentialRecord{}, err
+	}
+	if !tokenValid(c.now(), timeFromUnix(record.TokenExpiresAt)) {
+		record, err = c.refresh(ctx, options, record)
+		if err != nil {
+			return resolvedOptions{}, credentialRecord{}, err
+		}
+	}
+	return options, record, nil
+}
+
+// credentialBoundToTarget refuses a credential stored for another repository, so
+// neither a refresh nor a newer record can redirect the token.
+func credentialBoundToTarget(credential credentialRecord, target string) error {
+	if credential.TargetRepository != "" && !strings.EqualFold(credential.TargetRepository, target) {
+		return fmt.Errorf("%w: stored target repository does not match the requested repository", ErrAccountMismatch)
+	}
+	return nil
+}
+
+// apiTransport is the REST half of tokenTransport: it only accepts requests on
+// BaseURL's host within the selected repository's API subtree.
 type apiTransport struct {
-	baseURL   *url.URL
-	target    string
+	tokenTransport
+	baseURL *url.URL
+	target  string
+}
+
+func (t *apiTransport) RoundTrip(request *http.Request) (*http.Response, error) {
+	return t.roundTrip(request, t)
+}
+
+func (t *apiTransport) authorizeRequest(clone *http.Request, accessToken string) {
+	clone.Header.Set("Authorization", "Bearer "+accessToken)
+	clone.Header.Set("Accept", "application/vnd.github+json")
+	clone.Header.Set("User-Agent", "zt-github-auth")
+	clone.Header.Set("X-GitHub-Api-Version", "2022-11-28")
+}
+
+func (t *apiTransport) validateCredentialTarget(credential credentialRecord) error {
+	return credentialBoundToTarget(credential, t.target)
+}
+
+// tokenTransport is the pipeline shared by the token-free endpoints. It keeps
+// the credential in memory, attaches it only to requests its endpointRoute
+// accepts, refreshes once when GitHub answers 401, replays a re-creatable body,
+// and strips credential headers from the response's request.
+type tokenTransport struct {
+	label     string // endpoint name for transport errors, e.g. "GitHub API"
 	transport http.RoundTripper
 	client    *Client
 	options   resolvedOptions
@@ -87,21 +128,49 @@ type apiTransport struct {
 	credential credentialRecord
 }
 
-func (t *apiTransport) RoundTrip(request *http.Request) (*http.Response, error) {
-	if err := t.validateRequest(request); err != nil {
+// endpointRoute is the per-endpoint half of tokenTransport: which requests may
+// carry the credential, and how that credential is presented on them.
+type endpointRoute interface {
+	// validateRequest refuses any request outside the endpoint's selected host
+	// and route before the credential is attached.
+	validateRequest(*http.Request) error
+	// authorizeRequest adds the credential to a private clone of the request,
+	// never to the caller's request.
+	authorizeRequest(clone *http.Request, accessToken string)
+	// validateCredentialTarget checks that a stored or refreshed credential still
+	// belongs to the verified repository.
+	validateCredentialTarget(credentialRecord) error
+}
+
+func (c *Client) newTokenTransport(options resolvedOptions, credential credentialRecord, label string) tokenTransport {
+	var baseTransport http.RoundTripper = http.DefaultTransport
+	if c.httpClient != nil && c.httpClient.Transport != nil {
+		baseTransport = c.httpClient.Transport
+	}
+	return tokenTransport{
+		label:      label,
+		transport:  baseTransport,
+		client:     c,
+		options:    options,
+		credential: credential,
+	}
+}
+
+func (t *tokenTransport) roundTrip(request *http.Request, route endpointRoute) (*http.Response, error) {
+	if err := route.validateRequest(request); err != nil {
 		return nil, err
 	}
 
 	credential := t.currentCredential()
-	if err := t.validateCredentialTarget(credential); err != nil {
+	if err := route.validateCredentialTarget(credential); err != nil {
 		return nil, err
 	}
-	response, err := t.send(request, credential.AccessToken, nil)
+	response, err := t.send(request, route, credential.AccessToken, nil)
 	if err != nil {
-		return nil, remoteTransportError()
+		return nil, t.remoteError()
 	}
 	if response == nil {
-		return nil, remoteTransportError()
+		return nil, t.remoteError()
 	}
 	if response.StatusCode != http.StatusUnauthorized {
 		return response, nil
@@ -112,7 +181,7 @@ func (t *apiTransport) RoundTrip(request *http.Request) (*http.Response, error) 
 	if err != nil {
 		return nil, err
 	}
-	if err := t.validateCredentialTarget(credential); err != nil {
+	if err := route.validateCredentialTarget(credential); err != nil {
 		return nil, err
 	}
 	t.setCredential(credential)
@@ -127,12 +196,9 @@ func (t *apiTransport) RoundTrip(request *http.Request) (*http.Response, error) 
 			return nil, fmt.Errorf("%w: could not recreate the request body for retry", ErrProtocol)
 		}
 	}
-	if err := t.validateCredentialTarget(credential); err != nil {
-		return nil, err
-	}
-	response, err = t.send(request, credential.AccessToken, retryBody)
+	response, err = t.send(request, route, credential.AccessToken, retryBody)
 	if err != nil || response == nil {
-		return nil, remoteTransportError()
+		return nil, t.remoteError()
 	}
 	if response.StatusCode == http.StatusUnauthorized {
 		closeResponse(response)
@@ -141,16 +207,13 @@ func (t *apiTransport) RoundTrip(request *http.Request) (*http.Response, error) 
 	return response, nil
 }
 
-func (t *apiTransport) send(request *http.Request, accessToken string, body io.ReadCloser) (*http.Response, error) {
+func (t *tokenTransport) send(request *http.Request, route endpointRoute, accessToken string, body io.ReadCloser) (*http.Response, error) {
 	clone := request.Clone(request.Context())
 	clone.Header = request.Header.Clone()
 	if clone.Header == nil {
 		clone.Header = make(http.Header)
 	}
-	clone.Header.Set("Authorization", "Bearer "+accessToken)
-	clone.Header.Set("Accept", "application/vnd.github+json")
-	clone.Header.Set("User-Agent", "zt-github-auth")
-	clone.Header.Set("X-GitHub-Api-Version", "2022-11-28")
+	route.authorizeRequest(clone, accessToken)
 	if body != nil {
 		clone.Body = body
 	}
@@ -159,11 +222,8 @@ func (t *apiTransport) send(request *http.Request, accessToken string, body io.R
 	return response, err
 }
 
-func (t *apiTransport) validateCredentialTarget(credential credentialRecord) error {
-	if credential.TargetRepository != "" && !strings.EqualFold(credential.TargetRepository, t.target) {
-		return fmt.Errorf("%w: stored target repository does not match the requested repository", ErrAccountMismatch)
-	}
-	return nil
+func (t *tokenTransport) remoteError() error {
+	return fmt.Errorf("%w: %s transport failed (details omitted)", ErrRemote, t.label)
 }
 
 func sanitizeResponseRequest(response *http.Response) {
@@ -262,23 +322,19 @@ func invalidAPIRequest() error {
 	return fmt.Errorf("%w: request is outside the selected GitHub repository API path", ErrInvalidOptions)
 }
 
-func remoteTransportError() error {
-	return fmt.Errorf("%w: GitHub API transport failed (details omitted)", ErrRemote)
-}
-
 func closeResponse(response *http.Response) {
 	if response != nil && response.Body != nil {
 		_ = response.Body.Close()
 	}
 }
 
-func (t *apiTransport) currentCredential() credentialRecord {
+func (t *tokenTransport) currentCredential() credentialRecord {
 	t.mu.RLock()
 	defer t.mu.RUnlock()
 	return t.credential
 }
 
-func (t *apiTransport) setCredential(record credentialRecord) {
+func (t *tokenTransport) setCredential(record credentialRecord) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	t.credential = record

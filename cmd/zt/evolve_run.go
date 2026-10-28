@@ -57,7 +57,7 @@ they do not contain a malicious candidate. Results are operator-local evidence t
 alter, and they are never uploaded.`,
 		Args: evolveCandidateArg,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := requireEvolveFlags(cmd, "policy", "upstream", "validation"); err != nil {
+			if err := requireEvolveFlags(cmd, "policy", "validation"); err != nil {
 				return err
 			}
 			options.Candidate = args[0]
@@ -81,7 +81,7 @@ alter, and they are never uploaded.`,
 		},
 	}
 	cmd.Flags().StringVar(&options.Policy, "policy", "", "trusted operator policy JSON file")
-	cmd.Flags().StringVar(&options.Upstream, "upstream", "", "local Git repository holding the pinned base commit")
+	cmd.Flags().StringVar(&options.Upstream, "upstream", "", "explicit local Git repository (default: complete pinned cache under --root)")
 	cmd.Flags().StringVar(&options.Validation, "validation", "", "trusted validation contract JSON file")
 	cmd.Flags().StringVar(&options.Root, "root", ".", "existing local workspace that owns .zt/artifacts/evolve")
 	cmd.Flags().BoolVar(&options.TrustedLocalExecution, "trusted-local-execution", false, "run the reviewed native commands on this host (NOT an OS sandbox, NOT credential isolation)")
@@ -109,7 +109,7 @@ credential, contacting the network, running anything or writing anything. Approv
 approval file naming that digest.`,
 		Args: evolveCandidateArg,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := requireEvolveFlags(cmd, "policy", "upstream", "validation"); err != nil {
+			if err := requireEvolveFlags(cmd, "policy", "validation"); err != nil {
 				return err
 			}
 			if !options.ShowPayload {
@@ -130,7 +130,7 @@ approval file naming that digest.`,
 		},
 	}
 	cmd.Flags().StringVar(&options.Policy, "policy", "", "trusted operator policy JSON file")
-	cmd.Flags().StringVar(&options.Upstream, "upstream", "", "local Git repository holding the pinned base commit")
+	cmd.Flags().StringVar(&options.Upstream, "upstream", "", "explicit local Git repository (default: complete pinned cache under --root)")
 	cmd.Flags().StringVar(&options.Validation, "validation", "", "trusted validation contract JSON file")
 	cmd.Flags().StringVar(&options.Approval, "approval", "", "operator approval JSON file binding this exact candidate and payload")
 	cmd.Flags().StringVar(&options.Root, "root", ".", "existing local workspace that owns .zt/artifacts/evolve")
@@ -157,7 +157,7 @@ flag, exact head and GitHub-observed check-run counts. Differences are reported 
 never rewritten and never reported as an exact match.`,
 		Args: evolveCandidateArg,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := requireEvolveFlags(cmd, "policy", "upstream"); err != nil {
+			if err := requireEvolveFlags(cmd, "policy"); err != nil {
 				return err
 			}
 			options.Candidate = args[0]
@@ -175,7 +175,7 @@ never rewritten and never reported as an exact match.`,
 		},
 	}
 	cmd.Flags().StringVar(&options.Policy, "policy", "", "trusted operator policy JSON file")
-	cmd.Flags().StringVar(&options.Upstream, "upstream", "", "local Git repository holding the pinned base commit")
+	cmd.Flags().StringVar(&options.Upstream, "upstream", "", "explicit local Git repository (default: complete pinned cache under --root)")
 	cmd.Flags().StringVar(&options.Validation, "validation", "", "trusted validation contract JSON file")
 	cmd.Flags().StringVar(&options.Root, "root", ".", "existing local workspace that owns .zt/artifacts/evolve")
 	cmd.Flags().BoolVar(&options.Remote, "remote", false, "also reconcile the pull request and checks on GitHub (network and stored credential)")

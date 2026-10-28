@@ -146,22 +146,32 @@ func openExistingStore(workspace string) (*Store, error) {
 		return nil, fmt.Errorf("workspace: %w", err)
 	}
 	dir := filepath.Join(root, filepath.FromSlash(artifactRoot))
-	entry, err := os.Lstat(dir)
-	if errors.Is(err, os.ErrNotExist) {
-		return &Store{dir: dir}, nil
-	}
-	if err != nil {
-		return nil, fmt.Errorf("artifact path %s: %w", artifactRoot, err)
-	}
-	if entry.Mode()&os.ModeSymlink != 0 {
-		return nil, fmt.Errorf("refusing symlinked artifact path %s", artifactRoot)
-	}
-	if !entry.IsDir() {
-		return nil, fmt.Errorf("artifact path %s is not a directory", artifactRoot)
-	}
-	handle, err := os.OpenRoot(dir)
+	handle, err := os.OpenRoot(root)
 	if err != nil {
 		return nil, err
+	}
+	display := ""
+	for _, name := range []string{".zt", "artifacts", "evolve"} {
+		display = path.Join(display, name)
+		entry, err := handle.Lstat(name)
+		if errors.Is(err, os.ErrNotExist) {
+			handle.Close()
+			return &Store{dir: dir}, nil
+		}
+		if err != nil {
+			handle.Close()
+			return nil, err
+		}
+		if entry.Mode()&os.ModeSymlink != 0 || !entry.IsDir() {
+			handle.Close()
+			return nil, fmt.Errorf("artifact path %s is symlinked or not a directory", display)
+		}
+		child, err := handle.OpenRoot(name)
+		handle.Close()
+		if err != nil {
+			return nil, err
+		}
+		handle = child
 	}
 	return &Store{evolve: handle, dir: dir}, nil
 }

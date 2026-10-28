@@ -105,7 +105,7 @@ func Status(ctx context.Context, options StatusOptions) (StatusResult, error) {
 	if !bytes.Equal(canonical, data) {
 		return StatusResult{}, fmt.Errorf("candidate: bytes are not canonical, so the file was modified after preparation")
 	}
-	repo, err := OpenRepo(ctx, options.Upstream)
+	repo, err := resolveUpstream(ctx, options.Upstream, options.Root, policy)
 	if err != nil {
 		return StatusResult{}, err
 	}

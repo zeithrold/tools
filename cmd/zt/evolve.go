@@ -31,6 +31,10 @@ from-installed derives replacements from one edited managed global Skill after
 matching its entire pinned base Skill to the installation lock digest. It uses
 prepare's candidate rules without modifying the installation or fetching objects.
 
+upstream fetch --allow-network obtains a complete pinned bare baseline through the
+stored GitHub App credential. upstream status inspects only local readiness.
+Omitting --upstream uses that workspace's verified cache; no local stage fetches.
+
 check runs the trusted validation contract against a complete materialised pinned
 base with the candidate applied. It only executes with --trusted-local-execution:
 those commands are native local processes, which is neither an OS sandbox nor
@@ -61,6 +65,7 @@ func newEvolveCommand(a *app) *cobra.Command {
 		newEvolveCheckCommand(a),
 		newEvolveSubmitCommand(a),
 		newEvolveStatusCommand(a),
+		newEvolveUpstreamCommand(a),
 	)
 	return cmd
 }
@@ -77,7 +82,7 @@ func newEvolveFromInstalledCommand(a *app) *cobra.Command {
 			"fetches objects, merges changes, runs checks or approves publication. Deletions and out-of-scope changes are refused.",
 		Args: noPositionalArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := requireEvolveFlags(cmd, "skill", "policy", "upstream", "source-repository", "source-commit", "license", "reason"); err != nil {
+			if err := requireEvolveFlags(cmd, "skill", "policy", "source-repository", "source-commit", "license", "reason"); err != nil {
 				return err
 			}
 			home, err := a.homeDir()
@@ -97,7 +102,7 @@ func newEvolveFromInstalledCommand(a *app) *cobra.Command {
 	}
 	cmd.Flags().StringVar(&options.Skill, "skill", "", "one managed global Skill id")
 	cmd.Flags().StringVar(&options.Policy, "policy", "", "trusted operator policy JSON file")
-	cmd.Flags().StringVar(&options.Upstream, "upstream", "", "local Git repository holding the pinned installation baseline")
+	cmd.Flags().StringVar(&options.Upstream, "upstream", "", "explicit local Git repository (default: complete pinned cache under --root)")
 	cmd.Flags().StringVar(&options.Root, "root", ".", "existing local workspace that owns .zt/artifacts/evolve")
 	cmd.Flags().StringVar(&options.Provenance.Repository, "source-repository", "", "declared source of the proposed material as owner/name")
 	cmd.Flags().StringVar(&options.Provenance.Commit, "source-commit", "", "declared full lowercase source commit of the proposed material")
@@ -116,7 +121,7 @@ func newEvolvePrepareCommand(a *app) *cobra.Command {
 		Long:  "prepare validates a proposal against the operator policy and the pinned local base commit, then writes one new directory below .zt/artifacts/evolve. It writes nothing until the whole candidate is valid, and repeating it for the same inputs writes nothing.",
 		Args:  noPositionalArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := requireEvolveFlags(cmd, "proposal", "policy", "upstream"); err != nil {
+			if err := requireEvolveFlags(cmd, "proposal", "policy"); err != nil {
 				return err
 			}
 			result, err := evolve.Prepare(cmd.Context(), options)
@@ -131,14 +136,14 @@ func newEvolvePrepareCommand(a *app) *cobra.Command {
 	}
 	cmd.Flags().StringVar(&options.Proposal, "proposal", "", "replacement proposal JSON file")
 	cmd.Flags().StringVar(&options.Policy, "policy", "", "trusted operator policy JSON file")
-	cmd.Flags().StringVar(&options.Upstream, "upstream", "", "local Git repository holding the pinned base commit")
+	cmd.Flags().StringVar(&options.Upstream, "upstream", "", "explicit local Git repository (default: complete pinned cache under --root)")
 	cmd.Flags().StringVar(&options.Root, "root", ".", "existing local workspace that owns .zt/artifacts/evolve")
 	cmd.Flags().BoolVar(&asJSON, "json", false, "machine-readable result")
 	return cmd
 }
 
 func newEvolvePlanCommand(a *app) *cobra.Command {
-	var policy, upstream string
+	var policy, upstream, root string
 	var asJSON bool
 	cmd := &cobra.Command{
 		Use:   "plan CANDIDATE_FILE",
@@ -154,10 +159,10 @@ func newEvolvePlanCommand(a *app) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := requireEvolveFlags(cmd, "policy", "upstream"); err != nil {
+			if err := requireEvolveFlags(cmd, "policy"); err != nil {
 				return err
 			}
-			result, err := evolve.Plan(cmd.Context(), evolve.PlanOptions{Candidate: args[0], Policy: policy, Upstream: upstream})
+			result, err := evolve.Plan(cmd.Context(), evolve.PlanOptions{Candidate: args[0], Policy: policy, Upstream: upstream, Root: root})
 			if err != nil {
 				return err
 			}
@@ -168,7 +173,8 @@ func newEvolvePlanCommand(a *app) *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVar(&policy, "policy", "", "trusted operator policy JSON file")
-	cmd.Flags().StringVar(&upstream, "upstream", "", "local Git repository holding the pinned base commit")
+	cmd.Flags().StringVar(&upstream, "upstream", "", "explicit local Git repository (default: complete pinned cache under --root)")
+	cmd.Flags().StringVar(&root, "root", ".", "existing local workspace holding the upstream cache")
 	cmd.Flags().BoolVar(&asJSON, "json", false, "machine-readable result")
 	return cmd
 }
