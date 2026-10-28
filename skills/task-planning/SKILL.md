@@ -149,8 +149,14 @@ Signals, in order of how early they appear:
   protocol hops, retries or fallbacks to reach the same outcome;
 - the acceptance check needs to be weakened, narrowed or split to keep passing.
 
-When these accumulate, stop patching and return to the scope contract and the
-interface decision. The trigger is accumulation across related findings, not a
+When these accumulate, stop patching and return to the scope contract before
+selecting another technical approach. If delivery now depends on a capability or
+execution guarantee not required by the user's outcome, and materially changes
+the nature or cost of the work, pause the affected line and ask the user to choose
+continuation, reduction or deferral. Technical feasibility, bounded implementation
+and coordinator approval do not supply that scope authorization. Settled local
+implementation choices and ordinary repairs within the authorized outcome do not
+need a new approval. The trigger is accumulation across related findings, not a
 count of patches, rounds or lines: two findings that each add a special case to
 the same decision point are already a signal, and a dozen independent fixes in
 different modules are not. Record the reset, what triggered it, and which
@@ -180,8 +186,13 @@ evidence, not defended:
 Stop expanding when the agreed acceptance conditions are met; unrelated
 improvements are follow-ups, not new prerequisites. If local milestones keep
 completing without the remaining delivery work converging, reopen scope or
-approach instead of reporting only that work is unblocked. A newly discovered
-correctness or safety issue must still be surfaced, not hidden to declare done.
+approach instead of reporting only that work is unblocked. Surface newly found
+correctness or safety issues, distinguishing regressions introduced by this change
+from pre-existing gaps and optional capabilities. Discovery alone does not make
+every related repair a prerequisite for this task. Do not waive safety or hide a
+regression to declare completion; when a safe deliverable is unavailable within
+the authorized scope, retaining the work and pausing delivery for the user's
+decision is a valid outcome, not permission to expand the task until it can ship.
 
 Escalate rather than decide alone when the open question is authorization,
 credential handling, data loss, an interface owned elsewhere, or a choice that
