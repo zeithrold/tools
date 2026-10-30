@@ -5,6 +5,11 @@ instructions and examples exist; it does not mean host activation, improved task
 outcomes or safe unattended execution have been demonstrated. Run receipts belong
 in ignored artifacts or CI. The [roadmap](roadmap.md) tracks implementation order.
 
+The separately recorded [HERO adoption](hero-adoption.md) includes a verbatim
+global prompt block and its retained MIT license. It is not one of the conceptual
+synthesis rows below; their no-template and unaudited-source-terms statements do
+not describe that adoption.
+
 The source keys below identify fixed conceptual inputs. New prose is original
 synthesis, not redistributed upstream templates, code or scripts. This map does
 not certify upstream file licenses: copying or adapting protected expression

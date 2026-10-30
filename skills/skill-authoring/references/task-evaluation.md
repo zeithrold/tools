@@ -85,8 +85,11 @@ Before starting, record task IDs/revisions, arm definitions, Skill content,
 shared prompt, model/Agent/runtime configuration, all effective stopping limits,
 attempt count, schedule, oracle and how interruptions will be treated.
 Include inherited message, tool, token and time caps, not just explicit CLI flags.
-Use native manifests/hashes when available; keep case labels outside participant
-inputs. Do not put answers, previous results or other arms' artifacts in its tree.
+Use existing native revision records only when they identify the actual evaluated
+inputs, including candidate changes; otherwise retain the exact inputs. A baseline
+or HEAD that omits uncommitted changes is insufficient. Keep case labels outside
+participant inputs. Do not put answers, previous results or other arms' artifacts
+in its tree.
 
 Verify resolved configuration semantically: serializers may omit default fields.
 An absent optional empty list is not necessarily a broken configuration.

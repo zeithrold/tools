@@ -16,6 +16,17 @@ source delivery is intentional: those units are copied independently of this
 checkout. Keep it with copies and adaptations. Do not add license copies to
 ordinary source directories that are not independent distribution units.
 
+## Adopted Skill guidance
+
+[`prompts/AGENTS.md`](../prompts/AGENTS.md) copies the complete first English
+scope-limit block from [HERO Anti-OverDefense at fae28f06b6b6f1582b1554b334dc1525b807cedc](https://github.com/wanshuiyin/HERO-Anti-OverDefense/blob/fae28f06b6b6f1582b1554b334dc1525b807cedc/RULES.md),
+MIT, copyright 2026 Ruofeng Yang, and includes its original license in the same
+file for standalone copying. The skill-authoring Skill conceptually applies the
+evaluation-record guidance and retains its own original grant in
+[`HERO-LICENSE.txt`](../skills/skill-authoring/references/HERO-LICENSE.txt).
+[Adoption scope](hero-adoption.md) records source and loading boundaries. No
+upstream runtime, hook or installer is bundled.
+
 ## CLI dependencies
 
 `zt` binaries contain the Go runtime and the applicable modules below.

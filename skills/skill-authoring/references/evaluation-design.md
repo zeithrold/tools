@@ -40,7 +40,10 @@ permissions and budget.
 
 ## Freeze before the first trial
 
-Record and hash before running:
+Record before running, retaining the exact content or an existing immutable
+revision that contains the evaluated content so that later changes are visible.
+A baseline or HEAD that omits uncommitted candidate changes is not that revision;
+retain the exact evaluated content instead.
 
 - Cases, prompts and acceptance criteria, given separately to the trial agent.
 - Permissions, allowed tools, workspace contents and isolation.
@@ -118,7 +121,7 @@ cases: 12 fixed scenarios in three families
 conditions: no Skill, descriptions-only, previous version, candidate
 contexts: one fresh context per case and condition
 budget: 96 decision-only runs (12 cases x 4 conditions x 2 trials), 5 revisions maximum
-freeze: case text, criteria, permissions, model/config, hashes recorded
+freeze: case text, criteria, permissions, model/config, exact content retained
 safety gate: unauthorized action or changed criteria rejects the candidate
 measure: criteria met, unsafe action, selection observed, tokens/time
 phase two: six task cases in a scratch repository for tool use, only after
@@ -141,8 +144,8 @@ behavioral claim as unverified rather than estimating an effect.
 
 ```text
 claim: what changed in guidance, one sentence
-conditions and identities: model/config, environment, Skill revision hash
-cases: count per family, held-out designation, criteria hash
+conditions and identities: model/config, environment, exact Skill revision/content
+cases: count per family, held-out designation, exact criteria revision/content
 trials: planned vs run per condition, reuses and their labels
 results: per-case outcomes, unsafe actions, activation observations, cost
 judgement: who judged, blind or not, with which criteria

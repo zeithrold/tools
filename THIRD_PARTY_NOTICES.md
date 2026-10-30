@@ -22,3 +22,9 @@ index documents the exact scope without asserting legal clearance.
 UI deliveries retain required copied-code and patch notices. Remote Google
 Fonts are not bundled; their OFL terms and upstream links are documented in
 the index. Separately installed npm dependencies retain their own terms.
+
+`prompts/AGENTS.md` copies the complete English HERO Anti-OverDefense scope-limit
+block, copyright 2026 Ruofeng Yang, under MIT, and includes its original grant.
+The skill-authoring Skill conceptually applies its evaluation-record guidance
+and retains `skills/skill-authoring/references/HERO-LICENSE.txt` for independent
+distribution. Source, scope and loading boundaries are in `docs/hero-adoption.md`.

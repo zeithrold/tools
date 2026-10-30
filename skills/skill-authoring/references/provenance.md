@@ -55,3 +55,16 @@ Record only checks that actually ran. Frontmatter, links and license lookups are
 static checks; they do not show that the guidance changes behavior. Preserve
 required license text and notices beside the distributed directory, and never
 put a secret, personal path or private source into provenance or examples.
+
+## HERO evaluation records
+
+The exact-content/revision guidance in `evaluation-design.md` (“Freeze before
+the first trial” and its examples) and `task-evaluation.md` (“Freeze a cohort”)
+conceptually applies the hash and rubric limits from
+[HERO `RULES.md` at fae28f06b6b6f1582b1554b334dc1525b807cedc](https://github.com/wanshuiyin/HERO-Anti-OverDefense/blob/fae28f06b6b6f1582b1554b334dc1525b807cedc/RULES.md).
+It replaces mandatory new hashes with retained exact content or existing native
+revision records, while preserving fixed inputs and change visibility. It does
+not remove existing native records or establish behavioral effectiveness.
+The owner selected this application; independent behavioral acceptance remains
+unverified. Upstream is MIT, copyright 2026 Ruofeng Yang; the complete original
+grant is retained in [HERO-LICENSE.txt](HERO-LICENSE.txt).
