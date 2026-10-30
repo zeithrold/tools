@@ -121,7 +121,8 @@ func Status(ctx context.Context, options StatusOptions) (StatusResult, error) {
 		Publication:   publicationNotReady,
 	}
 
-	var payload *PublicPayload
+	// --validation is optional: it only locates a local verification record so status
+	// can describe it. Nothing status reports requires one to exist.
 	if strings.TrimSpace(options.Validation) != "" {
 		validation, err := LoadValidation(options.Validation)
 		if err != nil {
@@ -162,21 +163,6 @@ func Status(ctx context.Context, options StatusOptions) (StatusResult, error) {
 		return result, nil
 	}
 
-	info, err := repo.CommitInfo(ctx, candidate.Target.BaseCommit)
-	if err != nil {
-		return StatusResult{}, err
-	}
-	if strings.TrimSpace(options.Validation) != "" {
-		validation, err := LoadValidation(options.Validation)
-		if err != nil {
-			return StatusResult{}, err
-		}
-		built, err := buildPayload(candidate, id, validation, result.ValidationDigest, info)
-		if err != nil {
-			return StatusResult{}, err
-		}
-		payload = &built
-	}
 	if options.OpenAPI == nil {
 		return StatusResult{}, fmt.Errorf("remote status needs an explicit GitHub opt-in and the githubauth credential seam, which this build did not provide")
 	}
@@ -188,7 +174,7 @@ func Status(ctx context.Context, options StatusOptions) (StatusResult, error) {
 	if err != nil {
 		return StatusResult{}, err
 	}
-	remote, err := observeRemote(ctx, endpoint, candidate, result.Branch, payload, result.Journal)
+	remote, err := observeRemote(ctx, endpoint, candidate, result.Branch, result.Journal)
 	if err != nil {
 		return StatusResult{}, err
 	}
@@ -253,9 +239,11 @@ func observeJournal(store *Store, candidateID string) (*StatusJournal, bool, err
 }
 
 // observeRemote reads the deterministic branch, its pull request and the checks
-// GitHub reports for the head. Differences are collected as drift and reported;
-// nothing is rewritten and no exact match is claimed without reading the objects.
-func observeRemote(ctx context.Context, endpoint *githubEndpoint, candidate Candidate, branch string, payload *PublicPayload, journal *StatusJournal) (*StatusRemote, error) {
+// GitHub reports for the head. Differences in code identity are collected as drift
+// and reported; nothing is rewritten and no exact match is claimed without reading
+// the objects. A pull request title or body that was edited later, and one that was
+// marked ready for review, are not drift: they do not change what is being proposed.
+func observeRemote(ctx context.Context, endpoint *githubEndpoint, candidate Candidate, branch string, journal *StatusJournal) (*StatusRemote, error) {
 	repository, err := endpoint.repository(ctx)
 	if err != nil {
 		return nil, err
@@ -288,34 +276,15 @@ func observeRemote(ctx context.Context, endpoint *githubEndpoint, candidate Cand
 		remote.PullRequest = &SubmitPullRequest{Number: chosen.Number, URL: chosen.HTMLURL, State: chosen.State, Draft: chosen.Draft}
 		remote.HeadSHA = chosen.Head.SHA
 		remote.BaseSHA = chosen.Base.SHA
-		switch {
-		case chosen.State != "open":
-		case !chosen.Draft:
-			remote.Drift = append(remote.Drift, "pull-request-not-draft")
-		}
 		if chosen.Base.Ref != repository.DefaultBranch {
 			remote.Drift = append(remote.Drift, "base-branch-changed")
 		}
 		if chosen.Head.Repo == nil || !equalRepository(chosen.Head.Repo.FullName, candidate.Target.Repository) {
 			remote.Drift = append(remote.Drift, "head-repository-changed")
 		}
-		if payload != nil {
-			// Exact bytes: any difference in what a reader sees is drift, and status never
-			// rewrites it.
-			if chosen.Title != payload.PullRequest.Title || chosen.Body != payload.PullRequest.Body {
-				remote.Drift = append(remote.Drift, "public-text-changed")
-			}
-		}
 	}
 	if journal != nil && journal.Commit != "" && remote.HeadSHA != "" && journal.Commit != remote.HeadSHA {
 		remote.Drift = append(remote.Drift, "head-commit-changed")
-	}
-	head, err := endpoint.ref(ctx, "refs/heads/"+refPath(repository.DefaultBranch))
-	if err != nil {
-		return nil, err
-	}
-	if head != nil && head.Object.SHA != candidate.Target.BaseCommit {
-		remote.Drift = append(remote.Drift, "base-branch-moved-past-pinned-base")
 	}
 	if remote.HeadSHA != "" {
 		runs, found, err := endpoint.checkRuns(ctx, remote.HeadSHA)

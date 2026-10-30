@@ -31,11 +31,11 @@ type ValidationCheck struct {
 // Validation is the trusted operator's validation contract for one candidate.
 //
 // It lives outside the candidate, the proposal and the policy: a candidate that
-// is valid under one contract stays valid under another, but its recorded
-// verification results and its approval name one exact contract digest, so a
-// changed contract cannot inherit either. The check names must match the
-// policy's requiredChecks exactly; the policy fixes *which* checks are required
-// and this file fixes *how* they run, so neither can expand the other.
+// is valid under one contract stays valid under another. It belongs to `evolve
+// check`, which is independent of submission. The contract must run a command for
+// every name the policy requires, and may add further checks of its own; nothing
+// in the policy can prevent the operator checking more than it asked for, and the
+// contract cannot leave a required check unverified.
 type Validation struct {
 	SchemaVersion int               `json:"schemaVersion"`
 	Checks        []ValidationCheck `json:"checks"`
@@ -120,17 +120,18 @@ func validateArgv(argv []string, what string) error {
 	return nil
 }
 
-// covers requires the contract to name exactly the policy's required checks:
-// a missing command leaves a required check unverified, and an extra one claims
-// verification the policy never asked for.
+// covers requires the contract to run a command for every name the policy
+// requires: a missing command leaves a required check unverified. Additional
+// checks are the operator's own business and are accepted, so a standalone
+// validation contract can verify more than the policy asks for.
 func (v Validation) covers(policy Policy) error {
-	if len(v.Checks) != len(policy.RequiredChecks) {
-		return fmt.Errorf("validation: checks (%s) must name exactly the policy's requiredChecks (%s)",
-			strings.Join(v.names(), ", "), strings.Join(policy.RequiredChecks, ", "))
+	provided := make(map[string]bool, len(v.Checks))
+	for _, check := range v.Checks {
+		provided[check.Name] = true
 	}
-	for i, name := range policy.RequiredChecks {
-		if v.Checks[i].Name != name {
-			return fmt.Errorf("validation: checks (%s) must name exactly the policy's requiredChecks (%s)",
+	for _, name := range policy.RequiredChecks {
+		if !provided[name] {
+			return fmt.Errorf("validation: checks (%s) must include the policy's requiredChecks (%s)",
 				strings.Join(v.names(), ", "), strings.Join(policy.RequiredChecks, ", "))
 		}
 	}
@@ -145,14 +146,14 @@ func (v Validation) names() []string {
 	return names
 }
 
-// canonicalBytes renders the contract the way every stored or approved document
+// canonicalBytes renders the contract the way every stored document
 // is rendered, so the digest and the bytes a reviewer reads are one value.
 func (v Validation) canonicalBytes() ([]byte, error) {
 	return canonicalJSON(v)
 }
 
 // digest identifies the exact contract. A changed command, argument or timeout
-// invalidates approval and recorded results, because both name this digest.
+// changes it, so a recorded local result for another contract is not reused.
 func (v Validation) digest() (string, error) {
 	data, err := v.canonicalBytes()
 	if err != nil {

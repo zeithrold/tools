@@ -332,7 +332,7 @@ func (e *githubEndpoint) commitObject(ctx context.Context, sha string) (remoteCo
 }
 
 // treeEntries reads one complete remote tree. A truncated listing is refused: a
-// partial tree cannot prove that a head contains exactly the approved files.
+// partial tree cannot prove that a head contains exactly the expected files.
 func (e *githubEndpoint) treeEntries(ctx context.Context, sha string) (map[string]remoteTreeEntry, error) {
 	var tree remoteTree
 	status, err := e.do(ctx, http.MethodGet, e.repoPath("/git/trees/"+url.PathEscape(sha)), url.Values{"recursive": []string{"1"}}, nil, &tree)

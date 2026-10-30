@@ -30,8 +30,9 @@ func TestCheckStreamsOutputAndPreservesJSON(t *testing.T) {
 				"schemaVersion": 1,
 				"modules": []any{map[string]any{
 					"id": "app", "path": ".", "stack": "js-ts",
-					"commands": map[string]any{"build": []string{binary, "-test.run=^TestCheckOutputHelper$"}},
-					"profiles": map[string]any{"ci": []string{"build"}},
+					"commands":  map[string]any{"build": []string{binary, "-test.run=^TestCheckOutputHelper$"}},
+					"profiles":  map[string]any{"ci": []string{"build"}},
+					"artifacts": []string{"missing"},
 				}},
 			}
 			data, err := json.Marshal(config)
@@ -52,9 +53,18 @@ func TestCheckStreamsOutputAndPreservesJSON(t *testing.T) {
 			progress := stdout
 			if asJSON {
 				progress = stderr
-				var report struct{ Status string }
-				if err := json.Unmarshal([]byte(stdout), &report); err != nil || report.Status != "passed" {
+				var report struct {
+					Status         string `json:"status"`
+					ArtifactStatus string `json:"artifactStatus"`
+				}
+				if err := json.Unmarshal([]byte(stdout), &report); err != nil || report.Status != "passed" || report.ArtifactStatus != "failed" {
 					t.Fatalf("stdout is not a clean successful JSON report: %q, %v", stdout, err)
+				}
+			} else {
+				for _, message := range []string{"status: passed", "artifact status: failed", "warning: declared artifact missing: missing"} {
+					if !strings.Contains(stdout, message) {
+						t.Fatalf("text output missing %q: stdout=%q", message, stdout)
+					}
 				}
 			}
 			for _, message := range []string{"build stdout progress", "build stderr progress"} {

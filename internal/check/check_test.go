@@ -31,6 +31,10 @@ func TestNativeHelper(t *testing.T) {
 	case "artifact":
 		os.MkdirAll("browser-results", 0755)
 		os.WriteFile("browser-results/evidence.json", []byte(`{"browser":"chromium"}`), 0644)
+	case "artifact-symlink":
+		if err := os.Symlink(".", filepath.Join(os.Getenv("ZT_ARTIFACTS_DIR"), "unsafe")); err != nil {
+			os.Exit(8)
+		}
 	}
 	os.Stdout.WriteString("native success evidence\n")
 	os.Exit(0)
@@ -62,7 +66,7 @@ func fixture(t *testing.T, modes map[string]string, levels map[string]string, ar
 func TestSuccessCollectsActualLogsAndArtifacts(t *testing.T) {
 	_, options := fixture(t, map[string]string{"lint": "pass", "css": "pass", "a11y": "artifact"}, nil, []string{"browser-results"})
 	report, err := Run(context.Background(), options)
-	if err != nil || report.Status != "passed" {
+	if err != nil || report.Status != "passed" || report.ArtifactStatus != "passed" {
 		t.Fatalf("%+v %v", report, err)
 	}
 	if len(report.Checks) != 3 || report.Checks[2].Steps[0].ExitCode != 0 {
@@ -112,11 +116,14 @@ func TestTimeoutAndMissingExecutableAreNotPasses(t *testing.T) {
 	}
 }
 
-func TestArtifactSymlinksAndMissingSourcesFail(t *testing.T) {
+func TestMissingDeclaredArtifactDoesNotFailPassedChecks(t *testing.T) {
 	root, options := fixture(t, map[string]string{"lint": "pass", "css": "pass", "a11y": "pass"}, nil, []string{"absent"})
 	report, err := Run(context.Background(), options)
-	if err != nil || report.Status != "failed" {
+	if err != nil || report.Status != "passed" || report.ArtifactStatus != "failed" {
 		t.Fatalf("%+v %v", report, err)
+	}
+	if !strings.Contains(strings.Join(report.Warnings, "\n"), "declared artifact missing: absent") {
+		t.Fatalf("missing artifact warning not reported: %+v", report.Warnings)
 	}
 	if err := os.Symlink(t.TempDir(), filepath.Join(root, "linked")); err != nil {
 		t.Skip(err)
@@ -127,6 +134,35 @@ func TestArtifactSymlinksAndMissingSourcesFail(t *testing.T) {
 	options.Output = filepath.Join(root, "linked", "output")
 	if _, err := Run(context.Background(), options); err == nil {
 		t.Fatal("wrote through symlink")
+	}
+}
+
+func TestRequiredNativeFailureStillFailsWhenArtifactCollectionFails(t *testing.T) {
+	_, options := fixture(t, map[string]string{"lint": "fail", "css": "pass", "a11y": "pass"}, nil, []string{"absent"})
+	report, err := Run(context.Background(), options)
+	if err != nil || report.Status != "failed" || report.ArtifactStatus != "failed" || report.Checks[0].Status != "failed" || report.Checks[1].Status != "not_run" {
+		t.Fatalf("%+v %v", report, err)
+	}
+	if !strings.Contains(strings.Join(report.Warnings, "\n"), "declared artifact missing: absent") {
+		t.Fatalf("missing artifact warning not reported: %+v", report.Warnings)
+	}
+}
+
+func TestFinalArtifactScanFailureDoesNotChangeNativeStatus(t *testing.T) {
+	probe := filepath.Join(t.TempDir(), "symlink")
+	if err := os.Symlink(".", probe); err != nil {
+		t.Skip(err)
+	}
+	_, options := fixture(t, map[string]string{"lint": "pass", "css": "pass", "a11y": "artifact-symlink"}, nil, nil)
+	report, err := Run(context.Background(), options)
+	if err != nil || report.Status != "passed" || report.ArtifactStatus != "failed" {
+		t.Fatalf("%+v %v", report, err)
+	}
+	if !strings.Contains(strings.Join(report.Warnings, "\n"), "native artifact is a symlink") {
+		t.Fatalf("final scan failure not reported: %+v", report.Warnings)
+	}
+	if _, err := os.Lstat(filepath.Join(report.ArtifactDir, "unsafe")); err != nil {
+		t.Fatalf("native symlink was not retained for inspection: %v", err)
 	}
 }
 

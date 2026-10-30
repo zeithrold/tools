@@ -67,16 +67,14 @@ Useful source anchors, not pre-approved material for copying:
 
 ## Evolution runtime: released slice and remaining acceptance
 
-[v0.2.0](https://github.com/zeithrold/tools/releases/tag/v0.2.0) releases the local
-lifecycle described in [the lifecycle contract](evolve.md): structured replacement
-`prepare`, read-only `plan`, explicit trusted-local `check`, reviewed Draft PR
-`submit` and local/remote `status`. A real-repository trial still requires
-approval for each exact public payload, and a release is not evidence that
-privacy, idempotency or recovery behaviour was accepted on a live submission;
-acceptance of the implementation never authorizes a new candidate's publication.
-Activation, rollback and revocation remain unimplemented.
+The current [lifecycle contract](evolve.md) provides structured replacement
+`prepare`, read-only `plan`, independent trusted-local `check`, Draft PR `submit`
+and local/remote `status`. Submission previews its upload and does not require
+local verification records or approval documents. A release is not evidence of
+live submission, recovery or CI behavior. Activation, rollback and revocation
+remain unimplemented.
 
-The recommended MVP is a local candidate, read-only plan, explicit verification
+The recommended MVP is a local candidate, read-only plan, optional verification
 and idempotent Draft PR followed by human review. It does not include model
 training, automatic merging, deployment or package publication.
 
@@ -85,7 +83,7 @@ training, automatic merging, deployment or package publication.
 | `prepare` | Accept structured replacements, pinned policy/base and declared provenance/evidence; write an immutable candidate only under owned artifacts |
 | `plan` | Read the candidate, trusted policy and cached baseline without network, credentials, tests, installs or writes |
 | `check` | Run an operator-owned validation contract only after explicit trusted-local execution consent; bind results to the complete base/candidate tree and validation identity; do not claim an OS sandbox |
-| `submit` | Require authorization for the reviewed digest, target, base and public payload; create a dedicated branch and Draft PR |
+| `submit` | Preview the public payload or explicitly create a dedicated branch and Draft PR; retain target/code identity and recover interrupted writes |
 | `status` | Report local observations; use explicit remote reads to reconcile the PR, exact head and checks |
 
 ### Required boundaries
@@ -98,12 +96,12 @@ training, automatic merging, deployment or package publication.
 - Use the existing GitHub App Device Flow and native credential adapters. App
   installation and authentication do not authorize publication. Do not pass
   tokens to candidate processes or fall back to PATs or plaintext files.
-- Bind approval to the canonical manifest, patch, base tree, target, validation
-  contract and public evidence. Changes invalidate approval and relevant results.
-  Keep mutable submission journals outside immutable candidate identity.
-- Require known provenance and compatible licensing. Publish only reviewed,
-  bounded payloads, not transcripts, reasoning, secrets, private source, absolute
-  paths or raw logs. Hashes are not privacy checks.
+- Bind candidate identity to the replacements, pinned base and target.
+  Keep mutable submission journals outside immutable candidate identity and
+  validation results independent of submission.
+- Carry declared provenance and licensing without claiming to verify them.
+  Upload bounded candidate payloads, not transcripts, reasoning, secrets,
+  private source, absolute paths or raw logs. The operator owns content review.
 - Validate real filesystem paths and content identity; reject traversal,
   symlink escapes, unsupported file types and content changes during use.
 - Run untrusted candidates without credentials in an appropriate sandbox.
@@ -113,9 +111,9 @@ training, automatic merging, deployment or package publication.
 
 ### Delivery sequence
 
-1. Preserve the released v1 candidate/policy identity and the offline
-   `prepare`/`plan` guarantees.
-2. Trusted-local execution and reviewed submission are released with
+1. Preserve the offline `prepare`/`plan` guarantees and reject unsupported stored
+   formats explicitly.
+2. Trusted-local execution and submission use
    synthetic-upstream and faithful GitHub wire-contract fixtures; keep those
    fixtures green as the surface changes.
 3. Close independent execution/credential and publication/recovery findings at
@@ -131,12 +129,12 @@ interruption, not a guarantee against machine power loss. Unknown remote write
 outcomes must be reconciled through reads; never force-push, overwrite unrelated
 work or blindly duplicate commits/PRs.
 
-If a matching PR already exists, return it without writes, even if the base has
-moved. If further writes are needed against a changed base, require renewed
-preparation, verification and review. Closed proposals are not reopened
-automatically.
+If a matching PR already exists, return it without writes and preserve its
+edited title, body and readiness. Base-branch advancement does not block
+submission: the candidate retains its pinned parent without an implicit rebase.
+Closed proposals are not reopened automatically.
 
-The MVP is complete only after a real authorized prepare → check → submit →
+The MVP is complete only after a real authorized prepare → submit →
 status flow demonstrates privacy, idempotency, failure recovery and CI behavior.
 Unattended submission, Issue tracking integration and model-driven candidate
 generation remain unimplemented. Sandbox target, execution isolation and

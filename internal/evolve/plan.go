@@ -25,7 +25,7 @@ type PlanOptions struct {
 // It reads only. It creates no directory, cache, lock or artifact, writes no
 // project file, runs no check, reads no credential and accesses no network. The
 // result reports declared provenance and the policy's named checks as not_run, and
-// reports publication as not_ready: this slice has no publishable state.
+// reports publication as not_ready: planning is not publication.
 func Plan(ctx context.Context, options PlanOptions) (PlanResult, error) {
 	if err := ctx.Err(); err != nil {
 		return PlanResult{}, err
@@ -73,7 +73,6 @@ func Plan(ctx context.Context, options PlanOptions) (PlanResult, error) {
 		Evidence:        candidate.Evidence,
 		EvidenceState:   declaredUnverified,
 		Publication:     publicationNotReady,
-		MissingEvidence: append([]string(nil), missingEvidence...),
 	}, nil
 }
 

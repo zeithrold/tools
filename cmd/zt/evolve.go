@@ -38,13 +38,15 @@ Omitting --upstream uses that workspace's verified cache; no local stage fetches
 check runs the trusted validation contract against a complete materialised pinned
 base with the candidate applied. It only executes with --trusted-local-execution:
 those commands are native local processes, which is neither an OS sandbox nor
-credential isolation.
+credential isolation. check is independent of submission; status can report its
+local results when given --validation.
 
-submit requires a passed local verification and an operator approval naming the
-exact candidate, target, base commit, validation contract and public payload. It
-creates one deterministic branch and one draft pull request, or returns an exactly
-matching existing one without writing. --show-payload prints the exact publication
-and its digest without credentials, network or writes.
+submit opens one deterministic branch pinned at the policy's base commit, plus a
+draft pull request against the repository's current default branch; it returns the
+submission that already exists rather than writing again. It needs the candidate and
+the policy, not a local check run: a verification record, its logs and its workspace
+are never consulted. --show-payload prints the exact publication and its digest
+without credentials, network or writes.
 
 status reports local state read-only; --remote explicitly reconciles the pull
 request and GitHub's checks. Nothing here merges, publishes, activates, force-updates
@@ -204,7 +206,7 @@ func renderPrepare(output io.Writer, result evolve.PrepareResult) error {
 	if _, err := fmt.Fprintf(output, "path: %s\n", result.CandidatePath); err != nil {
 		return err
 	}
-	return renderEvolveBody(output, result.Skill, result.Target, result.Files, result.Checks, result.Provenance, result.Evidence, result.Publication, result.MissingEvidence)
+	return renderEvolveBody(output, result.Skill, result.Target, result.Files, result.Checks, result.Provenance, result.Evidence, result.Publication)
 }
 
 func renderEvolvePlan(output io.Writer, result evolve.PlanResult) error {
@@ -214,12 +216,12 @@ func renderEvolvePlan(output io.Writer, result evolve.PlanResult) error {
 	if _, err := fmt.Fprintf(output, "path: %s\n", result.CandidatePath); err != nil {
 		return err
 	}
-	return renderEvolveBody(output, result.Skill, result.Target, result.Files, result.Checks, result.Provenance, result.Evidence, result.Publication, result.MissingEvidence)
+	return renderEvolveBody(output, result.Skill, result.Target, result.Files, result.Checks, result.Provenance, result.Evidence, result.Publication)
 }
 
 // renderEvolveBody prints what prepare and plan both report. Every declaration is
-// labelled as declared and every check as not run.
-func renderEvolveBody(output io.Writer, skill string, target evolve.Target, files []evolve.FileSummary, checks []evolve.Check, provenance evolve.Provenance, evidence []evolve.EvidenceRef, publication string, missing []string) error {
+// labelled as declared and every policy check as not run.
+func renderEvolveBody(output io.Writer, skill string, target evolve.Target, files []evolve.FileSummary, checks []evolve.Check, provenance evolve.Provenance, evidence []evolve.EvidenceRef, publication string) error {
 	if _, err := fmt.Fprintf(output, "skill: %s\n", skill); err != nil {
 		return err
 	}
@@ -238,12 +240,14 @@ func renderEvolveBody(output io.Writer, skill string, target evolve.Target, file
 			return err
 		}
 	}
-	if _, err := fmt.Fprintln(output, "checks (not run):"); err != nil {
-		return err
-	}
-	for _, check := range checks {
-		if _, err := fmt.Fprintf(output, "  %s %s\n", check.Name, check.Status); err != nil {
+	if len(checks) > 0 {
+		if _, err := fmt.Fprintln(output, "checks (not run):"); err != nil {
 			return err
+		}
+		for _, check := range checks {
+			if _, err := fmt.Fprintf(output, "  %s %s\n", check.Name, check.Status); err != nil {
+				return err
+			}
 		}
 	}
 	if _, err := fmt.Fprintf(output, "provenance (declared, not verified): source %s@%s, license %s\n", provenance.Repository, provenance.Commit, provenance.License); err != nil {
@@ -258,9 +262,6 @@ func renderEvolveBody(output io.Writer, skill string, target evolve.Target, file
 		}
 	}
 	if _, err := fmt.Fprintf(output, "publication: %s\n", publication); err != nil {
-		return err
-	}
-	if _, err := fmt.Fprintf(output, "missing independent evidence: %s\n", strings.Join(missing, ", ")); err != nil {
 		return err
 	}
 	return nil

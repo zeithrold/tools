@@ -7,17 +7,13 @@
 // it replaces and its new content. It is never a unified diff, and zt never applies
 // a patch stream.
 //
-// Three kinds of document are kept apart, and none of them can supply another:
+// Two kinds of document are kept apart, and neither can supply the other:
 //
 //   - The trusted operator policy, supplied with --policy. It fixes the host,
-//     repository, pinned base commit, allowed Skills and named required checks.
-//     Only an operator writes it; a proposal never carries or influences it.
+//     repository, pinned base commit and allowed Skills, and may name required
+//     checks. Only an operator writes it; a proposal never carries or influences it.
 //   - The untrusted replacement proposal, supplied with --proposal. Everything it
 //     asserts about itself is a declaration, never observed evidence.
-//   - The operator's validation contract and approval, supplied with --validation
-//     and --approval. The contract must name exactly the policy's required checks;
-//     the approval must name the exact candidate, target, base commit, contract
-//     digest and public payload digest.
 //
 // The commands are layered so that each stage adds evidence without gaining
 // authority over the next:
@@ -26,14 +22,15 @@
 //     writes only .zt/artifacts/evolve/<content-id>/candidate.json.
 //   - plan re-reads a candidate and repeats that validation, writing nothing.
 //   - Verify (`evolve check`) materialises the complete pinned base with the
-//     candidate applied and runs the validation contract, but only when the
-//     operator passed --trusted-local-execution: those commands are native local
-//     processes, which is neither an OS sandbox nor credential isolation.
-//   - Submit requires a passed local verification and a human approval, then opens
-//     one deterministic draft pull request, returns an exactly matching existing one
-//     without writing, or completes a verified branch that is missing only its pull
-//     request. It never merges, publishes, activates, force-updates a ref or reopens
-//     a closed pull request.
+//     candidate applied and runs a validation contract, but only when the operator
+//     passed --trusted-local-execution: those commands are native local processes,
+//     which is neither an OS sandbox nor credential isolation. Verification is a
+//     standalone utility; publication neither requires it nor reads its results.
+//   - Submit opens one deterministic branch pinned at the base commit and one draft
+//     pull request against the repository's current default branch, returns the
+//     submission that already exists, or completes a verified branch that is
+//     missing only its pull request. It never merges, publishes, activates,
+//     force-updates a ref or reopens a closed pull request.
 //   - Status reports local observations, and with an explicit opt-in reconciles the
 //     pull request and GitHub's checks without writing.
 //

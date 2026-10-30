@@ -176,7 +176,6 @@ func TestSubmitPreservesReplacedBaseMode(t *testing.T) {
 		t.Fatalf("the verification workspace materialised the replaced Markdown file as %v, not executable", info.Mode())
 	}
 
-	s.approve(t)
 	result, err := s.submit(t)
 	if err != nil {
 		t.Fatalf("submit: %v", err)
@@ -317,7 +316,6 @@ func TestReconcileRefusesALostModeSubmission(t *testing.T) {
 				t.Fatalf("the fixture tree holds the replaced file as %s, so this test no longer faces a lost mode", got)
 			}
 
-			s.approve(t)
 			writes := s.remote.Writes()
 			result, err := s.submit(t)
 			if err == nil {

@@ -41,8 +41,6 @@ type Journal struct {
 	SchemaVersion       int                 `json:"schemaVersion"`
 	CandidateID         string              `json:"candidateId"`
 	PublicPayloadDigest string              `json:"publicPayloadDigest"`
-	ApprovalDigest      string              `json:"approvalDigest"`
-	ValidationDigest    string              `json:"validationDigest"`
 	Branch              string              `json:"branch"`
 	BaseBranch          string              `json:"baseBranch"`
 	BaseCommit          string              `json:"baseCommit"`

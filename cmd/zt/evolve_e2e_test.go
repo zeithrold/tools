@@ -536,30 +536,20 @@ func TestEvolveLifecycleEndToEndThroughTheCLI(t *testing.T) {
 	}
 
 	preview := run("evolve", "submit", candidate, "--policy", fixture.policy, "--upstream", fixture.upstream,
-		"--validation", validation, "--root", fixture.root, "--show-payload", "--json")
+		"--root", fixture.root, "--show-payload", "--json")
 	var plan struct {
 		CandidateID         string `json:"candidateId"`
-		ValidationDigest    string `json:"validationDigest"`
 		PublicPayloadDigest string `json:"publicPayloadDigest"`
 	}
 	if err := json.Unmarshal([]byte(preview), &plan); err != nil {
 		t.Fatalf("preview json: %v\n%s", err, preview)
 	}
-
-	approval := filepath.Join(t.TempDir(), "approval.json")
-	writeFile(t, approval, evolveTestJSON(t, map[string]any{
-		"schemaVersion":       1,
-		"candidateId":         plan.CandidateID,
-		"target":              map[string]any{"host": "github.com", "repository": "example/fixture", "baseCommit": fixture.commit},
-		"validationDigest":    plan.ValidationDigest,
-		"publicPayloadDigest": plan.PublicPayloadDigest,
-		"reviewer":            "reviewer@example.invalid",
-		"reviewedAt":          "2026-02-01T09:30:00Z",
-		"attestations":        map[string]any{"humanReview": "approved", "privacy": "approved", "license": "approved"},
-	}))
+	if plan.CandidateID == "" || plan.PublicPayloadDigest == "" {
+		t.Fatalf("preview did not name the candidate and payload: %s", preview)
+	}
 
 	submitted := run("evolve", "submit", candidate, "--policy", fixture.policy, "--upstream", fixture.upstream,
-		"--validation", validation, "--approval", approval, "--root", fixture.root, "--client-id", cliClientID, "--json")
+		"--root", fixture.root, "--client-id", cliClientID, "--json")
 	var submitResult struct {
 		Action      string `json:"action"`
 		Publication string `json:"publication"`
@@ -581,7 +571,7 @@ func TestEvolveLifecycleEndToEndThroughTheCLI(t *testing.T) {
 	writes := remote.writeCount()
 
 	replayed := run("evolve", "submit", candidate, "--policy", fixture.policy, "--upstream", fixture.upstream,
-		"--validation", validation, "--approval", approval, "--root", fixture.root, "--client-id", cliClientID, "--json")
+		"--root", fixture.root, "--client-id", cliClientID, "--json")
 	var replayResult struct {
 		Action string `json:"action"`
 		Writes int    `json:"writes"`

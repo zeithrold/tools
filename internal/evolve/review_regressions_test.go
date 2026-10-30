@@ -187,36 +187,9 @@ func verifyFixture(t *testing.T, h *harness) (CheckOptions, CheckResult) {
 	return options, result
 }
 
-func TestMissingVerificationRecordLeavesTheWorkspaceEmpty(t *testing.T) {
-	p := newPublicationHarness(t)
-	preview := p.showPayload(t)
-	approval := filepath.Join(t.TempDir(), "approval.json")
-	writeJSONFile(t, approval, approvalFor(preview, nil))
-	emptyRoot := t.TempDir()
-	_, err := Submit(context.Background(), SubmitOptions{
-		Candidate: p.candidateFile(t), Policy: p.policy, Upstream: p.upstream,
-		Validation: p.validation, Approval: approval, Root: emptyRoot,
-		OpenAPI: func(context.Context, Target) (githubauth.API, error) {
-			t.Fatal("the credential seam was opened without a verification record")
-			return githubauth.API{}, nil
-		},
-	})
-	if err == nil {
-		t.Fatal("a missing verification record was accepted")
-	}
-	entries, readErr := os.ReadDir(emptyRoot)
-	if readErr != nil {
-		t.Fatal(readErr)
-	}
-	if len(entries) != 0 {
-		t.Fatalf("a failed preflight created %s", entries[0].Name())
-	}
-}
-
 func TestMalformedJournalFailsBeforeTheCredentialSeam(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
 	s.verify(t)
-	s.approve(t)
 	preview := s.showPayload(t)
 	journalPath := filepath.Join(s.workspace, artifactRoot, submitJournalRelative(preview.CandidateID, preview.PublicPayloadDigest))
 	if err := os.MkdirAll(filepath.Dir(journalPath), 0o755); err != nil {
@@ -228,7 +201,7 @@ func TestMalformedJournalFailsBeforeTheCredentialSeam(t *testing.T) {
 	called := false
 	_, err := Submit(context.Background(), SubmitOptions{
 		Candidate: s.candidateFile(t), Policy: s.policy, Upstream: s.upstream,
-		Validation: s.validation, Approval: s.approval, Root: s.workspace,
+		Root: s.workspace,
 		OpenAPI: func(context.Context, Target) (githubauth.API, error) {
 			called = true
 			return githubauth.API{BaseURL: s.remote.Server.URL, Transport: fakeBearer{token: testRemoteToken}}, nil
@@ -242,24 +215,55 @@ func TestMalformedJournalFailsBeforeTheCredentialSeam(t *testing.T) {
 	}
 }
 
-func TestChangedPublicTextIsDriftNotAnExactMatch(t *testing.T) {
+// TestEditedPullRequestIsStillRecognised pins the recognition rule: an operator who
+// edits the pull request title or body, or marks the draft ready for review, has
+// changed the review surface rather than the proposal. The submission is still this
+// candidate's — the code identity decides — so it is recognised without a write and
+// nobody's edit is rewritten.
+func TestEditedPullRequestIsStillRecognised(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
 	s.verify(t)
-	s.approve(t)
-	if _, err := s.submit(t); err != nil {
+	first, err := s.submit(t)
+	if err != nil {
 		t.Fatalf("submit: %v", err)
 	}
 	s.remote.mu.Lock()
+	s.remote.pulls[0].Title = "Reworded by the reviewer"
 	s.remote.pulls[0].Body = "    " + s.remote.pulls[0].Body
+	s.remote.pulls[0].Draft = false
 	s.remote.mu.Unlock()
 
 	writes := s.remote.Writes()
-	if _, err := s.submit(t); err == nil {
-		t.Fatal("four spaces of unapproved Markdown indentation were adopted as an exact match")
+	repeated, err := s.submit(t)
+	if err != nil {
+		t.Fatalf("submit did not recognise its own edited pull request: %v", err)
 	}
+	if repeated.Action != "existing" || repeated.Writes != 0 {
+		t.Fatalf("an edited pull request was not recognised as this submission: %+v", repeated)
+	}
+	if repeated.PullRequest == nil || repeated.PullRequest.Number != first.PullRequest.Number {
+		t.Fatalf("a different pull request was reported: %+v", repeated.PullRequest)
+	}
+	if repeated.PullRequest.Draft {
+		t.Fatal("a ready pull request was reported as a draft")
+	}
+	if len(repeated.Notes) != 1 || repeated.Notes[0] != "the existing pull request was recognized; no remote writes were made" {
+		t.Fatalf("recognition did not report the existing pull request accurately: %v", repeated.Notes)
+	}
+	if s.remote.Writes() != writes {
+		t.Fatal("recognition rewrote the remote side")
+	}
+	s.remote.mu.Lock()
+	title, draft := s.remote.pulls[0].Title, s.remote.pulls[0].Draft
+	s.remote.mu.Unlock()
+	if title != "Reworded by the reviewer" || draft {
+		t.Fatalf("the operator's edit was rewritten: title=%q draft=%t", title, draft)
+	}
+
+	// Status reports the same object, and the edit is not drift.
 	observed, err := Status(context.Background(), StatusOptions{
 		Candidate: s.candidateFile(t), Policy: s.policy, Upstream: s.upstream,
-		Validation: s.validation, Root: s.workspace, Remote: true,
+		Root: s.workspace, Remote: true,
 		OpenAPI: func(context.Context, Target) (githubauth.API, error) {
 			return githubauth.API{BaseURL: s.remote.Server.URL, Transport: fakeBearer{token: testRemoteToken}}, nil
 		},
@@ -267,11 +271,11 @@ func TestChangedPublicTextIsDriftNotAnExactMatch(t *testing.T) {
 	if err != nil {
 		t.Fatalf("status: %v", err)
 	}
-	if observed.Remote == nil || !containsString(observed.Remote.Drift, "public-text-changed") {
-		t.Fatalf("status did not report the changed text as drift: %+v", observed.Remote)
+	if observed.Remote == nil || len(observed.Remote.Drift) != 0 {
+		t.Fatalf("an edited pull request was reported as drift: %+v", observed.Remote)
 	}
 	if s.remote.Writes() != writes {
-		t.Fatal("a drifted submission was rewritten")
+		t.Fatal("status wrote to the remote")
 	}
 }
 
@@ -293,9 +297,9 @@ func TestJournalRefusesToDowngradeACompletedSubmission(t *testing.T) {
 	relative := submitJournalRelative(prepared.CandidateID, strings.Repeat("1", 64))
 	journal := Journal{
 		SchemaVersion: schemaVersion, CandidateID: prepared.CandidateID,
-		PublicPayloadDigest: strings.Repeat("1", 64), ApprovalDigest: strings.Repeat("2", 64),
-		ValidationDigest: strings.Repeat("3", 64), Branch: "evolve/fixture-skill-000000000000",
-		BaseCommit: h.commit,
+		PublicPayloadDigest: strings.Repeat("1", 64),
+		Branch:              "evolve/fixture-skill-000000000000",
+		BaseCommit:          h.commit,
 	}
 	if err := record(context.Background(), store, relative, &journal, journalRefCreated, "branch created"); err != nil {
 		t.Fatal(err)
@@ -356,14 +360,13 @@ func (g *gatedTransport) RoundTrip(request *http.Request) (*http.Response, error
 func TestOverlappingSubmissionsSerialiseAndKeepTheCompletedJournal(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
 	s.verify(t)
-	s.approve(t)
 	gate := &gatedTransport{reached: make(chan struct{}), resume: make(chan struct{}), failPR: true}
 
 	second := make(chan error, 1)
 	go func() {
 		_, err := Submit(context.Background(), SubmitOptions{
 			Candidate: s.candidateFile(t), Policy: s.policy, Upstream: s.upstream,
-			Validation: s.validation, Approval: s.approval, Root: s.workspace,
+			Root: s.workspace,
 			OpenAPI: func(context.Context, Target) (githubauth.API, error) {
 				return githubauth.API{BaseURL: s.remote.Server.URL, Transport: gate}, nil
 			},
@@ -412,12 +415,6 @@ func TestOverlappingSubmissionsSerialiseAndKeepTheCompletedJournal(t *testing.T)
 	if journal.State != journalCompleted || journal.PullRequest == nil {
 		t.Fatalf("the completed journal was downgraded by the overlapping attempt: %+v", journal)
 	}
-	status, err := Status(context.Background(), StatusOptions{
-		Candidate: preview.CandidateID, Policy: s.policy, Upstream: s.upstream,
-		Validation: s.validation, Root: s.workspace,
-	})
-	_ = status
-	_ = err
 }
 
 // TestTreeListingUsesTheGitHubWireKey pins the wire contract on a literal body: the
@@ -466,36 +463,6 @@ func literalEndpoint(t *testing.T, body string) *githubEndpoint {
 	return endpoint
 }
 
-// TestSubmitRefusesWhenRetainedEvidenceChanged pins that submission applies the
-// same record rule as reuse: evidence that no longer matches what was recorded
-// blocks submission instead of being trusted.
-func TestSubmitRefusesWhenRetainedEvidenceChanged(t *testing.T) {
-	s := newSubmitHarness(t, "example/fixture")
-	record := s.verify(t)
-	s.approve(t)
-	run := filepath.Dir(filepath.Join(s.workspace, filepath.FromSlash(record.ResultPath)))
-	logPath := filepath.Join(run, filepath.FromSlash(record.Checks[0].Log))
-	file, err := os.OpenFile(logPath, os.O_APPEND|os.O_WRONLY, 0o644)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err := file.WriteString("appended after the run\n"); err != nil {
-		file.Close()
-		t.Fatal(err)
-	}
-	if err := file.Close(); err != nil {
-		t.Fatal(err)
-	}
-
-	_, err = s.submit(t)
-	if err == nil || !strings.Contains(err.Error(), "changed after the run") {
-		t.Fatalf("submit trusted a retained log that no longer matches its record: %v", err)
-	}
-	if s.remote.Writes() != 0 {
-		t.Fatal("a submission with contradictory evidence wrote to the remote")
-	}
-}
-
 // rewriteBaseDigest replaces the recorded base-set digest with a well-formed but
 // wrong value, keeping the record canonical.
 func rewriteBaseDigest(t *testing.T, workspace string, record CheckResult) {
@@ -536,39 +503,12 @@ func TestRecordWithAForeignBaseDigestIsNotReused(t *testing.T) {
 	}
 }
 
-func TestRecordWithAForeignBaseDigestBlocksSubmission(t *testing.T) {
+// TestRecoveredBranchIsCompletedAfterTheDefaultBranchAdvanced pins that recovery from a
+// lost ref response still completes when the default branch moved meanwhile: the branch
+// already holds this candidate's exact commit, so only the pull request is missing and
+// zt creates only that, against the current default branch.
+func TestRecoveredBranchIsCompletedAfterTheDefaultBranchAdvanced(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
-	record := s.verify(t)
-	s.approve(t)
-	rewriteBaseDigest(t, s.workspace, record)
-
-	_, err := Submit(context.Background(), SubmitOptions{
-		Candidate: s.candidateFile(t), Policy: s.policy, Upstream: s.upstream,
-		Validation: s.validation, Approval: s.approval, Root: s.workspace,
-		OpenAPI: func(context.Context, Target) (githubauth.API, error) {
-			t.Fatal("the credential seam was opened with a foreign base digest")
-			return githubauth.API{}, nil
-		},
-	})
-	if err == nil || !strings.Contains(err.Error(), "different pinned base") {
-		t.Fatalf("a record naming a foreign pinned base was accepted: %v", err)
-	}
-	if s.remote.Writes() != 0 {
-		t.Fatal("a submission with a foreign base digest wrote to the remote")
-	}
-	if _, statErr := os.Lstat(filepath.Join(s.workspace, artifactRoot, "locks")); !os.IsNotExist(statErr) {
-		t.Fatalf("a failing preflight created the submission lock directory: %v", statErr)
-	}
-}
-
-// TestRecoveredBranchStillRequiresThePinnedBase pins the frozen rule that every
-// remaining remote write — including the pull request a lost-ref recovery still
-// needs — requires the pinned base to be the live default-branch head. Only an
-// exactly matching existing pull request may be returned after the base moved.
-func TestRecoveredBranchStillRequiresThePinnedBase(t *testing.T) {
-	s := newSubmitHarness(t, "example/fixture")
-	s.verify(t)
-	s.approve(t)
 	s.remote.DropAfterWrite("/git/refs")
 	first, err := s.submit(t)
 	if err == nil || first.State != "uncertain" {
@@ -581,25 +521,28 @@ func TestRecoveredBranchStillRequiresThePinnedBase(t *testing.T) {
 	writes := s.remote.Writes()
 
 	recovered, err := s.submit(t)
-	if err == nil {
-		t.Fatalf("recovery wrote a pull request against a moved base: %+v", recovered)
+	if err != nil {
+		t.Fatalf("recovery could not complete its own branch: %v", err)
 	}
-	if !strings.Contains(err.Error(), "has moved") {
-		t.Fatalf("unexpected refusal: %v", err)
+	if recovered.Action != "created" || recovered.PullRequest == nil {
+		t.Fatalf("unexpected recovery result: %+v", recovered)
 	}
-	if s.remote.Writes() != writes {
-		t.Fatalf("the refused recovery wrote: %d -> %d", writes, s.remote.Writes())
+	if added := s.remote.Writes() - writes; added != 1 {
+		t.Fatalf("recovery performed %d remote writes; only the pull request was missing", added)
 	}
-	if pulls := s.remote.Pulls(); len(pulls) != 0 {
-		t.Fatalf("the refused recovery created %d pull requests", len(pulls))
+	if head, ok := s.remote.Ref("refs/heads/" + recovered.Branch); !ok || head != first.Commit {
+		t.Fatalf("recovery changed the branch: %s %v", head, ok)
+	}
+	if pulls := s.remote.Pulls(); len(pulls) != 1 || pulls[0].Base != "main" {
+		t.Fatalf("unexpected pull requests: %+v", pulls)
 	}
 }
 
 // TestCommitVerificationComparesTheGitObjectNotTheRestMessage pins the live
 // compatibility rule: GitHub's REST message view drops one trailing newline while the
-// stored object keeps the exact approved bytes. Verification must rebuild the raw
+// stored object keeps the exact bytes. Verification must rebuild the raw
 // commit object and compare object ids, so a presentation difference passes only when
-// the object really is the approved one, and a substantive difference fails.
+// the object really is the same one, and a substantive difference fails.
 func TestCommitVerificationComparesTheGitObjectNotTheRestMessage(t *testing.T) {
 	upstream, baseCommit := newUpstream(t, baseFileSet())
 	repo, err := OpenRepo(context.Background(), upstream)

@@ -134,7 +134,7 @@ func (p proposal) toCandidate(policy Policy) (Candidate, error) {
 		Skill:         p.Skill,
 		Target:        policy.target(),
 		PolicyDigest:  digest,
-		Checks:        append([]string(nil), policy.RequiredChecks...),
+		Checks:        append([]string{}, policy.RequiredChecks...),
 		Provenance:    p.Provenance,
 		Evidence:      append([]EvidenceRef(nil), p.Evidence...),
 		Files:         files,

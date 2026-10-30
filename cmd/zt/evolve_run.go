@@ -95,27 +95,25 @@ func newEvolveSubmitCommand(a *app) *cobra.Command {
 	var clientID, profile string
 	cmd := &cobra.Command{
 		Use:   "submit CANDIDATE_FILE",
-		Short: "Open a draft pull request for one approved candidate",
-		Long: `submit requires a passed local verification, an operator approval naming the exact candidate,
-target, base commit, validation contract and public payload, and stored GitHub App credentials.
+		Short: "Open a draft pull request for one stored candidate",
+		Long: `submit publishes one stored candidate as a deterministic branch and a draft pull request
+against the repository's current default branch, using stored GitHub App credentials.
 
-It creates one deterministic branch and one draft pull request, or returns an exactly matching one
-without writing; a branch that already holds exactly the approved commit but no pull request is
-completed by creating only the pull request. It never merges, publishes, activates, force-updates a
-ref or reopens a closed pull request. A new write against a moved base is refused.
+It needs only the candidate and the operator policy: a local zt evolve check run is
+independent, and submit neither requires its record nor reads the logs and workspace it
+retained. It creates the branch and the draft pull request, or recognises the submission
+that already exists and writes nothing; a branch that already holds exactly this
+candidate's commit but no pull request is completed by creating only the pull request.
+A default branch that has advanced does not block a submission: the branch stays pinned at
+the policy's base commit and is never rebased. It never merges, publishes, activates,
+force-updates a ref or reopens a closed pull request.
 
---show-payload prints the exact document that would be uploaded, and its digest, without reading any
-credential, contacting the network, running anything or writing anything. Approve by writing an
-approval file naming that digest.`,
+--show-payload prints the exact document that would be uploaded, and its digest, without
+reading any credential, contacting the network, running anything or writing anything.`,
 		Args: evolveCandidateArg,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := requireEvolveFlags(cmd, "policy", "validation"); err != nil {
+			if err := requireEvolveFlags(cmd, "policy"); err != nil {
 				return err
-			}
-			if !options.ShowPayload {
-				if err := requireEvolveFlags(cmd, "approval"); err != nil {
-					return err
-				}
 			}
 			options.Candidate = args[0]
 			options.OpenAPI = a.evolveOpenAPI("evolve submit", clientID, profile)
@@ -131,8 +129,6 @@ approval file naming that digest.`,
 	}
 	cmd.Flags().StringVar(&options.Policy, "policy", "", "trusted operator policy JSON file")
 	cmd.Flags().StringVar(&options.Upstream, "upstream", "", "explicit local Git repository (default: complete pinned cache under --root)")
-	cmd.Flags().StringVar(&options.Validation, "validation", "", "trusted validation contract JSON file")
-	cmd.Flags().StringVar(&options.Approval, "approval", "", "operator approval JSON file binding this exact candidate and payload")
 	cmd.Flags().StringVar(&options.Root, "root", ".", "existing local workspace that owns .zt/artifacts/evolve")
 	cmd.Flags().StringVar(&clientID, "client-id", "", "public GitHub App client id that keys the stored credential")
 	cmd.Flags().StringVar(&profile, "profile", defaultAuthProfile, "stored credential profile (account)")
@@ -250,8 +246,7 @@ func renderEvolveSubmit(output io.Writer, result evolve.SubmitResult) error {
 		if _, err := fmt.Fprintf(output, "public payload digest: %s\n", result.PublicPayloadDigest); err != nil {
 			return err
 		}
-		_, err = fmt.Fprintf(output, "\nNothing was read from the OS keystore, executed, or written; no network connection was made.\nReview the document above (it is the exact publication, including file content). To approve it,\nwrite an approval file naming candidateId %s, target %s/%s@%s, validationDigest %s,\npublicPayloadDigest %s, your reviewer identifier, an RFC 3339 UTC reviewedAt, and\nattestations humanReview/privacy/license set to \"approved\".\n",
-			result.CandidateID, result.Target.Host, result.Target.Repository, result.Target.BaseCommit, result.ValidationDigest, result.PublicPayloadDigest)
+		_, err = fmt.Fprintf(output, "\nNothing was read from the OS keystore, executed, or written; no network connection was made.\nThe document above is the exact publication, including every replacement's content.\n")
 		return err
 	}
 	if _, err := fmt.Fprintf(output, "submission %s (%s)\n", result.Action, result.State); err != nil {
@@ -275,12 +270,6 @@ func renderEvolveSubmit(output io.Writer, result evolve.SubmitResult) error {
 	}
 	if _, err := fmt.Fprintf(output, "writes: %d\n", result.Writes); err != nil {
 		return err
-	}
-	if result.Attestations != nil {
-		if _, err := fmt.Fprintf(output, "attestations: humanReview=%s privacy=%s license=%s (attested by %s at %s, not verified by zt)\n",
-			result.Attestations.HumanReview, result.Attestations.Privacy, result.Attestations.License, result.Attestations.Reviewer, result.Attestations.ReviewedAt); err != nil {
-			return err
-		}
 	}
 	if _, err := fmt.Fprintf(output, "publication: %s (a draft pull request is not a merge, publication or activation)\n", result.Publication); err != nil {
 		return err

@@ -1,24 +1,13 @@
 package evolve
 
-// Publication and observation states. There is deliberately no ready state: this
-// slice cannot verify a candidate, and a declaration is not evidence.
+// Publication and observation states. There is deliberately no ready state: a
+// declaration is not evidence, so prepare and plan report not_ready.
 const (
 	publicationNotReady  = "not_ready"
 	publicationSubmitted = "submitted"
 	checkNotRun          = "not_run"
 	declaredUnverified   = "declared_not_verified"
 )
-
-// missingEvidence names the independent evidence every candidate still needs.
-// prepare and plan never observe any of it, so the list is fixed here instead of
-// being inferred from what a candidate claims about itself.
-var missingEvidence = []string{
-	"independent-license",
-	"privacy",
-	"independent-review",
-	"authorization",
-	"verification",
-}
 
 // FileSummary describes one replacement without carrying its content.
 type FileSummary struct {
@@ -52,11 +41,10 @@ type PrepareResult struct {
 	Evidence        []EvidenceRef `json:"evidence,omitempty"`
 	EvidenceState   string        `json:"evidenceState,omitempty"`
 	Publication     string        `json:"publication"`
-	MissingEvidence []string      `json:"missingEvidence"`
 }
 
-// PlanResult is what plan re-read and re-validated. It reports declarations as
-// declarations and the outstanding independent evidence as missing.
+// PlanResult is what plan re-read and re-validated. It reports every declaration
+// as a declaration.
 type PlanResult struct {
 	SchemaVersion   int           `json:"schemaVersion"`
 	CandidateID     string        `json:"candidateId"`
@@ -71,7 +59,6 @@ type PlanResult struct {
 	Evidence        []EvidenceRef `json:"evidence,omitempty"`
 	EvidenceState   string        `json:"evidenceState,omitempty"`
 	Publication     string        `json:"publication"`
-	MissingEvidence []string      `json:"missingEvidence"`
 }
 
 func summarizeFiles(files []File) []FileSummary {

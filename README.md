@@ -6,9 +6,9 @@
 
 - `zt inspect`: read-only inventory. Go and JS/TS have focused detectors; Flutter, Rust, Python, and JVM have conservative initial detectors. The report separates discovered entry points from environment readiness and execution results. This command never runs checks.
 - `zt plan CAPABILITY --module ID`: read-only command plan for Go and JS/TS. It prefers existing project recipes and package scripts. Generated Go fuzz commands have a 30-second budget per target.
-- `zt check --module ID --profile NAME`: executes reviewed native commands in an explicit ordered profile, stops after a required failure/blocker, and retains execution reports/logs/artifacts. It never installs dependencies or deploys.
+- `zt check --module ID --profile NAME`: executes native commands in an explicit ordered profile, stops after a required failure/blocker, and retains execution reports/logs/artifacts. Artifact collection is reported separately from native command results. It never installs dependencies or deploys.
 - `zt evolve prepare` / `zt evolve plan`: prepare immutable local Skill replacement candidates and revalidate their pinned policy/base without applying them, running checks or contacting GitHub. See [offline candidate format](docs/evolve.md).
-- [v0.2.0](https://github.com/zeithrold/tools/releases/tag/v0.2.0) adds `zt evolve check`, `submit` and `status`: explicit trusted-local verification, exact public-payload approval and a recoverable Draft PR workflow. Shipping the commands is not acceptance evidence; `check` runs with the operator's own authority rather than in a sandbox. Live submission and independent-review claims require their own run-specific evidence. See the [lifecycle contract](docs/evolve.md).
+- `zt evolve check`, `submit` and `status`: independent trusted-local verification and recoverable Draft PR submission. `submit --show-payload` previews the upload; `submit` does not require local checks or an approval document. Checks run with the operator's own authority, not in a sandbox. See the [lifecycle contract](docs/evolve.md).
 - `zt sync --plan`: read-only preview of user-global Skill directory changes.
 - `zt sync [--global] [--skills ID[,ID]]`: installs complete Skill directories into `~/.agents/skills/<id>` and records them in `~/.agents/zt.lock.json`. The selection is the `skills` list of the user-global `~/.agents/zt.json` or an explicit `--skills` list; zt never selects the whole catalog by default, and it refuses to overwrite unmanaged or locally edited Skill directories. Removal is intentionally manual in this slice.
 - `zt skills list` / `zt skills sync`: discover bundled Skills and use the same global distributor. `zt sync` remains an alias; neither manages project knowledge.
@@ -128,7 +128,7 @@ cmd/zt/                 CLI
 internal/project/       zt.json validation
 internal/inspect/       read-only stack inventory
 internal/check/         native execution and evidence collection
-internal/evolve/        Skill candidates, trusted-local verification and reviewed Draft PR submission
+internal/evolve/        Skill candidates, independent local checks and recoverable Draft PR submission
 internal/skills/        user-global Skill planning, collision detection, and sync
 internal/githubauth/    GitHub App device authorization and credential lifecycle
 internal/keystore/      restricted native keyring adapter and process coordination

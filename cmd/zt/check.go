@@ -41,6 +41,12 @@ func newCheckCommand(a *app) *cobra.Command {
 						return err
 					}
 				}
+				if _, err := fmt.Fprintf(a.stdout, "status: %s\n", report.Status); err != nil {
+					return err
+				}
+				if _, err := fmt.Fprintf(a.stdout, "artifact status: %s\n", report.ArtifactStatus); err != nil {
+					return err
+				}
 				if _, err := fmt.Fprintf(a.stdout, "artifacts: %s\n", report.ArtifactDir); err != nil {
 					return err
 				}

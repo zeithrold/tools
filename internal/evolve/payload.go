@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// Bounds on the publication. They are enforced before a digest exists, so an
-// approval can only ever name a payload that fits the reviewed shape.
+// Bounds on the publication. They are enforced before the digest is printed, so
+// `--show-payload` can only ever describe a payload that fits the reviewed shape.
 const (
 	maxPayloadBytes       = 1 << 20
 	maxCommitMessageBytes = 4096
@@ -34,8 +34,8 @@ type PayloadFile struct {
 }
 
 // PayloadCommit is the commit metadata a submission creates. CommittedAt comes
-// from the pinned base commit, so the payload (and therefore its digest) exists
-// before any approval and is reproducible on every replay.
+// from the pinned base commit, so the payload (and therefore its digest) is
+// reproducible on every replay.
 type PayloadCommit struct {
 	Message     string `json:"message"`
 	AuthorName  string `json:"authorName"`
@@ -52,8 +52,8 @@ type PayloadPullRequest struct {
 
 // PublicPayload is the complete, reviewable publication: the exact bytes that
 // leave the operator's machine. Its canonical rendering is what
-// publicPayloadDigest covers and what an approval names, so the approved value
-// and the uploaded content cannot diverge without changing the digest.
+// publicPayloadDigest covers, so the document a reviewer reads and the content
+// that is uploaded cannot diverge without changing the digest.
 type PublicPayload struct {
 	SchemaVersion   int                `json:"schemaVersion"`
 	Host            string             `json:"host"`
@@ -74,21 +74,18 @@ func branchFor(skill, candidateID string) string {
 }
 
 // buildPayload derives the publication from values zt already validated: the
-// stored candidate bytes, the validation contract and the pinned base commit. It
-// reads no approval, so `--show-payload` can print a stable document before the
-// operator has approved anything, and no circular dependency exists between the
-// payload digest and the approval.
-func buildPayload(candidate Candidate, candidateID string, validation Validation, validationDigest string, info CommitInfo) (PublicPayload, error) {
+// stored candidate bytes and the pinned base commit. It reads nothing else, so
+// `--show-payload` prints the same document without a credential, a network
+// connection or a write.
+func buildPayload(candidate Candidate, candidateID string, info CommitInfo) (PublicPayload, error) {
 	branch := branchFor(candidate.Skill, candidateID)
 	if !branchPattern.MatchString(branch) {
 		return PublicPayload{}, fmt.Errorf("payload: derived branch %s is not a valid evolve branch", safeQuote(branch))
 	}
 	committedAt := info.CommittedAt.UTC().Format(time.RFC3339)
 	files := make([]PayloadFile, len(candidate.Files))
-	var paths []string
 	for i, file := range candidate.Files {
 		files[i] = PayloadFile{Path: file.Path, Content: file.Content}
-		paths = append(paths, "`"+file.Path+"`")
 	}
 	payload := PublicPayload{
 		SchemaVersion:   schemaVersion,
@@ -99,14 +96,14 @@ func buildPayload(candidate Candidate, candidateID string, validation Validation
 		Branch:          branch,
 		Files:           files,
 		Commit: PayloadCommit{
-			Message:     commitMessage(candidate, candidateID, validationDigest),
+			Message:     commitMessage(candidate, candidateID),
 			AuthorName:  evolveAuthorName,
 			AuthorEmail: evolveAuthorEmail,
 			CommittedAt: committedAt,
 		},
 		PullRequest: PayloadPullRequest{
 			Title: pullTitle(candidate, candidateID),
-			Body:  pullBody(candidate, candidateID, validation, validationDigest, paths),
+			Body:  pullBody(candidate, candidateID),
 			Draft: true,
 		},
 	}
@@ -119,26 +116,23 @@ func buildPayload(candidate Candidate, candidateID string, validation Validation
 // commitMessage records the identity of the candidate in the commit itself, so the
 // commit remains self-describing after the local artifacts are gone. It cannot
 // contain the public payload digest: that digest covers this message.
-func commitMessage(candidate Candidate, candidateID, validationDigest string) string {
-	checks := strings.Join(candidate.Checks, ", ")
-	return fmt.Sprintf("evolve(%s): candidate %s\n\nCandidate-Id: %s\nBase-Commit: %s\nValidation-Digest: %s\nChecks: %s\n\nDeclared reason (not verified by zt):\n%s\n",
-		candidate.Skill, candidateID[:12], candidateID, candidate.Target.BaseCommit, validationDigest, checks, strings.TrimSpace(candidate.Provenance.Reason))
+func commitMessage(candidate Candidate, candidateID string) string {
+	return fmt.Sprintf("evolve(%s): candidate %s\n\nCandidate-Id: %s\nBase-Commit: %s\n\nDeclared reason (not verified by zt):\n%s\n",
+		candidate.Skill, candidateID[:12], candidateID, candidate.Target.BaseCommit, strings.TrimSpace(candidate.Provenance.Reason))
 }
 
 func pullTitle(candidate Candidate, candidateID string) string {
 	return fmt.Sprintf("evolve(%s): candidate %s", candidate.Skill, candidateID[:12])
 }
 
-// pullBody is the review surface inside the pull request. It states what zt
-// observed, what it never verified, and that verification stays local: no log,
-// no absolute path, no transcript and no unrelated source is published.
-func pullBody(candidate Candidate, candidateID string, validation Validation, validationDigest string, paths []string) string {
+// pullBody is the review surface inside the pull request: the facts of what is being
+// proposed, and an explicit label on everything zt did not verify. No log, local path,
+// transcript or unrelated source is published.
+func pullBody(candidate Candidate, candidateID string) string {
 	var body strings.Builder
 	fmt.Fprintf(&body, "## Skill evolution candidate `%s`\n\n", candidateID[:12])
-	body.WriteString("Prepared by `zt evolve` as a draft. Merging, publication and activation are human\ndecisions; zt does not merge, publish or activate anything.\n\n")
-	fmt.Fprintf(&body, "| Field | Value |\n| --- | --- |\n| Skill | `%s` |\n| Target | `%s/%s` |\n| Base commit | `%s` |\n| Candidate | `%s` |\n| Validation contract | `%s` |\n| Required checks | `%s` |\n\n",
-		candidate.Skill, candidate.Target.Host, candidate.Target.Repository, candidate.Target.BaseCommit,
-		candidateID, validationDigest, strings.Join(validation.names(), "`, `"))
+	fmt.Fprintf(&body, "| Field | Value |\n| --- | --- |\n| Skill | `%s` |\n| Target | `%s/%s` |\n| Base commit | `%s` |\n| Candidate | `%s` |\n\n",
+		candidate.Skill, candidate.Target.Host, candidate.Target.Repository, candidate.Target.BaseCommit, candidateID)
 	body.WriteString("### Published files\n")
 	for _, file := range candidate.Files {
 		fmt.Fprintf(&body, "- `%s` (%d bytes)\n", file.Path, file.Bytes)
@@ -149,22 +143,11 @@ func pullBody(candidate Candidate, candidateID string, validation Validation, va
 	for _, ref := range candidate.Evidence {
 		fmt.Fprintf(&body, "- evidence: `%s` sha256 `%s`\n", ref.Label, ref.Digest)
 	}
-	body.WriteString("\n### Verification and review\n")
-	body.WriteString("- The required checks are named above. Any local run is recorded on the operator's\n")
-	body.WriteString("  machine by `zt evolve check` and is **not** uploaded here. That evidence is\n")
-	body.WriteString("  operator-local: it is not an OS sandbox, not tamper-proof and not an\n")
-	body.WriteString("  independent attestation.\n")
-	body.WriteString("- License, privacy and publication approval are operator attestations bound to\n")
-	body.WriteString("  this exact payload. zt verifies none of them.\n")
-	body.WriteString("- Checks that run on this pull request's head in this repository are the only\n")
-	body.WriteString("  machine-generated verification signal.\n")
-	_ = paths
 	return body.String()
 }
 
 // validate enforces the publication bounds on the document that will be hashed and
-// uploaded, so an approval cannot name an oversized payload that the remote would
-// later accept in a different shape.
+// uploaded, so a payload zt printed for review cannot be oversized.
 func (p PublicPayload) validate(skill string) error {
 	if p.SchemaVersion != schemaVersion {
 		return fmt.Errorf("payload: unsupported schemaVersion %d", p.SchemaVersion)
@@ -227,12 +210,12 @@ func (p PublicPayload) validate(skill string) error {
 
 // CanonicalBytes renders the payload exactly as it is hashed: two-space indented
 // JSON, no HTML escaping and one trailing newline. A reviewer can therefore hash the
-// printed document and get the digest an approval names.
+// printed document and get the digest submit reports.
 func (p PublicPayload) CanonicalBytes() ([]byte, error) {
 	return canonicalJSON(p)
 }
 
-// digest is the value an approval names and submit re-derives.
+// digest is the value `--show-payload` prints and submit re-derives.
 func (p PublicPayload) digest() (string, error) {
 	data, err := p.CanonicalBytes()
 	if err != nil {

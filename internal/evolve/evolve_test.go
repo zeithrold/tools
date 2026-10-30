@@ -409,9 +409,6 @@ func TestPlanRevalidatesWithoutWriting(t *testing.T) {
 	if planned.ProvenanceState != declaredUnverified || planned.EvidenceState != declaredUnverified {
 		t.Fatalf("plan treated declarations as verified: %q/%q", planned.ProvenanceState, planned.EvidenceState)
 	}
-	if len(planned.MissingEvidence) != len(missingEvidence) {
-		t.Fatalf("missing evidence is incomplete: %v", planned.MissingEvidence)
-	}
 	if len(planned.Checks) != 2 {
 		t.Fatalf("plan reported %d checks", len(planned.Checks))
 	}
@@ -940,15 +937,6 @@ func TestPrepareRejectsInvalidDocuments(t *testing.T) {
 				return document
 			},
 			want: "baseCommit",
-		},
-		{
-			name: "policy without checks",
-			policy: func(commit string) any {
-				document := policyDoc(commit)
-				document["requiredChecks"] = []string{}
-				return document
-			},
-			want: "requiredChecks",
 		},
 		{
 			name: "policy duplicate skill",

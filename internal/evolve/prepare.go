@@ -97,6 +97,5 @@ func prepareProposal(ctx context.Context, repo *Repo, policy Policy, value propo
 		Evidence:        candidate.Evidence,
 		EvidenceState:   declaredUnverified,
 		Publication:     publicationNotReady,
-		MissingEvidence: append([]string(nil), missingEvidence...),
 	}, nil
 }

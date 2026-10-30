@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -86,13 +87,12 @@ func TestEvolveCheckRefusesToExecuteWithoutTheExplicitFlag(t *testing.T) {
 	}
 }
 
-func TestEvolveSubmitShowPayloadNeedsNoApprovalCredentialOrWrite(t *testing.T) {
+func TestEvolveSubmitShowPayloadNeedsNoCredentialOrWrite(t *testing.T) {
 	f := newEvolveFixture(t)
 	candidate := preparedCandidate(t, f)
-	validation := writeEvolveValidation(t, deterministicCheck("go-test"), deterministicCheck("repo-lint"))
 	before := snapshotFiles(t, f.root)
 
-	stdout, err := runEvolveOfflineCLI(t, "evolve", "submit", candidate, "--policy", f.policy, "--upstream", f.upstream, "--validation", validation, "--root", f.root, "--show-payload")
+	stdout, err := runEvolveOfflineCLI(t, "evolve", "submit", candidate, "--policy", f.policy, "--upstream", f.upstream, "--root", f.root, "--show-payload")
 	if err != nil {
 		t.Fatalf("show payload: %v", err)
 	}
@@ -109,30 +109,41 @@ func TestEvolveSubmitShowPayloadNeedsNoApprovalCredentialOrWrite(t *testing.T) {
 	assertEqualSnapshots(t, "the workspace", before, snapshotFiles(t, f.root))
 }
 
-func TestEvolveSubmitRequiresAnApprovalFileBeforeAnyCredential(t *testing.T) {
+// TestEvolveSubmitReachesTheCredentialSeamWithoutALocalCheck pins that submission is
+// not gated by an approval document or a local verification: with neither present, the
+// command goes straight to the credential seam and the only failure is the missing
+// credential itself.
+func TestEvolveSubmitReachesTheCredentialSeamWithoutALocalCheck(t *testing.T) {
 	f := newEvolveFixture(t)
 	candidate := preparedCandidate(t, f)
-	validation := writeEvolveValidation(t, deterministicCheck("go-test"), deterministicCheck("repo-lint"))
-
-	_, err := runEvolveOfflineCLI(t, "evolve", "submit", candidate, "--policy", f.policy, "--upstream", f.upstream, "--validation", validation, "--root", f.root)
-	if err == nil || !strings.Contains(err.Error(), "--approval") {
-		t.Fatalf("submit did not require an approval: %v", err)
+	if _, err := os.Lstat(filepath.Join(f.root, ".zt", "artifacts", "evolve", "checks")); !os.IsNotExist(err) {
+		t.Fatalf("the fixture already holds a verification tree: %v", err)
 	}
 
-	approval := filepath.Join(t.TempDir(), "approval.json")
-	writeFile(t, approval, evolveTestJSON(t, map[string]any{
-		"schemaVersion":       1,
-		"candidateId":         strings.Repeat("0", 64),
-		"target":              map[string]any{"host": "github.com", "repository": "example/fixture", "baseCommit": f.commit},
-		"validationDigest":    strings.Repeat("1", 64),
-		"publicPayloadDigest": strings.Repeat("2", 64),
-		"reviewer":            "reviewer",
-		"reviewedAt":          "2026-02-01T09:30:00Z",
-		"attestations":        map[string]any{"humanReview": "approved", "privacy": "approved", "license": "approved"},
-	}))
-	_, err = runEvolveOfflineCLI(t, "evolve", "submit", candidate, "--policy", f.policy, "--upstream", f.upstream, "--validation", validation, "--approval", approval, "--root", f.root)
-	if err == nil || !strings.Contains(err.Error(), "candidateId") {
-		t.Fatalf("a mismatched approval was accepted: %v", err)
+	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
+	a := newApp(stdout, stderr)
+	a.homeDir = func() (string, error) {
+		t.Fatal("the command resolved the home directory")
+		return "", nil
+	}
+	a.newAuth = func(string) (authService, error) {
+		t.Fatal("the command constructed the auth service")
+		return nil, nil
+	}
+	reached := false
+	a.openAPI = func(context.Context, string, string, string, string) (githubauth.API, error) {
+		reached = true
+		return githubauth.API{}, fmt.Errorf("synthetic: no stored credential")
+	}
+	err := executeApp(a, context.Background(), []string{"evolve", "submit", candidate, "--policy", f.policy, "--upstream", f.upstream, "--root", f.root, "--client-id", cliClientID})
+	if !reached {
+		t.Fatalf("submit did not reach the credential seam without a local check: %v", err)
+	}
+	if err == nil || !strings.Contains(err.Error(), "no stored credential") {
+		t.Fatalf("unexpected submit outcome: %v", err)
+	}
+	if _, statErr := os.Lstat(filepath.Join(f.root, ".zt", "artifacts", "evolve", "checks")); !os.IsNotExist(statErr) {
+		t.Fatalf("submit created a verification tree: %v", statErr)
 	}
 }
 
@@ -152,41 +163,6 @@ func TestEvolveStatusIsLocalReadOnlyAndReportsNotReady(t *testing.T) {
 		}
 	}
 	assertEqualSnapshots(t, "the workspace", before, snapshotFiles(t, f.root))
-}
-
-func TestEvolveSubmitRequiresATrustedLocalVerification(t *testing.T) {
-	f := newEvolveFixture(t)
-	candidate := preparedCandidate(t, f)
-	validation := writeEvolveValidation(t, deterministicCheck("go-test"), deterministicCheck("repo-lint"))
-
-	preview, err := runEvolveOfflineCLI(t, "evolve", "submit", candidate, "--policy", f.policy, "--upstream", f.upstream, "--validation", validation, "--root", f.root, "--show-payload", "--json")
-	if err != nil {
-		t.Fatalf("preview: %v", err)
-	}
-	var plan struct {
-		CandidateID         string `json:"candidateId"`
-		ValidationDigest    string `json:"validationDigest"`
-		PublicPayloadDigest string `json:"publicPayloadDigest"`
-	}
-	if err := json.Unmarshal([]byte(preview), &plan); err != nil {
-		t.Fatalf("preview json: %v", err)
-	}
-	approval := filepath.Join(t.TempDir(), "approval.json")
-	writeFile(t, approval, evolveTestJSON(t, map[string]any{
-		"schemaVersion":       1,
-		"candidateId":         plan.CandidateID,
-		"target":              map[string]any{"host": "github.com", "repository": "example/fixture", "baseCommit": f.commit},
-		"validationDigest":    plan.ValidationDigest,
-		"publicPayloadDigest": plan.PublicPayloadDigest,
-		"reviewer":            "reviewer@example.invalid",
-		"reviewedAt":          "2026-02-01T09:30:00Z",
-		"attestations":        map[string]any{"humanReview": "approved", "privacy": "approved", "license": "approved"},
-	}))
-
-	_, err = runEvolveOfflineCLI(t, "evolve", "submit", candidate, "--policy", f.policy, "--upstream", f.upstream, "--validation", validation, "--approval", approval, "--root", f.root)
-	if err == nil || !strings.Contains(err.Error(), "zt evolve check") {
-		t.Fatalf("submit did not require a passed local verification: %v", err)
-	}
 }
 
 // assertEqualSnapshots is the file-level twin of the evolve package assertion.

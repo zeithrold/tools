@@ -15,29 +15,17 @@ import (
 	"github.com/zeithrold/tools/internal/githubauth"
 )
 
-// SubmitOptions selects one candidate, the trusted policy and validation contract,
-// the human approval, and the authenticated endpoint. OpenAPI is the credential
+// SubmitOptions selects one candidate, the trusted policy, the local upstream that
+// holds the pinned base and the authenticated endpoint. OpenAPI is the credential
 // seam: it is only called after every local precondition has passed, and it never
 // hands zt a token.
 type SubmitOptions struct {
 	Candidate   string
 	Policy      string
 	Upstream    string
-	Validation  string
-	Approval    string
 	Root        string
 	ShowPayload bool
 	OpenAPI     func(ctx context.Context, target Target) (githubauth.API, error)
-}
-
-// SubmitAttestations restates what the operator, not zt, asserted.
-type SubmitAttestations struct {
-	Reviewer    string `json:"reviewer"`
-	ReviewedAt  string `json:"reviewedAt"`
-	HumanReview string `json:"humanReview"`
-	Privacy     string `json:"privacy"`
-	License     string `json:"license"`
-	State       string `json:"state"`
 }
 
 // SubmitPullRequest is the observed pull request.
@@ -51,39 +39,43 @@ type SubmitPullRequest struct {
 // SubmitResult reports what happened, including the case where nothing was written
 // because an exact pull request already existed.
 type SubmitResult struct {
-	SchemaVersion       int                 `json:"schemaVersion"`
-	Action              string              `json:"action"` // payload, created, existing
-	State               string              `json:"state"`  // planned, completed, uncertain
-	CandidateID         string              `json:"candidateId"`
-	Target              Target              `json:"target"`
-	ValidationDigest    string              `json:"validationDigest"`
-	PublicPayloadDigest string              `json:"publicPayloadDigest"`
-	ApprovalDigest      string              `json:"approvalDigest,omitempty"`
-	Branch              string              `json:"branch"`
-	BaseBranch          string              `json:"baseBranch,omitempty"`
-	Commit              string              `json:"commit,omitempty"`
-	Tree                string              `json:"tree,omitempty"`
-	PullRequest         *SubmitPullRequest  `json:"pullRequest,omitempty"`
-	Writes              int                 `json:"writes"`
-	Publication         string              `json:"publication"`
-	Attestations        *SubmitAttestations `json:"attestations,omitempty"`
-	Payload             *PublicPayload      `json:"payload,omitempty"`
-	JournalPath         string              `json:"journalPath,omitempty"`
-	Notes               []string            `json:"notes,omitempty"`
+	SchemaVersion       int                `json:"schemaVersion"`
+	Action              string             `json:"action"` // payload, created, existing
+	State               string             `json:"state"`  // planned, completed, uncertain
+	CandidateID         string             `json:"candidateId"`
+	Target              Target             `json:"target"`
+	PublicPayloadDigest string             `json:"publicPayloadDigest"`
+	Branch              string             `json:"branch"`
+	BaseBranch          string             `json:"baseBranch,omitempty"`
+	Commit              string             `json:"commit,omitempty"`
+	Tree                string             `json:"tree,omitempty"`
+	PullRequest         *SubmitPullRequest `json:"pullRequest,omitempty"`
+	Writes              int                `json:"writes"`
+	Publication         string             `json:"publication"`
+	Payload             *PublicPayload     `json:"payload,omitempty"`
+	JournalPath         string             `json:"journalPath,omitempty"`
+	Notes               []string           `json:"notes,omitempty"`
 }
 
-// Submit turns one approved candidate into a deterministic dedicated branch and a
+// Submit turns one stored candidate into a deterministic dedicated branch and a
 // draft pull request.
 //
 // It never merges, publishes, activates, force-updates a ref or reopens a closed
-// pull request. Every local precondition — the candidate bytes, the policy and
-// validation bindings, the approval, the retained verification evidence and the
-// stored journal — is checked against a read-only view of the workspace before the
-// credential seam is used. The candidate+payload transaction is then serialised by
-// a cross-process lock, and every remaining step is decided by reading: an exact
-// existing submission is returned without any write, a verified branch missing only
-// its pull request gets just the pull request, and anything that does not verify
-// exactly is refused.
+// pull request. Every local precondition — the candidate bytes and the policy
+// binding, plus the journal of an earlier attempt at this payload — is checked
+// against a read-only view of the workspace before the credential seam is used.
+// Submission deliberately consults no local verification record: `evolve check` is
+// an independent utility, and a submit needs neither that record nor the logs and
+// workspace a check run retains.
+//
+// The candidate+payload transaction is then serialised by a cross-process lock.
+// Every remaining step is decided by reading: an existing submission of this
+// candidate is returned without any write, a verified branch missing only its pull
+// request gets just the pull request, and any object that is not exactly this
+// candidate's is refused. The pull request targets the repository's current default
+// branch, so a default branch that has advanced does not stop a submission: the
+// branch still points at one commit whose parent is the pinned base, and zt neither
+// rebases it nor changes its content.
 func Submit(ctx context.Context, options SubmitOptions) (SubmitResult, error) {
 	if err := ctx.Err(); err != nil {
 		return SubmitResult{}, err
@@ -107,17 +99,6 @@ func Submit(ctx context.Context, options SubmitOptions) (SubmitResult, error) {
 	if !bytes.Equal(canonical, data) {
 		return SubmitResult{}, fmt.Errorf("candidate: bytes are not canonical, so the file was modified after preparation")
 	}
-	validation, err := LoadValidation(options.Validation)
-	if err != nil {
-		return SubmitResult{}, err
-	}
-	if err := validation.covers(policy); err != nil {
-		return SubmitResult{}, err
-	}
-	validationDigest, err := validation.digest()
-	if err != nil {
-		return SubmitResult{}, err
-	}
 	repo, err := resolveUpstream(ctx, options.Upstream, options.Root, policy)
 	if err != nil {
 		return SubmitResult{}, err
@@ -129,7 +110,7 @@ func Submit(ctx context.Context, options SubmitOptions) (SubmitResult, error) {
 	if err != nil {
 		return SubmitResult{}, err
 	}
-	payload, err := buildPayload(candidate, id, validation, validationDigest, info)
+	payload, err := buildPayload(candidate, id, info)
 	if err != nil {
 		return SubmitResult{}, err
 	}
@@ -143,67 +124,27 @@ func Submit(ctx context.Context, options SubmitOptions) (SubmitResult, error) {
 		Action:              "payload",
 		CandidateID:         id,
 		Target:              candidate.Target,
-		ValidationDigest:    validationDigest,
 		PublicPayloadDigest: payloadDigest,
 		Branch:              payload.Branch,
 		Publication:         publicationNotReady,
 	}
 
-	// The review preview stops here: it reads no approval, no verification record, no
-	// credential and no journal, and writes nothing. It must stay usable before the
-	// operator has approved anything.
+	// The review preview stops here: it reads no credential and no journal, and it
+	// writes nothing.
 	if options.ShowPayload {
 		result.Payload = &payload
 		return result, nil
 	}
 
-	approval, err := LoadApproval(options.Approval)
-	if err != nil {
-		return SubmitResult{}, err
-	}
-	if err := approval.validateFor(id, candidate.Target, validationDigest, payloadDigest); err != nil {
-		return SubmitResult{}, err
-	}
-	approvalDigest, err := approval.digest()
-	if err != nil {
-		return SubmitResult{}, err
-	}
-	if _, err := approval.reviewedTime(); err != nil {
-		return SubmitResult{}, err
-	}
-	result.ApprovalDigest = approvalDigest
-	result.Attestations = &SubmitAttestations{
-		Reviewer:    approval.Reviewer,
-		ReviewedAt:  approval.ReviewedAt,
-		HumanReview: approval.Attestations.HumanReview,
-		Privacy:     approval.Attestations.Privacy,
-		License:     approval.Attestations.License,
-		State:       "attested_by_operator_not_verified_by_zt",
-	}
-
-	// Local preflight: a read-only view of the owned tree, so a missing verification
-	// record or a malformed journal fails before any credential is touched and before
-	// any directory is created.
+	// Local preflight: a read-only view of the owned tree, so a malformed journal
+	// fails before any credential is touched and before any directory is created.
+	// A local verification is not consulted: `evolve check` is independent, and a
+	// submission needs neither its record nor the logs and workspace it retained.
 	readStore, err := openExistingStore(options.Root)
 	if err != nil {
 		return SubmitResult{}, err
 	}
 	defer readStore.Close()
-	summary := summarizeFiles(candidate.Files)
-	runRelative := checkRunRelative(id, validationDigest)
-	// The pinned base digest is derived here from the local Git objects, not read from
-	// the record, so the verification evidence must name exactly this base.
-	baseEntries, err := repo.CompleteTree(ctx, candidate.Target.BaseCommit)
-	if err != nil {
-		return SubmitResult{}, err
-	}
-	baseDigest, err := entrySetDigest(baseEntries)
-	if err != nil {
-		return SubmitResult{}, err
-	}
-	if _, err := validateVerificationRecord(readStore, runRelative, id, validationDigest, candidate, validation, summary, baseDigest); err != nil {
-		return SubmitResult{}, err
-	}
 	journalRelative := submitJournalRelative(id, payloadDigest)
 	journal, found, err := loadJournal(readStore, journalRelative, id, payloadDigest)
 	if err != nil {
@@ -217,12 +158,14 @@ func Submit(ctx context.Context, options SubmitOptions) (SubmitResult, error) {
 			PublicPayloadDigest: payloadDigest,
 		}
 	}
-	// The payload is identical for this candidate and contract, so this run records
-	// the approval and contract it actually verified.
-	journal.ApprovalDigest = approvalDigest
-	journal.ValidationDigest = validationDigest
+	// This run records the candidate and payload it actually publishes, so a
+	// replayed attempt describes the same transaction.
 	journal.BaseCommit = candidate.Target.BaseCommit
 	journal.Branch = payload.Branch
+	baseEntries, err := repo.CompleteTree(ctx, candidate.Target.BaseCommit)
+	if err != nil {
+		return SubmitResult{}, err
+	}
 	expected, err := expectedTree(ctx, repo, baseEntries, candidate)
 	if err != nil {
 		return SubmitResult{}, err
@@ -247,8 +190,6 @@ func Submit(ctx context.Context, options SubmitOptions) (SubmitResult, error) {
 		// Re-read under the lock: another process may have advanced this transaction
 		// after our preflight read.
 		journal = current
-		journal.ApprovalDigest = approvalDigest
-		journal.ValidationDigest = validationDigest
 		journal.BaseCommit = candidate.Target.BaseCommit
 		journal.Branch = payload.Branch
 	}
@@ -282,29 +223,11 @@ func Submit(ctx context.Context, options SubmitOptions) (SubmitResult, error) {
 
 	commit := state.head
 	if commit != "" {
-		// The dedicated branch already holds exactly the approved commit and only the
-		// pull request is missing. Never re-create the ref, never force it. A pull
-		// request is still a remote write, so the pinned base gate below applies.
+		// The dedicated branch already holds exactly this candidate's commit and only
+		// the pull request is missing. Never re-create the ref, never force it.
 		journal.Commit = commit
 		result.Commit = commit
-	} else {
-		journal.BaseBranch = baseBranch
-	}
-
-	// Any remaining remote write requires the pinned base to still be the default
-	// branch head. That includes completing a verified branch that is only missing its
-	// pull request: only an exactly matching existing pull request may be returned
-	// after the base has moved.
-	liveHead, err := endpoint.ref(ctx, "refs/heads/"+refPath(baseBranch))
-	if err != nil {
-		return SubmitResult{}, err
-	}
-	if liveHead == nil || liveHead.Object.SHA != candidate.Target.BaseCommit {
-		return SubmitResult{}, fmt.Errorf("the target base branch %s has moved: the policy pins %s, and this submission still needs a remote write. Refresh the pinned base and repeat preparation, verification and approval; zt will not write against a changed base", safeQuote(baseBranch), candidate.Target.BaseCommit)
-	}
-
-	if state.head != "" {
-		if err := advanceJournal(ctx, writeStore, journalRelative, &journal, journalRefCreated, "verified the existing approved branch; the draft pull request is missing"); err != nil {
+		if err := advanceJournal(ctx, writeStore, journalRelative, &journal, journalRefCreated, "verified the existing candidate branch; the draft pull request is missing"); err != nil {
 			return SubmitResult{}, err
 		}
 	} else {
@@ -439,7 +362,7 @@ func finishExisting(ctx context.Context, store *Store, journalRelative string, r
 	result.Publication = publicationSubmitted
 	result.Commit = pull.Head.SHA
 	result.PullRequest = &SubmitPullRequest{Number: pull.Number, URL: pull.HTMLURL, State: pull.State, Draft: pull.Draft}
-	result.Notes = append(result.Notes, "an exact draft pull request already exists; nothing was written")
+	result.Notes = append(result.Notes, "the existing pull request was recognized; no remote writes were made")
 	return result, nil
 }
 
@@ -459,8 +382,8 @@ func wrapUncertain(result SubmitResult, journalRelative string, err error) (Subm
 	return uncertain(result, journalRelative, err)
 }
 
-// expectedTree is the complete tree the approved payload must produce: the pinned
-// base with exactly the approved files replaced. Reconciliation compares this whole
+// expectedTree is the complete tree the payload must produce: the pinned base with
+// exactly the candidate's files replaced. Reconciliation compares this whole
 // set, so extra, missing or rewritten unrelated files are all refused.
 type treeFile struct {
 	Mode string
@@ -532,11 +455,11 @@ func assertRemoteTreeMatches(ctx context.Context, endpoint *githubEndpoint, tree
 	return nil
 }
 
-// verifyRealizedCommit checks one realized commit against the approved payload by
+// verifyRealizedCommit checks one realized commit against the payload by
 // rebuilding the exact Git commit object the payload names and comparing object ids.
 //
 // The object id decides, not the REST representation: GitHub returns `message` with
-// one trailing newline removed, while the stored object keeps the exact approved
+// one trailing newline removed, while the stored object keeps the exact payload
 // bytes, so a presentation difference is acceptable only when the reconstructed
 // object hashes to the observed commit. Parents, tree identity and the author and
 // committer identity and date are checked separately, and any additional header in
@@ -564,14 +487,14 @@ func (e *githubEndpoint) verifyRealizedCommit(ctx context.Context, repo *Repo, c
 		return err
 	}
 	if expectedID != commit.SHA {
-		return fmt.Errorf("the remote commit %s is not exactly the approved commit (its raw object hashes to %s); zt compares the Git object, not the API's message view", safeQuote(commit.SHA), expectedID)
+		return fmt.Errorf("the remote commit %s is not exactly the commit the payload describes (its raw object hashes to %s); zt compares the Git object, not the API's message view", safeQuote(commit.SHA), expectedID)
 	}
 	return e.verifyRealizedTree(ctx, commit.Tree.SHA, expected)
 }
 
-// rawCommitObject renders the exact Git commit object the approved payload names:
+// rawCommitObject renders the exact Git commit object the payload names:
 // one tree, one parent, the fixed author and committer identity and date, and the
-// approved message bytes verbatim. No newline is added, trimmed or normalised.
+// message bytes verbatim. No newline is added, trimmed or normalised.
 func rawCommitObject(tree, parent string, commit PayloadCommit) ([]byte, error) {
 	instant, err := time.Parse(time.RFC3339, commit.CommittedAt)
 	if err != nil {
@@ -589,15 +512,15 @@ func rawCommitObject(tree, parent string, commit PayloadCommit) ([]byte, error) 
 
 func verifyIdentity(identity remoteIdentity, commit PayloadCommit) error {
 	if identity.Name != commit.AuthorName || identity.Email != commit.AuthorEmail {
-		return fmt.Errorf("commit identity %s <%s> is not the approved zt-evolve identity", safeQuote(identity.Name), safeQuote(identity.Email))
+		return fmt.Errorf("commit identity %s <%s> is not the zt-evolve identity the payload names", safeQuote(identity.Name), safeQuote(identity.Email))
 	}
 	date, err := time.Parse(time.RFC3339, identity.Date)
 	if err != nil {
 		return fmt.Errorf("commit date %s is not an RFC 3339 instant", safeQuote(identity.Date))
 	}
-	approved, err := time.Parse(time.RFC3339, commit.CommittedAt)
-	if err != nil || !date.Equal(approved) {
-		return fmt.Errorf("commit date does not equal the pinned base committer instant approved in the payload")
+	expected, err := time.Parse(time.RFC3339, commit.CommittedAt)
+	if err != nil || !date.Equal(expected) {
+		return fmt.Errorf("commit date does not equal the pinned base committer instant in the payload")
 	}
 	return nil
 }
@@ -609,7 +532,7 @@ func (e *githubEndpoint) verifyRealizedTree(ctx context.Context, treeSHA string,
 		return err
 	}
 	if len(remote) != len(expected) {
-		return fmt.Errorf("the remote tree holds %d files but the approved publication has %d; refusing to call this an exact match", len(remote), len(expected))
+		return fmt.Errorf("the remote tree holds %d files but the publication has %d; refusing to call this an exact match", len(remote), len(expected))
 	}
 	paths := make([]string, 0, len(expected))
 	for name := range expected {
@@ -619,18 +542,21 @@ func (e *githubEndpoint) verifyRealizedTree(ctx context.Context, treeSHA string,
 	for _, name := range paths {
 		value, ok := remote[name]
 		if !ok {
-			return fmt.Errorf("the remote tree is missing %s from the approved publication", safeQuote(name))
+			return fmt.Errorf("the remote tree is missing %s from the publication", safeQuote(name))
 		}
 		if value.SHA != expected[name].SHA || value.Mode != expected[name].Mode {
-			return fmt.Errorf("the remote tree holds a different %s than the approved publication", safeQuote(name))
+			return fmt.Errorf("the remote tree holds a different %s than the publication", safeQuote(name))
 		}
 	}
 	return nil
 }
 
-// verifyPull requires every field a reviewer reads to be exactly the approved one.
-// A changed title, body, draft flag, head repository, head branch or base branch is
-// drift: it is reported, never rewritten.
+// verifyPull requires every field that identifies this submission: this branch of
+// this repository as the head, the default branch of this repository as the base,
+// an open pull request and the exact head commit. A title or body the operator has
+// since edited, and a draft that was marked ready for review, are review decisions
+// rather than identity: zt recognises such a pull request as its own and never
+// rewrites it.
 func verifyPull(pull remotePull, payload PublicPayload, baseBranch, headSHA string) error {
 	if pull.Head.Ref != payload.Branch {
 		return fmt.Errorf("pull request %d has head branch %s instead of %s; refusing to treat it as this submission", pull.Number, safeQuote(pull.Head.Ref), safeQuote(payload.Branch))
@@ -647,16 +573,8 @@ func verifyPull(pull remotePull, payload PublicPayload, baseBranch, headSHA stri
 	if pull.State != "open" {
 		return fmt.Errorf("pull request %d is %s, not open; zt never reopens or reuses a closed pull request", pull.Number, safeQuote(pull.State))
 	}
-	if !pull.Draft {
-		return fmt.Errorf("pull request %d is not a draft; the approved payload requires a draft", pull.Number)
-	}
-	// Exact byte equality: whitespace and line endings are part of what a reviewer
-	// approved, and Markdown indentation can change meaning.
-	if pull.Title != payload.PullRequest.Title || pull.Body != payload.PullRequest.Body {
-		return fmt.Errorf("pull request %d no longer carries the approved text; that is drift, and zt reports it instead of rewriting it", pull.Number)
-	}
 	if headSHA != "" && pull.Head.SHA != headSHA {
-		return fmt.Errorf("pull request %d points at commit %s instead of the expected %s; that is drift, not an exact match", pull.Number, pull.Head.SHA, headSHA)
+		return fmt.Errorf("pull request %d points at commit %s instead of the expected %s; that is not this candidate", pull.Number, pull.Head.SHA, headSHA)
 	}
 	return nil
 }
@@ -666,17 +584,17 @@ func equalRepository(left, right string) bool {
 }
 
 // reconcileOutcome is what a read-only reconciliation found: an exact existing pull
-// request, or a branch that already holds exactly the approved commit with only the
+// request, or a branch that already holds exactly this candidate's commit with only the
 // pull request missing.
 type reconcileOutcome struct {
 	pull *remotePull
 	head string
 }
 
-// reconcile inspects the deterministic branch and returns an exactly matching open
-// pull request, or a verified head that is missing only its pull request. Any
-// existing but non-matching object is refused instead of adopted, so an unknown
-// object can never be reported as this submission.
+// reconcile inspects the deterministic branch and returns an existing open pull
+// request that carries this candidate's exact commit, or a verified head that is
+// missing only its pull request. Any existing but non-matching object is refused
+// instead of adopted, so an unknown object can never be reported as this submission.
 func reconcile(ctx context.Context, repo *Repo, endpoint *githubEndpoint, payload PublicPayload, expected map[string]treeFile, baseBranch string) (reconcileOutcome, error) {
 	pulls, err := endpoint.pullsForBranch(ctx, payload.Branch)
 	if err != nil {
@@ -726,7 +644,7 @@ func reconcile(ctx context.Context, repo *Repo, endpoint *githubEndpoint, payloa
 		return reconcileOutcome{}, err
 	}
 	if err := endpoint.verifyRealizedCommit(ctx, repo, commit, payload, payload.BaseCommit, expected); err != nil {
-		return reconcileOutcome{}, fmt.Errorf("branch %s exists but does not hold exactly the approved commit: %w. zt never reuses or force-updates it", safeQuote(payload.Branch), err)
+		return reconcileOutcome{}, fmt.Errorf("branch %s exists but does not hold exactly this candidate's commit: %w. zt never reuses or force-updates it", safeQuote(payload.Branch), err)
 	}
 	return reconcileOutcome{head: ref.Object.SHA}, nil
 }

@@ -1,4 +1,4 @@
-# Reviewed Skill evolution
+# Skill evolution
 
 `zt evolve` implements the local candidate stage, an explicit trusted-local
 verification stage, and an idempotent draft pull request stage:
@@ -14,10 +14,25 @@ this command surface.
 | `from-installed` | Derives replacements from one edited managed global Skill after matching the complete pinned Skill to its installation lock digest, then prepares a candidate | Same candidate-only writes as `prepare`; installation and lock remain untouched |
 | `plan` | Re-reads and re-validates a stored candidate | None: no write, credential, network or execution |
 | `check` | Runs the trusted validation contract against a complete materialised pinned base with the candidate applied | Executes native commands, but only with `--trusted-local-execution`; writes its own result, logs and workspace |
-| `submit` | Requires a passed local verification and an approval naming the exact candidate, target, base, validation contract and public payload, then opens one draft pull request, returns an exact existing one, or completes a verified branch missing only its pull request | Remote writes only through the GitHub App credential; a serialised, monotone local journal records each step |
+| `submit` | Opens a draft pull request for a candidate, returns a matching existing one, or completes a verified branch missing only its pull request | Remote writes only through the GitHub App credential; a serialised, monotone local journal records each step |
 | `status` | Reports local state; `--remote` additionally reads the pull request and GitHub's checks | Local reads only unless `--remote` is passed |
 | `upstream status` | Reports whether the complete pinned baseline is locally usable | No write, credential, network or validation execution |
 | `upstream fetch` | Acquires exact Git objects through the stored GitHub App credential with `--allow-network`, or reuses a complete cache | Writes only a staged then verified bare cache under `.zt/artifacts/evolve/upstreams/`; no remote writes |
+
+## CLI compatibility
+
+Submission takes the candidate and policy, not `--approval` or `--validation`.
+Use `--validation` only with `check` or to select a local record in `status`.
+Prepare/plan results no longer contain `missingEvidence`; submit results and
+journals no longer contain approval or validation fields.
+
+Policy, proposal, candidate and validation formats retain `schemaVersion: 1`.
+Existing prepared candidates remain readable. The submission payload has changed,
+so its digest and journal path differ from earlier releases. Existing artifacts
+are left untouched and are not migrated. An existing remote branch must still
+match the current payload's commit; an earlier submission with different commit
+metadata is refused rather than overwritten. Continue that PR directly, or
+prepare a new candidate against the current upstream base.
 
 ## Managed upstream baseline (no user checkout)
 
@@ -113,11 +128,13 @@ commit ID present in the selected local upstream:
 }
 ```
 
-`requiredChecks` are names. The policy never carries a command: unknown fields,
-including command definitions, are rejected. What each name *runs* is fixed by a
-separate validation contract that must cover exactly these names. Target identity,
-allowed scope and the required check names come from the policy, never from the
-proposal.
+`requiredChecks` lists check names for `evolve check` and may be empty (`[]`).
+The policy never
+carries a command: unknown fields, including command definitions, are rejected.
+A separate validation contract supplies commands and must cover any declared
+required names; additional checks are allowed. Target identity and allowed scope
+come from the policy, never from the proposal. Submission is independent of
+validation.
 
 A proposal declares one Skill and one origin, then provides file replacements:
 
@@ -164,7 +181,7 @@ zt evolve from-installed --skill example-skill \
 The operator still supplies the trusted policy and declares the proposed
 material's source, license and reason. Those declarations do not become verified
 provenance or redistribution rights. This convenience command does not generate
-wording, evidence, validation results or approval; use `prepare` for a proposal
+wording, evidence or validation results; use `prepare` for a proposal
 carrying explicit evidence references.
 
 The current installation lock records a version and an aggregate content digest,
@@ -191,7 +208,7 @@ installed baseline, use a matching pinned base or explicitly review replacements
 for `prepare`; do not resync over edits to make this command work.
 
 The output is the same immutable candidate/result as `prepare`, so continue with
-`plan`, `check` and exact-payload approval and submission below. Identical inputs
+`plan`, optional `check` and submission below. Identical inputs
 produce the same candidate as an equivalent explicit proposal. Automatic
 installation-source recording and multiple Skills per candidate
 remain separate follow-ups. Managed upstream caching is described above.
@@ -254,7 +271,7 @@ Git-config or object-store IO.
 ## Trusted local verification
 
 A validation contract is a separate operator file. It cannot be supplied by a
-candidate, and it must name exactly the policy's `requiredChecks`:
+candidate, and it must cover the policy's `requiredChecks`, if any:
 
 ```json
 {
@@ -317,28 +334,27 @@ digests, the materialised workspace digest and the base entry-set digest. The
 workspace is digested from the physical files before and after the run, so a
 command that rewrites the inputs cannot yield a reusable `passed` record.
 
-Reuse and submission apply the **same** record rule: the stored result must be
+Check-result reuse requires that the stored result be
 canonical, bound to exactly this candidate and contract, report every step as
 passed with exit 0 in the contract's order, keep every retained log whose size and
 SHA-256 still match, and still describe the workspace that exists on disk. A
 missing log, an edited tree, a deleted workspace or a contradictory step record
-(even with an overall `passed`) is not reusable and blocks submission. This is a
-consistency check on local evidence, not protection against the same user writing
-a complete forged record.
+(even with an overall `passed`) is not reusable. These files belong to the
+independent check command; removing them does not prevent submission.
 
 `check` prints its result and then exits non-zero unless the recorded status is
 `passed`, matching `zt check`; a failed or blocked run is never reported as a
 successful command.
 
-## Approval and the public payload
+## Preview the public payload
 
-The publication is a separate reviewed artifact. `submit --show-payload` prints
-it without reading a credential, contacting the network, executing anything or
+`submit --show-payload` prints the upload document
+without reading a credential, contacting the network, executing anything or
 writing anything:
 
 ```sh
 zt evolve submit CANDIDATE.json --policy policy.json --upstream /path/upstream \
-  --validation validation.json --root /path/to/workspace --show-payload
+  --root /path/to/workspace --show-payload
 ```
 
 That document is the exact publication, including every file's content:
@@ -355,63 +371,35 @@ That document is the exact publication, including every file's content:
 }
 ```
 
-Hashes bind bytes, so review must see the bytes. `publicPayloadDigest` is the
-SHA-256 of that canonical document. The commit date comes from the **pinned base
-commit's committer instant**, normalised to UTC, so the payload and its digest
-exist before any approval and stay reproducible on replay. The author is the
-fixed `zt-evolve` identity; zt never impersonates the reviewing user.
-
-An approval is the human decision for exactly that publication:
-
-```json
-{
-  "schemaVersion": 1,
-  "candidateId": "CANDIDATE_CONTENT_ID",
-  "target": {"host": "github.example", "repository": "example/skills", "baseCommit": "FULL_BASE_COMMIT"},
-  "validationDigest": "VALIDATION_CONTRACT_SHA256",
-  "publicPayloadDigest": "PUBLIC_PAYLOAD_SHA256",
-  "reviewer": "a human identifier",
-  "reviewedAt": "2026-02-01T09:30:00Z",
-  "attestations": {"humanReview": "approved", "privacy": "approved", "license": "approved"}
-}
-```
-
-Every field is compared with what zt derived itself. `approvalDigest` is the
-SHA-256 of the normalised approval document, so the reviewer, review time and
-each attestation are audited into the same binding. `reviewedAt` is an audited
-declaration and does not influence any commit. The attestations are the operator's
-own statements: zt does not verify license compatibility, privacy, provenance or
-suitability, and reports them as `attested_by_operator_not_verified_by_zt`
-anywhere a reader could confuse them with an observation.
+`publicPayloadDigest` identifies the canonical upload document for submission
+recovery. The commit date comes from the **pinned base commit's committer
+instant**, normalised to UTC, so the payload stays reproducible on replay.
+The author is the fixed `zt-evolve` identity.
 
 The public payload is exactly: the target host, repository and pinned base with
-its commit time, the branch name, the approved replacement file contents, the
+its commit time, the branch name, the replacement file contents, the
 declared reason and evidence labels with their digests, the declared source
 repository/commit/license lines, and the deterministic commit and pull-request
 text. zt adds no logs, transcripts, reasoning, absolute host paths, environment
 values, credentials or unrelated source to it, and CI logs are never copied into
-it. zt also does not scan the approved content for secrets: replacements, reason
-and labels publish exactly the bytes a reviewer approved, so keeping secret or
-private material out of a candidate remains the operator's responsibility.
+it. Keeping secret or private material out of a candidate is the operator's
+responsibility. Review and merge decisions belong to the repository's PR process.
 
 ## Submission, idempotency and recovery
 
 ```sh
 zt evolve submit CANDIDATE.json --policy policy.json --upstream /path/upstream \
-  --validation validation.json --approval approval.json --root /path/to/workspace \
+  --root /path/to/workspace \
   --client-id Iv1.example --profile default --json
 ```
 
-`submit` requires, in this order: a canonical candidate that still matches the
-policy and the pinned base; a validation contract covering the policy's checks; a
-payload digest the approval names; and a local verification record for exactly
-this candidate and contract, still consistent with the retained tree and logs. All
-of that is checked against a read-only view of the workspace, so a missing record
-or a malformed journal fails before any credential is read and before any
-directory is created. Only then is the OS keystore opened, through the same GitHub
-App device-flow credential as `zt auth`. There is no PAT, `gh`, environment-token
-or plaintext fallback, no token in any child process environment and no token in
-any result, journal or log.
+`submit` requires a canonical candidate that matches the policy and pinned base,
+and a valid local submission journal if one exists. It does not require a
+validation contract, local check results or an approval file. Running `submit`
+explicitly requests the remote write; `--show-payload` only previews it.
+Authentication uses the same GitHub App device-flow credential as `zt auth`.
+There is no PAT, `gh`, environment-token or plaintext fallback, no token in
+any child process environment and no token in any result, journal or log.
 
 It always reconciles by reading before it writes:
 
@@ -420,40 +408,32 @@ It always reconciles by reading before it writes:
    supported.
 2. The deterministic branch `evolve/<skill>-<candidate-id[:12]>` and its pull
    requests (any state) are read.
-3. An existing branch or pull request is adopted only when it verifies exactly:
-   head repository, head branch and base branch, open state, draft flag, approved
-   title and body, commit message, `zt-evolve` author and committer identity and
+3. An existing branch or pull request is adopted only when its code identity
+   matches: head repository, head branch and base branch, open state,
+   commit message, `zt-evolve` author and committer identity and
    date, the single pinned base commit as parent, and the **complete** tree — every
    path, mode and blob compared with the pinned base overlaid with exactly the
-   approved replacements. Extra, missing or rewritten unrelated files, and a
+   candidate replacements. Extra, missing or rewritten unrelated files, and a
    truncated tree response, are refused.
 4. An exact match is returned with zero writes, even if the base branch has moved.
    A closed or merged pull request on that branch is reported, never reopened. Any
    other object on that branch is refused; zt never force-updates a ref.
-   Approved text is compared byte for byte: whitespace and line endings are part of
-   what a reviewer approved, and Markdown indentation can change meaning, so any
-   difference is drift rather than a match.
+   Editing a PR's title or body, or marking it ready for review, does not prevent
+   recognition. zt preserves those edits.
    The commit is verified as a raw Git object, not through the API's `message`
-   field: zt rebuilds the object from the approved tree, parent, identity, date
+   field: zt rebuilds the object from the expected tree, parent, identity, date
    and message bytes and requires the remote object id to equal the id of that
-   reconstruction. GitHub's REST view drops one trailing newline from a
-   message, so comparing that view would either reject the approved bytes or
-   accept a message zt never approved; the object id fails closed on any
-   difference, including an added header zt did not write.
-5. A branch that already holds exactly the approved commit but no pull request is
+   reconstruction.
+5. A branch that already holds exactly the candidate commit but no pull request is
    completed by creating **only** the pull request - the ref is never re-created and
    never forced. This is the recovery path for a lost ref response.
-6. Any submission that still needs **any** remote write is then gated on the base:
-   the default branch head must still be the pinned base commit, otherwise the
-   submission is refused and preparation, verification and approval must be
-   repeated against the new base. That includes completing a verified branch that
-   is only missing its pull request - creating the pull request is still a write.
-   Only an exactly matching existing pull request is returned after the base has
-   moved, because that path writes nothing.
+6. Default-branch advancement does not block submission. The candidate commit
+   keeps its pinned parent; zt does not silently rebase it. GitHub and the
+   repository's native checks handle mergeability against the current branch.
 
 Writes are a blob per replaced file, one tree, one commit, one ref and one draft
 pull request. Each created blob's id is compared with the local object id of the
-exact approved bytes, so content that the server stores differently is refused.
+exact candidate bytes, so content that the server stores differently is refused.
 GitHub's own tree objects are re-read and verified after creation.
 
 The whole transaction for one candidate and payload is serialised across zt
@@ -495,16 +475,17 @@ zt evolve status CANDIDATE.json --policy policy.json --upstream /path/upstream \
   --validation validation.json --root /path/to/workspace --remote --client-id Iv1.example
 ```
 
-Local status is read-only: it revalidates the candidate, reports the stored
-verification record, the submission journal and `publication: not_ready` unless a
-completed journal records a draft pull request. It reads no credential and makes
-no connection, and it never creates the artifact tree.
+Local status is read-only: it revalidates the candidate and reports the
+submission journal. Supplying `--validation` additionally selects a local
+verification record to report. Submission state does not depend on that record.
+Status reads no credential, makes no connection and never creates the artifact
+tree.
 
 `--remote` is the explicit opt-in that reads the pull request state, draft flag,
-exact head commit and GitHub-observed check-run counts. Differences are reported
-as drift (`head-commit-changed`, `public-text-changed`, `base-branch-moved-past-pinned-base`,
-`pull-request-not-draft`, and so on) and are never rewritten or reported as an
-exact match. Check-run counts are GitHub's observation, not zt execution.
+exact head commit and GitHub-observed check-run counts. Code-identity differences
+are reported as drift and never rewritten. PR text edits, readiness changes and
+default-branch advancement are normal lifecycle changes. Check-run counts are
+GitHub's observation, not zt execution.
 
 ## Limits and truthful results
 
@@ -513,7 +494,7 @@ exact match. Check-run counts are GitHub's observation, not zt execution.
   `references/`. Absolute/traversal/backslash/control-character paths, case
   collisions, symlink/submodule targets and file/directory conflicts are refused.
 - Policy: 64 KiB; proposal: 1 MiB; canonical candidate: 2 MiB; validation
-  contract: 64 KiB; approval: 64 KiB; journal: 64 KiB.
+  contract: 64 KiB; journal: 64 KiB.
 - Verification workspaces: the pinned base tree is capped at 4096 tracked
   entries and read at up to 4 MiB per file and 32 MiB across its unreplaced
   files; candidate replacements add at most eight files and 512 KiB, so a
@@ -528,14 +509,13 @@ exact match. Check-run counts are GitHub's observation, not zt execution.
 - A candidate's own declarations stay `declared_not_verified`, and publication
   stays `not_ready` until a completed submission journal exists. A draft pull
   request is not a merge, a publication or an activation.
-- App login and installation do not authorize publication. Approval is a separate
-  human decision bound to the exact payload; merging, releasing and activating
-  remain outside zt.
+- App login and installation do not initiate submission. `submit` is the explicit
+  upload operation; merging, releasing and activating remain outside zt.
 
 Changing policy invalidates the candidate's policy binding. A changed proposal
-creates a different candidate; do not edit a stored candidate to preserve an old
-approval. Changing the validation contract invalidates both the recorded
-verification and the approval. Interrupted preparations may leave identifiable
+creates a different candidate. Changing the validation contract selects a
+different verification record without affecting submission. Interrupted
+preparations may leave identifiable
 `.prepare-*` stages; interrupted submissions may leave a journal that records what
 may have been created. Inspect them before cleanup rather than treating them as
 valid.

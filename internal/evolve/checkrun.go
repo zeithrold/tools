@@ -249,12 +249,12 @@ func Verify(ctx context.Context, options CheckOptions) (CheckResult, error) {
 	case readErr != nil:
 		result.WorkspaceChanged = true
 		result.Status = executionBlocked
-		result.Notes = append(result.Notes, "the verification workspace could not be read back after the run ("+readErr.Error()+"); results are not reusable because zt cannot attribute them to the approved input")
+		result.Notes = append(result.Notes, "the verification workspace could not be read back after the run ("+readErr.Error()+"); results are not reusable because zt cannot attribute them to the expected input")
 	case digestWorkspaceSet(after) != workDigest:
 		afterDigest := digestWorkspaceSet(after)
 		result.WorkspaceChanged = true
 		result.Status = executionBlocked
-		result.Notes = append(result.Notes, "the validation command changed tracked files in the workspace (was "+workDigest+", now "+afterDigest+"); results are not reusable because zt cannot attribute them to the approved input. Write outputs to $ZT_EVOLVE_OUT_DIR instead")
+		result.Notes = append(result.Notes, "the validation command changed tracked files in the workspace (was "+workDigest+", now "+afterDigest+"); results are not reusable because zt cannot attribute them to the expected input. Write outputs to $ZT_EVOLVE_OUT_DIR instead")
 	default:
 		// Aggregate by outcome, not by position: a failed command is the strongest
 		// truth, then anything that could not run, and only an all-passed run is passed.
@@ -383,7 +383,7 @@ func materializeWorkspace(ctx context.Context, store *Store, runRelative string,
 		handle, err := store.evolve.OpenFile(target, os.O_CREATE|os.O_EXCL|os.O_WRONLY, perm)
 		if err != nil {
 			if errors.Is(err, os.ErrExist) {
-				return fmt.Errorf("this host's filesystem stores %s as an existing workspace path, so the approved overlay cannot be materialised distinctly; zt refuses to run against a tree it cannot reproduce", safeQuote(name))
+				return fmt.Errorf("this host's filesystem stores %s as an existing workspace path, so the expected overlay cannot be materialised distinctly; zt refuses to run against a tree it cannot reproduce", safeQuote(name))
 			}
 			return fmt.Errorf("write %s: %w", target, err)
 		}
@@ -469,7 +469,7 @@ func fileSHA256(path string, limit int64) (string, error) {
 // compareWorkspace requires the stored set to be exactly the expected overlay.
 func compareWorkspace(stored map[string]workspaceFile, expected map[string]expectedFile) error {
 	if len(stored) != len(expected) {
-		return fmt.Errorf("the verification workspace holds %d files but the approved overlay has %d; zt refuses to verify a tree it did not materialise exactly", len(stored), len(expected))
+		return fmt.Errorf("the verification workspace holds %d files but the expected overlay has %d; zt refuses to verify a tree it did not materialise exactly", len(stored), len(expected))
 	}
 	names := make([]string, 0, len(expected))
 	for name := range expected {
@@ -480,13 +480,13 @@ func compareWorkspace(stored map[string]workspaceFile, expected map[string]expec
 		want := expected[name]
 		got, ok := stored[name]
 		if !ok {
-			return fmt.Errorf("the verification workspace is missing %s from the approved overlay", safeQuote(name))
+			return fmt.Errorf("the verification workspace is missing %s from the expected overlay", safeQuote(name))
 		}
 		if got.Mode != want.Mode {
 			return fmt.Errorf("the verification workspace holds %s with mode %s instead of %s", safeQuote(name), got.Mode, want.Mode)
 		}
 		if got.SHA256 != want.SHA256 {
-			return fmt.Errorf("the verification workspace holds different bytes for %s than the approved overlay", safeQuote(name))
+			return fmt.Errorf("the verification workspace holds different bytes for %s than the expected overlay", safeQuote(name))
 		}
 	}
 	return nil
@@ -578,10 +578,10 @@ func validateVerificationRecord(store *Store, runRelative, candidateID, validati
 		return CheckResult{}, fmt.Errorf("the stored verification result does not record trusted local execution; re-run `zt evolve check`")
 	}
 	if result.WorkspaceChanged {
-		return CheckResult{}, fmt.Errorf("the recorded verification run modified its own tracked inputs, so zt cannot attribute it to the approved candidate; re-run `zt evolve check` with outputs under $ZT_EVOLVE_OUT_DIR")
+		return CheckResult{}, fmt.Errorf("the recorded verification run modified its own tracked inputs, so zt cannot attribute it to the candidate; re-run `zt evolve check` with outputs under $ZT_EVOLVE_OUT_DIR")
 	}
 	if result.Status != executionPassed {
-		return CheckResult{}, fmt.Errorf("the recorded verification status is %s, not passed; submission needs a passed local verification for this exact candidate and contract", safeQuote(result.Status))
+		return CheckResult{}, fmt.Errorf("the recorded verification status is %s, not passed; only passed runs for this exact candidate and contract are reusable", safeQuote(result.Status))
 	}
 	if !equalEvidenceFiles(result.Files, summary) {
 		return CheckResult{}, fmt.Errorf("the stored verification result covers different file content; re-run `zt evolve check`")
@@ -620,7 +620,7 @@ func validateVerificationRecord(store *Store, runRelative, candidateID, validati
 		return CheckResult{}, fmt.Errorf("the verification workspace is no longer readable: %w; re-run `zt evolve check`", err)
 	}
 	if digestWorkspaceSet(stored) != result.WorkspaceDigest {
-		return CheckResult{}, fmt.Errorf("the verification workspace changed after the run, so its result no longer describes the approved input; re-run `zt evolve check`")
+		return CheckResult{}, fmt.Errorf("the verification workspace changed after the run, so its result no longer describes the expected input; re-run `zt evolve check`")
 	}
 	return result, nil
 }
@@ -647,19 +647,6 @@ func equalEvidenceFiles(left, right []FileSummary) bool {
 		}
 	}
 	return true
-}
-
-// entrySetDigest derives one base entry set's digest. A caller uses it to compute the
-// current pinned base's digest independently of any stored record.
-func entrySetDigest(entries []Entry) (string, error) {
-	set := make(map[string]Entry, len(entries))
-	for _, entry := range entries {
-		if entry.Path == "" {
-			return "", fmt.Errorf("local git returned an empty base path")
-		}
-		set[entry.Path] = entry
-	}
-	return digestEntrySet(set), nil
 }
 
 // digestLog records what the retained log actually holds, bounded, so a result

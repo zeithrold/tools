@@ -57,12 +57,12 @@ func TestEvolveHelperMutate(t *testing.T) {
 }
 
 // submitHarness wires a local upstream and a fake remote that describe the same base
-// commit, then prepares one candidate and verifies it locally.
+// commit and prepares one candidate. Publication needs nothing else, so a test starts
+// from exactly the local state an operator has after prepare.
 type submitHarness struct {
 	*harness
 	remote     *fakeGitHub
 	validation string
-	approval   string
 }
 
 // newSubmitHarness builds the fixture pair and runs prepare plus a passing check, so
@@ -157,14 +157,13 @@ func (s *submitHarness) candidateFile(t *testing.T) string {
 	return s.candidatePath(s.mustPrepare())
 }
 
-// showPayload previews the publication with the harness validation contract.
+// showPayload previews the publication.
 func (s *submitHarness) showPayload(t *testing.T) SubmitResult {
 	t.Helper()
 	result, err := Submit(context.Background(), SubmitOptions{
 		Candidate:   s.candidateFile(t),
 		Policy:      s.policy,
 		Upstream:    s.upstream,
-		Validation:  s.validation,
 		Root:        s.workspace,
 		ShowPayload: true,
 		OpenAPI: func(context.Context, Target) (githubauth.API, error) {
@@ -195,23 +194,13 @@ func (s *submitHarness) verify(t *testing.T) CheckResult {
 	return result
 }
 
-// approve writes an approval naming the payload preview for the current inputs.
-func (s *submitHarness) approve(t *testing.T) {
-	t.Helper()
-	preview := s.showPayload(t)
-	s.approval = filepath.Join(t.TempDir(), "approval.json")
-	writeJSONFile(t, s.approval, approvalFor(preview, nil))
-}
-
 func (s *submitHarness) submit(t *testing.T) (SubmitResult, error) {
 	t.Helper()
 	return Submit(context.Background(), SubmitOptions{
-		Candidate:  s.candidateFile(t),
-		Policy:     s.policy,
-		Upstream:   s.upstream,
-		Validation: s.validation,
-		Approval:   s.approval,
-		Root:       s.workspace,
+		Candidate: s.candidateFile(t),
+		Policy:    s.policy,
+		Upstream:  s.upstream,
+		Root:      s.workspace,
 		OpenAPI: func(context.Context, Target) (githubauth.API, error) {
 			return githubauth.API{BaseURL: s.remote.Server.URL, Transport: fakeBearer{token: testRemoteToken}}, nil
 		},
@@ -223,7 +212,6 @@ func TestSubmitCreatesOneDraftPullRequest(t *testing.T) {
 	if result := s.verify(t); result.Status != executionPassed {
 		t.Fatalf("fixture verification did not pass: %+v", result)
 	}
-	s.approve(t)
 	before := snapshotTree(t, s.workspace)
 
 	result, err := s.submit(t)
@@ -302,7 +290,6 @@ func assertNoSecretInTree(dir string) error {
 func TestSubmitReplaysWithoutRewritingAnything(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
 	s.verify(t)
-	s.approve(t)
 	first, err := s.submit(t)
 	if err != nil {
 		t.Fatalf("first submit: %v", err)
@@ -326,8 +313,6 @@ func TestSubmitReplaysWithoutRewritingAnything(t *testing.T) {
 
 func TestSubmitReturnsAnExactExistingPullRequestEvenAfterTheBaseMoved(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
-	s.verify(t)
-	s.approve(t)
 	first, err := s.submit(t)
 	if err != nil {
 		t.Fatalf("first submit: %v", err)
@@ -347,25 +332,45 @@ func TestSubmitReturnsAnExactExistingPullRequestEvenAfterTheBaseMoved(t *testing
 	}
 }
 
-func TestSubmitRefusesANewWriteAgainstAMovedBase(t *testing.T) {
+// TestSubmitPublishesAPinnedBaseAgainstAnAdvancedDefaultBranch pins the publication
+// rule: a default branch that advanced after the policy pinned its base does not stop
+// a submission. The branch keeps exactly the candidate's commit, whose parent is the
+// pinned base; the pull request targets the current default branch; and nothing is
+// rebased, rewritten or force-updated.
+func TestSubmitPublishesAPinnedBaseAgainstAnAdvancedDefaultBranch(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
-	s.verify(t)
-	s.approve(t)
-	s.remote.BaseMoved()
+	moved := s.remote.BaseMoved()
 
-	_, err := s.submit(t)
-	if err == nil || !strings.Contains(err.Error(), "has moved") {
-		t.Fatalf("submit accepted a moved base: %v", err)
+	result, err := s.submit(t)
+	if err != nil {
+		t.Fatalf("submit refused a candidate because the default branch advanced: %v", err)
 	}
-	if s.remote.Writes() != 0 {
-		t.Fatalf("submit wrote %d objects against a moved base", s.remote.Writes())
+	if result.Action != "created" || result.PullRequest == nil {
+		t.Fatalf("unexpected submission: %+v", result)
+	}
+	if result.BaseBranch != "main" {
+		t.Fatalf("the pull request targets %q instead of the default branch", result.BaseBranch)
+	}
+	if head, ok := s.remote.Ref("refs/heads/" + result.Branch); !ok || head != result.Commit {
+		t.Fatalf("the branch does not hold the created commit: %s %v", head, ok)
+	}
+	if head, ok := s.remote.Ref("refs/heads/main"); !ok || head != moved {
+		t.Fatalf("submit rewrote the default branch: %s %v, want %s", head, ok, moved)
+	}
+	s.remote.mu.Lock()
+	published := s.remote.commits[result.Commit]
+	s.remote.mu.Unlock()
+	if len(published.Parents) != 1 || published.Parents[0] != s.commit {
+		t.Fatalf("the published commit parents %v instead of the pinned base %s; the branch must stay pinned, not rebased", published.Parents, s.commit)
+	}
+	if pulls := s.remote.Pulls(); len(pulls) != 1 || pulls[0].Base != "main" {
+		t.Fatalf("unexpected pull requests: %+v", pulls)
 	}
 }
 
 func TestSubmitNeverReopensOrAdoptsAClosedPullRequest(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
 	s.verify(t)
-	s.approve(t)
 	preview := s.showPayload(t)
 	s.remote.AttachPull(fakeGHPull{
 		Number:  7,
@@ -389,7 +394,6 @@ func TestSubmitNeverReopensOrAdoptsAClosedPullRequest(t *testing.T) {
 func TestLostRefResponseIsRecoveredByCreatingOnlyThePullRequest(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
 	s.verify(t)
-	s.approve(t)
 	s.remote.DropAfterWrite("/git/refs")
 
 	result, err := s.submit(t)
@@ -445,7 +449,6 @@ func TestLostRefResponseIsRecoveredByCreatingOnlyThePullRequest(t *testing.T) {
 func TestLostPullRequestResponseIsAdoptedWithoutADuplicate(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
 	s.verify(t)
-	s.approve(t)
 	s.remote.DropAfterWrite("/pulls")
 
 	result, err := s.submit(t)
@@ -479,7 +482,6 @@ func TestLostPullRequestResponseIsAdoptedWithoutADuplicate(t *testing.T) {
 func TestPartialImmutableObjectsAreCompletedOnRetry(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
 	s.verify(t)
-	s.approve(t)
 	s.remote.DropAfterWrite("/git/commits")
 
 	result, err := s.submit(t)
@@ -510,14 +512,11 @@ func TestPartialImmutableObjectsAreCompletedOnRetry(t *testing.T) {
 func TestSubmitRefusesAnUnavailableCredentialWithoutWriting(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
 	s.verify(t)
-	s.approve(t)
 	_, err := Submit(context.Background(), SubmitOptions{
-		Candidate:  s.candidateFile(t),
-		Policy:     s.policy,
-		Upstream:   s.upstream,
-		Validation: s.validation,
-		Approval:   s.approval,
-		Root:       s.workspace,
+		Candidate: s.candidateFile(t),
+		Policy:    s.policy,
+		Upstream:  s.upstream,
+		Root:      s.workspace,
 		OpenAPI: func(context.Context, Target) (githubauth.API, error) {
 			return githubauth.API{}, fmt.Errorf("no stored credential")
 		},
@@ -533,7 +532,6 @@ func TestSubmitRefusesAnUnavailableCredentialWithoutWriting(t *testing.T) {
 func TestSubmitRefusesAnotherRepositoryThanThePolicyNames(t *testing.T) {
 	s := newSubmitHarness(t, "other/repository")
 	s.verify(t)
-	s.approve(t)
 	_, err := s.submit(t)
 	if err == nil || !strings.Contains(err.Error(), "cannot see repository") {
 		t.Fatalf("submit accepted a different repository: %v", err)
@@ -543,29 +541,44 @@ func TestSubmitRefusesAnotherRepositoryThanThePolicyNames(t *testing.T) {
 	}
 }
 
-func TestSubmitRefusesAFailedVerification(t *testing.T) {
+// TestSubmitNeedsNoLocalVerificationRecord pins that submission and verification are
+// independent utilities: a candidate plus the policy is enough, and submission
+// neither needs nor creates the tree a `zt evolve check` run retains.
+func TestSubmitNeedsNoLocalVerificationRecord(t *testing.T) {
+	s := newSubmitHarness(t, "example/fixture")
+	checksTree := filepath.Join(s.workspace, artifactRoot, "checks")
+	if _, err := os.Lstat(checksTree); !os.IsNotExist(err) {
+		t.Fatalf("the fixture already holds a verification tree: %v", err)
+	}
+
+	result, err := s.submit(t)
+	if err != nil {
+		t.Fatalf("submit refused a candidate that was never locally verified: %v", err)
+	}
+	if result.Action != "created" || result.PullRequest == nil {
+		t.Fatalf("unexpected submission: %+v", result)
+	}
+	if _, err := os.Lstat(checksTree); !os.IsNotExist(err) {
+		t.Fatalf("submission created a verification tree: %v", err)
+	}
+}
+
+// TestAFailedLocalVerificationDoesNotBlockSubmission pins the same independence from
+// the other side: a check that fails is its own result, and a submission does not
+// consult it.
+func TestAFailedLocalVerificationDoesNotBlockSubmission(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
 	writeJSONFile(t, s.validation, validationDoc(
 		validationCheck("go-test", 60, helperArgv("TestEvolveHelperFail")...),
 		validationCheck("repo-lint", 60, helperArgv("TestEvolveHelperPass")...),
 	))
-	result, err := Verify(context.Background(), CheckOptions{
-		Candidate:             s.candidateFile(t),
-		Policy:                s.policy,
-		Upstream:              s.upstream,
-		Validation:            s.validation,
-		Root:                  s.workspace,
-		TrustedLocalExecution: true,
-	})
-	if err != nil {
-		t.Fatalf("check: %v", err)
+	failed := s.verify(t)
+	if failed.Status != executionFailed {
+		t.Fatalf("a failing command was reported as %q", failed.Status)
 	}
-	if result.Status != executionFailed {
-		t.Fatalf("a failing command was reported as %q", result.Status)
-	}
-	s.approve(t)
-	if _, err := s.submit(t); err == nil || !strings.Contains(err.Error(), "not passed") {
-		t.Fatalf("submit accepted a failed verification: %v", err)
+
+	if _, err := s.submit(t); err != nil {
+		t.Fatalf("submit consulted a failed local verification: %v", err)
 	}
 }
 
@@ -603,10 +616,6 @@ func TestAVerificationThatRewritesItsInputsIsNotReusable(t *testing.T) {
 	if second.Reused {
 		t.Fatal("a blocked run was reused")
 	}
-	s.approve(t)
-	if _, err := s.submit(t); err == nil {
-		t.Fatal("submit accepted a blocked verification")
-	}
 }
 
 func TestVerificationReusesAnIdenticalPassedRun(t *testing.T) {
@@ -624,7 +633,6 @@ func TestVerificationReusesAnIdenticalPassedRun(t *testing.T) {
 func TestStatusObservesTheSubmittedPullRequestAndItsChecks(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
 	s.verify(t)
-	s.approve(t)
 	submitted, err := s.submit(t)
 	if err != nil {
 		t.Fatalf("submit: %v", err)
@@ -669,15 +677,19 @@ func TestStatusObservesTheSubmittedPullRequestAndItsChecks(t *testing.T) {
 	}
 }
 
+// TestStatusReportsDriftWithoutWriting pins that a changed code identity is reported
+// as drift and never rewritten. The drift here is the branch moving away from the
+// commit the journal recorded, which is what a rewritten branch would look like.
 func TestStatusReportsDriftWithoutWriting(t *testing.T) {
 	s := newSubmitHarness(t, "example/fixture")
 	s.verify(t)
-	s.approve(t)
 	if _, err := s.submit(t); err != nil {
 		t.Fatalf("submit: %v", err)
 	}
 	writes := s.remote.Writes()
-	s.remote.BaseMoved()
+	s.remote.mu.Lock()
+	s.remote.pulls[0].HeadSHA = strings.Repeat("f", 40)
+	s.remote.mu.Unlock()
 	observed, err := Status(context.Background(), StatusOptions{
 		Candidate: s.candidateFile(t), Policy: s.policy, Upstream: s.upstream,
 		Validation: s.validation, Root: s.workspace, Remote: true,
@@ -688,8 +700,8 @@ func TestStatusReportsDriftWithoutWriting(t *testing.T) {
 	if err != nil {
 		t.Fatalf("status: %v", err)
 	}
-	if observed.Remote == nil || len(observed.Remote.Drift) == 0 {
-		t.Fatalf("status reported no drift after the base moved: %+v", observed.Remote)
+	if observed.Remote == nil || !containsString(observed.Remote.Drift, "head-commit-changed") {
+		t.Fatalf("status did not report the changed head commit as drift: %+v", observed.Remote)
 	}
 	if s.remote.Writes() != writes {
 		t.Fatal("status wrote to the remote")

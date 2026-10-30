@@ -548,8 +548,7 @@ type CommitInfo struct {
 
 // CommitInfo reads the pinned commit object. The committer instant is used to
 // date a submitted commit, so a submission of one base is reproducible from the
-// pinned base alone and never from mutable local state such as the wall clock or
-// an approval's own timestamp.
+// pinned base alone and never from mutable local state such as the wall clock.
 func (r *Repo) CommitInfo(ctx context.Context, commit string) (CommitInfo, error) {
 	data, err := r.output(ctx, maxCommitObjectBytes, "cat-file", "commit", commit)
 	if err != nil {

@@ -184,19 +184,20 @@ credentials are readable from a candidate's execution environment.
 
 ## Aligning with the CLI
 
-The released `v0.2.0` provides `zt evolve prepare`, `plan`, `check`, `submit` and
+The CLI provides `zt evolve prepare`, `plan`, `check`, `submit` and
 `status`. `prepare` stores structured complete file replacements as one immutable
 candidate under the workspace's `.zt/artifacts/evolve/`; `plan` revalidates that
 candidate without a write, credential, network request or execution. `check` runs
 the operator's own validation contract against a materialised complete pinned
 base, and only with explicit trusted-local consent: it is neither an OS sandbox
 nor credential isolation, and its result is operator-local rather than an
-independent attestation. `submit` requires that local record plus human approval
-bound to the exact public payload, reconciles by reading before it writes, and
-creates at most one draft pull request; it never merges, force-updates a ref or
-reopens a closed proposal. `status` reads local state and contacts GitHub only
-with `--remote`. Consult the installed CLI's help rather than assuming a source
-checkout matches an installed release.
+independent attestation. `submit --show-payload` previews the upload; `submit`
+reconciles by reading before it writes and creates at most one draft pull request,
+independently of local checks. PR text edits, readiness changes and default-branch
+advancement do not prevent recognition or submission. It never merges,
+force-updates a ref or reopens a closed proposal. `status` reads local state and
+contacts GitHub only with `--remote`. Consult the installed CLI's help rather than
+assuming a source checkout matches an installed release.
 
 Activation, rollback, revocation, host-enforced cost/capability budgets,
 model-driven candidate generation and Issue-tracked follow-up remain

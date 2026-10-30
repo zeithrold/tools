@@ -13,8 +13,10 @@ import (
 // consumer project configuration, and zt has no built-in host, repository or
 // base commit.
 //
-// requiredChecks carries descriptive names only. A policy that tried to declare a
-// command would not decode (unknown field), and nothing here is ever executed.
+// requiredChecks carries descriptive names only, and may be empty: a policy that
+// names no required check is a policy that requires no named check. A policy that
+// tried to declare a command would not decode (unknown field), and nothing here is
+// ever executed.
 type Policy struct {
 	SchemaVersion  int      `json:"schemaVersion"`
 	Host           string   `json:"host"`
@@ -76,9 +78,6 @@ func (p Policy) normalized() (Policy, error) {
 	checks, err := identifierList(p.RequiredChecks, "requiredChecks")
 	if err != nil {
 		return Policy{}, err
-	}
-	if len(checks) == 0 {
-		return Policy{}, fmt.Errorf("policy: requiredChecks must name at least one check; zt reports it as not_run and never runs it")
 	}
 	p.AllowedSkills, p.RequiredChecks = skills, checks
 	return p, nil

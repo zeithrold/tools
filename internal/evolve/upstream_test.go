@@ -112,7 +112,7 @@ func TestCachedBaselineFeedsOfflineLifecycle(t *testing.T) {
 	if err != nil || status.Skill != fixtureSkill {
 		t.Fatalf("cached status: %+v %v", status, err)
 	}
-	preview, err := Submit(context.Background(), SubmitOptions{Candidate: candidate, Policy: h.policy, Root: h.workspace, Validation: validation, ShowPayload: true})
+	preview, err := Submit(context.Background(), SubmitOptions{Candidate: candidate, Policy: h.policy, Root: h.workspace, ShowPayload: true})
 	if err != nil || preview.Action != "payload" {
 		t.Fatalf("cached payload preview: %+v %v", preview, err)
 	}

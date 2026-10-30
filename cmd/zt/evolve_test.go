@@ -221,6 +221,30 @@ func TestEvolveRegistersNoPatchFlag(t *testing.T) {
 	}
 }
 
+// TestEvolveSubmitTakesNoApprovalOrValidationInput pins the command surface of the
+// simplification: submission takes the candidate and the policy, not an approval
+// document and not a validation contract.
+func TestEvolveSubmitTakesNoApprovalOrValidationInput(t *testing.T) {
+	root := newRootCommand(newApp(io.Discard, io.Discard))
+	submitCommand, _, err := root.Find([]string{"evolve", "submit"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, required := range []string{"policy", "upstream", "root", "show-payload", "json"} {
+		if submitCommand.Flags().Lookup(required) == nil {
+			t.Fatalf("evolve submit is missing --%s", required)
+		}
+	}
+	for _, removed := range []string{"approval", "validation"} {
+		if submitCommand.Flags().Lookup(removed) != nil {
+			t.Fatalf("evolve submit still accepts --%s", removed)
+		}
+	}
+	if err := submitCommand.ParseFlags([]string{"--approval", "x.json"}); err == nil {
+		t.Fatal("evolve submit accepted --approval")
+	}
+}
+
 func TestEvolveGroupRejectsUnknownSubcommandsButHelpSucceeds(t *testing.T) {
 	stdout, stderr, err := runCLI(t, "evolve")
 	if err != nil {
@@ -250,13 +274,12 @@ func TestEvolvePrepareAndPlanEndToEnd(t *testing.T) {
 		t.Fatalf("prepare failed: %v", err)
 	}
 	var prepared struct {
-		SchemaVersion   int    `json:"schemaVersion"`
-		CandidateID     string `json:"candidateId"`
-		CandidatePath   string `json:"candidatePath"`
-		Created         bool   `json:"created"`
-		Publication     string `json:"publication"`
-		MissingEvidence []string
-		Checks          []struct{ Name, Status string }
+		SchemaVersion int    `json:"schemaVersion"`
+		CandidateID   string `json:"candidateId"`
+		CandidatePath string `json:"candidatePath"`
+		Created       bool   `json:"created"`
+		Publication   string `json:"publication"`
+		Checks        []struct{ Name, Status string }
 	}
 	if err := json.Unmarshal([]byte(preparedJSON), &prepared); err != nil {
 		t.Fatalf("prepare stdout is not pure JSON %q: %v", preparedJSON, err)
@@ -287,7 +310,6 @@ func TestEvolvePrepareAndPlanEndToEnd(t *testing.T) {
 		CandidateID     string `json:"candidateId"`
 		Publication     string `json:"publication"`
 		ProvenanceState string `json:"provenanceState"`
-		MissingEvidence []string
 		Checks          []struct{ Name, Status string }
 		Files           []struct{ Path, SHA256 string }
 	}
@@ -299,9 +321,6 @@ func TestEvolvePrepareAndPlanEndToEnd(t *testing.T) {
 	}
 	if planned.Publication != "not_ready" || planned.ProvenanceState != "declared_not_verified" {
 		t.Fatalf("plan overstated its evidence: %+v", planned)
-	}
-	if len(planned.MissingEvidence) != 5 {
-		t.Fatalf("plan reported missing evidence %v", planned.MissingEvidence)
 	}
 	for _, check := range planned.Checks {
 		if check.Status != "not_run" {

@@ -41,16 +41,17 @@ type Step struct {
 }
 
 type Report struct {
-	SchemaVersion int         `json:"schemaVersion"`
-	ToolsVersion  string      `json:"toolsVersion"`
-	Module        string      `json:"module"`
-	Profile       string      `json:"profile"`
-	StartedAt     string      `json:"startedAt"`
-	Status        string      `json:"status"`
-	ArtifactDir   string      `json:"artifactDir"`
-	Checks        []Execution `json:"checks"`
-	Artifacts     []string    `json:"artifacts"`
-	Warnings      []string    `json:"warnings,omitempty"`
+	SchemaVersion  int         `json:"schemaVersion"`
+	ToolsVersion   string      `json:"toolsVersion"`
+	Module         string      `json:"module"`
+	Profile        string      `json:"profile"`
+	StartedAt      string      `json:"startedAt"`
+	Status         string      `json:"status"`
+	ArtifactStatus string      `json:"artifactStatus"`
+	ArtifactDir    string      `json:"artifactDir"`
+	Checks         []Execution `json:"checks"`
+	Artifacts      []string    `json:"artifacts"`
+	Warnings       []string    `json:"warnings,omitempty"`
 }
 
 // Run requires an explicit module/profile. It never installs tools, changes
@@ -124,7 +125,7 @@ func Run(ctx context.Context, options Options) (Report, error) {
 	if err := os.Mkdir(filepath.Join(directory, "logs"), 0755); err != nil {
 		return Report{}, err
 	}
-	report := Report{SchemaVersion: 1, ToolsVersion: tools.Version(), Module: module.ID, Profile: options.Profile, StartedAt: time.Now().UTC().Format(time.RFC3339Nano), Status: "passed", ArtifactDir: directory, Checks: []Execution{}, Artifacts: []string{}}
+	report := Report{SchemaVersion: 1, ToolsVersion: tools.Version(), Module: module.ID, Profile: options.Profile, StartedAt: time.Now().UTC().Format(time.RFC3339Nano), Status: "passed", ArtifactStatus: "passed", ArtifactDir: directory, Checks: []Execution{}, Artifacts: []string{}}
 	stopped := false
 	for i, capability := range capabilities {
 		level := module.Expect[capability]
@@ -166,7 +167,7 @@ func Run(ctx context.Context, options Options) (Report, error) {
 	for _, artifact := range module.Artifacts {
 		files, err := collect(moduleRoot, directory, artifact)
 		if err != nil {
-			report.Status = "failed"
+			report.ArtifactStatus = "failed"
 			report.Warnings = append(report.Warnings, err.Error())
 		}
 		report.Artifacts = append(report.Artifacts, files...)
@@ -198,7 +199,7 @@ func Run(ctx context.Context, options Options) (Report, error) {
 		return nil
 	})
 	if err != nil {
-		report.Status = "failed"
+		report.ArtifactStatus = "failed"
 		report.Warnings = append(report.Warnings, err.Error())
 	}
 	report.Artifacts = append(report.Artifacts, "report.json")

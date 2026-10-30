@@ -30,11 +30,18 @@ func defaultValidationChecks() []map[string]any {
 	}
 }
 
-// publicationHarness prepares one candidate and writes an operator validation
-// contract outside the workspace.
+// writeValidationFile stores one contract outside the workspace.
+func writeValidationFile(t *testing.T, doc map[string]any) string {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "validation.json")
+	writeJSONFile(t, path, doc)
+	return path
+}
+
+// publicationHarness prepares one candidate, which is everything a submission
+// needs: no approval document and no local verification record.
 type publicationHarness struct {
 	*harness
-	validation string
 }
 
 func newPublicationHarness(t *testing.T) *publicationHarness {
@@ -43,9 +50,7 @@ func newPublicationHarness(t *testing.T) *publicationHarness {
 	h.writePolicy(policyDoc(h.commit))
 	h.writeProposal(proposalDoc(h.commit, defaultProposalFiles()...))
 	h.mustPrepare()
-	validation := filepath.Join(t.TempDir(), "validation.json")
-	writeJSONFile(t, validation, validationDoc(defaultValidationChecks()...))
-	return &publicationHarness{harness: h, validation: validation}
+	return &publicationHarness{harness: h}
 }
 
 func (p *publicationHarness) candidateFile(t *testing.T) string {
@@ -60,7 +65,6 @@ func (p *publicationHarness) showPayload(t *testing.T) SubmitResult {
 		Candidate:   p.candidateFile(t),
 		Policy:      p.policy,
 		Upstream:    p.upstream,
-		Validation:  p.validation,
 		Root:        p.workspace,
 		ShowPayload: true,
 		OpenAPI: func(context.Context, Target) (githubauth.API, error) {
@@ -72,24 +76,6 @@ func (p *publicationHarness) showPayload(t *testing.T) SubmitResult {
 		t.Fatalf("show payload: %v", err)
 	}
 	return result
-}
-
-// approvalFor builds a correct approval document for one previewed payload.
-func approvalFor(result SubmitResult, mutate func(map[string]any)) map[string]any {
-	doc := map[string]any{
-		"schemaVersion":       1,
-		"candidateId":         result.CandidateID,
-		"target":              map[string]any{"host": result.Target.Host, "repository": result.Target.Repository, "baseCommit": result.Target.BaseCommit},
-		"validationDigest":    result.ValidationDigest,
-		"publicPayloadDigest": result.PublicPayloadDigest,
-		"reviewer":            "reviewer@example.invalid",
-		"reviewedAt":          "2026-02-01T09:30:00Z",
-		"attestations":        map[string]any{"humanReview": "approved", "privacy": "approved", "license": "approved"},
-	}
-	if mutate != nil {
-		mutate(doc)
-	}
-	return doc
 }
 
 func TestShowPayloadPublishesTheExactReviewedDocument(t *testing.T) {
@@ -107,8 +93,7 @@ func TestShowPayloadPublishesTheExactReviewedDocument(t *testing.T) {
 	if payload.Branch != branchFor("fixture-skill", result.CandidateID) {
 		t.Fatalf("unexpected branch %q", payload.Branch)
 	}
-	// The publication has to carry the real text a reviewer approves, not a digest
-	// of it.
+	// The publication has to carry the real text a reviewer reads, not a digest of it.
 	contents := map[string]string{}
 	for _, file := range payload.Files {
 		contents[file.Path] = file.Content
@@ -118,6 +103,9 @@ func TestShowPayloadPublishesTheExactReviewedDocument(t *testing.T) {
 	}
 	if !strings.Contains(payload.Commit.Message, result.CandidateID) {
 		t.Fatalf("commit message does not name the candidate: %q", payload.Commit.Message)
+	}
+	if !strings.Contains(payload.Commit.Message, payload.BaseCommit) {
+		t.Fatalf("commit message does not name the pinned base: %q", payload.Commit.Message)
 	}
 	if payload.Commit.AuthorName != evolveAuthorName || payload.Commit.AuthorEmail != evolveAuthorEmail {
 		t.Fatalf("commit identity is not the fixed zt identity: %+v", payload.Commit)
@@ -132,11 +120,13 @@ func TestShowPayloadPublishesTheExactReviewedDocument(t *testing.T) {
 		t.Fatal("payload does not request a draft pull request")
 	}
 	if !strings.Contains(payload.PullRequest.Body, "not verified by zt") {
-		t.Fatalf("pull request body does not state what zt did not verify:\n%s", payload.PullRequest.Body)
+		t.Fatalf("pull request body does not label the declarations zt did not verify:\n%s", payload.PullRequest.Body)
 	}
-	for _, forbidden := range []string{"passed", p.workspace} {
+	// The body states the facts of the proposal. It carries no validation contract,
+	// no approval narration and no local path.
+	for _, forbidden := range []string{"alidation", "attestation", "passed", "sandbox", p.workspace} {
 		if strings.Contains(payload.PullRequest.Body, forbidden) {
-			t.Fatalf("pull request body contains %q, which the payload must not bind:\n%s", forbidden, payload.PullRequest.Body)
+			t.Fatalf("pull request body contains %q, which it must not carry:\n%s", forbidden, payload.PullRequest.Body)
 		}
 	}
 	canonical, err := payload.CanonicalBytes()
@@ -164,7 +154,7 @@ func TestPayloadDigestIsStableAndBindsContent(t *testing.T) {
 	one := first.showPayload(t)
 	two := first.showPayload(t)
 	if one.PublicPayloadDigest != two.PublicPayloadDigest || one.PublicPayloadDigest != first.showPayload(t).PublicPayloadDigest {
-		t.Fatal("the same candidate and contract produced different payload digests")
+		t.Fatal("the same candidate produced different payload digests")
 	}
 
 	changed := newPublicationHarness(t)
@@ -175,97 +165,98 @@ func TestPayloadDigestIsStableAndBindsContent(t *testing.T) {
 	}
 }
 
-func TestSubmitRefusesWithoutAPassedLocalVerification(t *testing.T) {
-	p := newPublicationHarness(t)
-	preview := p.showPayload(t)
-	approval := filepath.Join(t.TempDir(), "approval.json")
-	writeJSONFile(t, approval, approvalFor(preview, nil))
-	_, err := Submit(context.Background(), SubmitOptions{
-		Candidate:  p.candidateFile(t),
-		Policy:     p.policy,
-		Upstream:   p.upstream,
-		Validation: p.validation,
-		Approval:   approval,
-		Root:       p.workspace,
-		OpenAPI: func(context.Context, Target) (githubauth.API, error) {
-			t.Fatal("submit opened the credential seam without a passed verification")
-			return githubauth.API{}, nil
-		},
+// TestPayloadDigestIgnoresLocalVerification pins that the publication binds the
+// candidate and the pinned base, not the local verification an operator happened to
+// run: `evolve check` is a separate utility, so its contract, its results and its
+// failures cannot change what would be published.
+func TestPayloadDigestIgnoresLocalVerification(t *testing.T) {
+	s := newSubmitHarness(t, "example/fixture")
+	before := s.showPayload(t)
+
+	writeJSONFile(t, s.validation, validationDoc(
+		validationCheck("go-test", 60, helperArgv("TestEvolveHelperFail")...),
+		validationCheck("repo-lint", 60, helperArgv("TestEvolveHelperPass")...),
+	))
+	failed, err := Verify(context.Background(), CheckOptions{
+		Candidate:             s.candidateFile(t),
+		Policy:                s.policy,
+		Upstream:              s.upstream,
+		Validation:            s.validation,
+		Root:                  s.workspace,
+		TrustedLocalExecution: true,
 	})
-	if err == nil || !strings.Contains(err.Error(), "zt evolve check") {
-		t.Fatalf("submit did not require a local verification: %v", err)
+	if err != nil {
+		t.Fatalf("check: %v", err)
 	}
-	for _, name := range []string{"checks", "submit"} {
-		if _, statErr := os.Lstat(filepath.Join(p.workspace, artifactRoot, name)); !os.IsNotExist(statErr) {
-			t.Fatalf("a refused submit created %s", name)
-		}
+	if failed.Status != executionFailed {
+		t.Fatalf("the fixture check did not fail: %+v", failed)
+	}
+
+	after := s.showPayload(t)
+	if after.PublicPayloadDigest != before.PublicPayloadDigest {
+		t.Fatal("a local verification changed the public payload identity")
 	}
 }
 
-func TestApprovalMustNameTheExactCandidateContractAndPayload(t *testing.T) {
-	p := newPublicationHarness(t)
-	preview := p.showPayload(t)
-	cases := []struct {
-		name   string
-		mutate func(map[string]any)
-		want   string
-	}{
-		{"candidate", func(doc map[string]any) { doc["candidateId"] = strings.Repeat("0", 64) }, "candidateId"},
-		{"base", func(doc map[string]any) {
-			target := doc["target"].(map[string]any)
-			target["baseCommit"] = strings.Repeat("a", 40)
-		}, "target does not match"},
-		{"host", func(doc map[string]any) {
-			target := doc["target"].(map[string]any)
-			target["host"] = "github.example"
-		}, "target does not match"},
-		{"validation", func(doc map[string]any) { doc["validationDigest"] = strings.Repeat("b", 64) }, "validationDigest"},
-		{"payload", func(doc map[string]any) { doc["publicPayloadDigest"] = strings.Repeat("c", 64) }, "publicPayloadDigest"},
-		{"privacy", func(doc map[string]any) {
-			doc["attestations"].(map[string]any)["privacy"] = "pending"
-		}, "attestations.privacy"},
-		{"license", func(doc map[string]any) {
-			doc["attestations"].(map[string]any)["license"] = "unknown"
-		}, "attestations.license"},
-		{"review-time-offset", func(doc map[string]any) { doc["reviewedAt"] = "2026-02-01T09:30:00+02:00" }, "reviewedAt"},
-		{"reviewer", func(doc map[string]any) { doc["reviewer"] = "  " }, "reviewer"},
-		{"unknown-field", func(doc map[string]any) { doc["approveEverything"] = true }, "approval file"},
+// TestPolicyMayRequireNoChecks pins that a policy naming no required check is a
+// valid policy rather than an error, and that a standalone contract may still run
+// whatever the operator wants to check.
+func TestPolicyMayRequireNoChecks(t *testing.T) {
+	h := newHarness(t)
+	doc := policyDoc(h.commit)
+	doc["requiredChecks"] = []string{}
+	h.writePolicy(doc)
+	h.writeProposal(proposalDoc(h.commit, defaultProposalFiles()...))
+
+	prepared := h.mustPrepare()
+	if len(prepared.Checks) != 0 {
+		t.Fatalf("a policy with no required checks reported %v", prepared.Checks)
 	}
-	for _, testCase := range cases {
-		t.Run(testCase.name, func(t *testing.T) {
-			approval := filepath.Join(t.TempDir(), "approval.json")
-			writeJSONFile(t, approval, approvalFor(preview, testCase.mutate))
-			_, err := Submit(context.Background(), SubmitOptions{
-				Candidate:  p.candidateFile(t),
-				Policy:     p.policy,
-				Upstream:   p.upstream,
-				Validation: p.validation,
-				Approval:   approval,
-				Root:       p.workspace,
-				OpenAPI: func(context.Context, Target) (githubauth.API, error) {
-					t.Fatal("an invalid approval reached the credential seam")
-					return githubauth.API{}, nil
-				},
-			})
-			if err == nil {
-				t.Fatal("a mismatched approval was accepted")
-			}
-			if !strings.Contains(err.Error(), testCase.want) {
-				t.Fatalf("error %q does not mention %q", err, testCase.want)
-			}
-		})
+	planned, err := h.plan(h.candidatePath(prepared))
+	if err != nil {
+		t.Fatalf("plan: %v", err)
+	}
+	if len(planned.Checks) != 0 {
+		t.Fatalf("plan reported checks %v for a policy that requires none", planned.Checks)
+	}
+
+	policy := policyDocToPolicy(t, h)
+	contract, err := LoadValidation(writeValidationFile(t, validationDoc(validationCheck("behaviour", 60, "true"))))
+	if err != nil {
+		t.Fatalf("load validation: %v", err)
+	}
+	if err := contract.covers(policy); err != nil {
+		t.Fatalf("a contract the operator chose was rejected by a policy that requires no check: %v", err)
 	}
 }
 
-func TestValidationContractMustCoverThePolicyChecksExactly(t *testing.T) {
+// TestValidationContractMustIncludeThePolicyChecks pins the one retained rule: a
+// standalone contract has to run a command for every check the policy requires, and
+// may add checks of its own.
+func TestValidationContractMustIncludeThePolicyChecks(t *testing.T) {
 	h := newHarness(t)
 	h.writePolicy(policyDoc(h.commit))
 	policy := policyDocToPolicy(t, h)
-	cases := map[string]map[string]any{
-		"missing": validationDoc(validationCheck("go-test", 60, "true")),
-		"extra": validationDoc(append(defaultValidationChecks(), []map[string]any{
-			validationCheck("behaviour", 60, "true"),
-		}...)...),
+
+	accepted := map[string]map[string]any{
+		"exact": validationDoc(defaultValidationChecks()...),
+		"extra": validationDoc(append(defaultValidationChecks(), validationCheck("behaviour", 60, "true"))...),
+	}
+	for name, doc := range accepted {
+		t.Run("accepted-"+name, func(t *testing.T) {
+			validation, err := LoadValidation(writeValidationFile(t, doc))
+			if err != nil {
+				t.Fatalf("load validation: %v", err)
+			}
+			if err := validation.covers(policy); err != nil {
+				t.Fatalf("validation contract %s was refused: %v", name, err)
+			}
+		})
+	}
+
+	refused := map[string]map[string]any{
+		"missing":     validationDoc(validationCheck("go-test", 60, "true")),
+		"only-extras": validationDoc(validationCheck("behaviour", 60, "true")),
 		"duplicate": validationDoc(
 			validationCheck("go-test", 60, "true"),
 			validationCheck("go-test", 60, "true"),
@@ -284,11 +275,9 @@ func TestValidationContractMustCoverThePolicyChecksExactly(t *testing.T) {
 			validationCheck("repo-lint", 60, "true"),
 		),
 	}
-	for name, doc := range cases {
-		t.Run(name, func(t *testing.T) {
-			path := filepath.Join(t.TempDir(), "validation.json")
-			writeJSONFile(t, path, doc)
-			validation, err := LoadValidation(path)
+	for name, doc := range refused {
+		t.Run("refused-"+name, func(t *testing.T) {
+			validation, err := LoadValidation(writeValidationFile(t, doc))
 			if err != nil {
 				return // already refused while loading
 			}
@@ -347,17 +336,11 @@ func TestJournalIsBoundToItsOwnCandidateAndPayload(t *testing.T) {
 	h.writePolicy(policyDoc(h.commit))
 	h.writeProposal(proposalDoc(h.commit, defaultProposalFiles()...))
 	prepared := h.mustPrepare()
-	store, err := openStore(h.workspace)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer store.Close()
+	store := mustStore(t, h.workspace)
 	journal := Journal{
 		SchemaVersion:       schemaVersion,
 		CandidateID:         prepared.CandidateID,
 		PublicPayloadDigest: strings.Repeat("1", 64),
-		ApprovalDigest:      strings.Repeat("2", 64),
-		ValidationDigest:    strings.Repeat("3", 64),
 		Branch:              "evolve/fixture-skill-000000000000",
 		BaseCommit:          h.commit,
 		State:               journalStarted,
@@ -381,5 +364,37 @@ func TestJournalIsBoundToItsOwnCandidateAndPayload(t *testing.T) {
 		if bytes.Contains(data, []byte(secret)) {
 			t.Fatalf("the journal recorded %q", secret)
 		}
+	}
+}
+
+// TestJournalFromTheRemovedProtocolIsRejected pins that a record written by the
+// removed approval protocol is refused rather than silently misread. Its path is
+// derived from the payload digest too, so an old record cannot describe a new one.
+func TestJournalFromTheRemovedProtocolIsRejected(t *testing.T) {
+	h := newHarness(t)
+	h.writePolicy(policyDoc(h.commit))
+	h.writeProposal(proposalDoc(h.commit, defaultProposalFiles()...))
+	prepared := h.mustPrepare()
+	store := mustStore(t, h.workspace)
+	payloadDigest := strings.Repeat("1", 64)
+	relative := submitJournalRelative(prepared.CandidateID, payloadDigest)
+	legacy := `{
+  "schemaVersion": 1,
+  "candidateId": "` + prepared.CandidateID + `",
+  "publicPayloadDigest": "` + payloadDigest + `",
+  "approvalDigest": "` + strings.Repeat("2", 64) + `",
+  "validationDigest": "` + strings.Repeat("3", 64) + `",
+  "branch": "evolve/fixture-skill-000000000000",
+  "baseBranch": "main",
+  "baseCommit": "` + h.commit + `",
+  "state": "started",
+  "updatedAt": "2026-02-01T00:00:00Z"
+}
+`
+	if err := store.writeOwned(context.Background(), relative, []byte(legacy)); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err := loadJournal(store, relative, prepared.CandidateID, payloadDigest); err == nil {
+		t.Fatal("a journal written by the removed approval protocol was accepted")
 	}
 }
