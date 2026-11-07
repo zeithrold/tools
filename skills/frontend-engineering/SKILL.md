@@ -14,9 +14,9 @@ Read AGENTS.md, the project design contract, scripts, compiler config and framew
    these references do not prescribe a framework or grant backend authority.
 2. Reuse semantic tokens, typography and component variants. Use configurable body/control/help size roles
    from the project design contract and `ui-design`, rather than shrinking whole forms or scattering literal sizes. Define missing semantic roles, including destructive actions, in the project contract without copying another product's values.
-   Fonts must use Noto Sans or Noto Serif families, including appropriate CJK variants, and Noto Color
+   Fonts use Noto Sans for ordinary UI or Source Serif 4 with Noto Serif CJK for reading, and Noto Color
    Emoji for all emoji. Support at least English and Chinese/Japanese/Korean glyphs. Use Noto Sans for ordinary
-   UI; choose Noto Serif only where the content benefits from serif typography. The Google Fonts
+   UI; choose Source Serif 4 only where the content benefits from serif typography. The Google Fonts
    API is the delivery route; document third-party browser requests, CSP and performance implications.
    Use Unicode-ranged subsets and the required weights; do not self-host or vendor font binaries.
    Preserve font licenses and verify actual rendered glyphs, weights and emoji sequences in the
