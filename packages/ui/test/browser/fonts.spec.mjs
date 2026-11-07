@@ -142,7 +142,7 @@ test('Noto Color Emoji renders complete sequences without platform emoji fallbac
 test('optional Serif uses Source Serif 4 with regional CJK glyphs and real italic', async ({ page, context }, info) => {
   const errors = watchErrors(page)
   const consumer = process.env.ZTD_UI_CONSUMER
-  const stylesheet = process.env.ZTD_UI_VERIFICATION_MODE === 'source'
+  const stylesheet = ['source', 'public-source'].includes(process.env.ZTD_UI_VERIFICATION_MODE)
     ? path.resolve(consumer, 'components/ui/ztd-me/styles/fonts-serif.css')
     : createRequire(path.resolve(consumer, 'package.json')).resolve('@ztd-me/ui/fonts-serif.css')
   const stylesheetText = await readFile(stylesheet, 'utf8')
