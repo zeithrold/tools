@@ -2,7 +2,7 @@
 
 @layer base {
 :root {
-  --ztd-font-serif: "Noto Serif", "Noto Serif SC", "Noto Serif JP", "Noto Serif KR", "Noto Color Emoji", serif;
+  --ztd-font-serif: "Source Serif 4", "Noto Serif SC", "Noto Serif JP", "Noto Serif KR", "Noto Color Emoji", serif;
   --ztd-font-mono: "SFMono-Regular", consolas, "Liberation Mono", monospace;
   --ztd-font-emoji: "Noto Color Emoji";
   --ztd-font-sans: "Noto Sans", "Noto Sans SC", "Noto Sans JP", "Noto Sans KR", "Noto Color Emoji", sans-serif;

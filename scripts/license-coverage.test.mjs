@@ -62,6 +62,7 @@ test('font evidence retains manual originals outside the public source payload',
     'NOTO-SANS-SC-OFL.txt',
     'NOTO-SERIF-SC-OFL.txt',
     'NOTO-COLOR-EMOJI-OFL.txt',
+    'SOURCE-SERIF-4-OFL.txt',
   ]) {
     const original = await read(`packages/ui/test/font-notices/${notice}`)
     assert.match(original, /SIL OPEN FONT LICENSE Version 1\.1/u, notice)

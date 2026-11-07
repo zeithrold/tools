@@ -59,9 +59,9 @@ real data extremes.
 
 ## Typography and icon roles
 
-Typography uses Noto Sans or Noto Serif families with appropriate CJK variants,
+Typography uses Noto Sans or Source Serif 4 paired with Noto Serif CJK,
 plus Noto Color Emoji for all emoji, and covers at least English and
-Chinese/Japanese/Korean glyphs. Prefer Noto Sans for UI and Noto Serif only where
+Chinese/Japanese/Korean glyphs. Prefer Noto Sans for UI and Source Serif 4 only where
 content benefits, without loading both by default. Deliver fonts through the
 Google Fonts API rather than self-hosting or vendoring binaries; document the
 third-party requests, CSP and privacy implications, and load only the required

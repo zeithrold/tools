@@ -1,4 +1,4 @@
-# Noto typography through Google Fonts
+# Typography through Google Fonts
 
 The source UI uses the Google Fonts CSS2 API directly. `styles/fonts.css` imports Noto Sans and
 Noto Sans SC/JP/KR as a variable weight range from 400 through 700, plus **Noto Color Emoji** at its native weight 400.
@@ -15,10 +15,12 @@ correct language on content and portals; changing the shared UI locale does not 
 content. The shared controls still support English and Simplified Chinese, independently of the font
 coverage. Consumers adding other languages should verify the appropriate Noto variant and its license.
 
-Noto Serif and its appropriate CJK variants are permitted for content that benefits from serif
-typography. The ordinary UI does not load unused Serif families. Add an explicit Google Fonts API
+Source Serif 4 handles English and Latin reading content, paired with Noto Serif SC/JP/KR for
+CJK glyphs. The ordinary UI does not load unused Serif families. Add an explicit Google Fonts API
 request by importing delivered `styles/fonts-serif.css`, then apply `font-serif` (or `.ztd-prose`)
 to reading content. `--ztd-font-serif` supplies the semantic stack, with matching CJK language forms.
+Source Serif 4 requests real upright and italic faces, weights 400 through 700, and the optical-size
+axis from 8 through 60. Native optical sizing follows the rendered size; CJK faces remain upright.
 
 `--ztd-font-sans` and `--ztd-font-emoji` are the delivered font tokens. Latin and CJK precede emoji in the
 ordinary text stack, preserving normal digits and text symbols. Use `.ztd-emoji` for an explicitly composed emoji
@@ -76,7 +78,9 @@ compression/cache headers differ. Default CI and public source acceptance requir
 ## Licensing and evidence
 
 Noto Sans, Noto Sans SC/JP/KR and Noto Color Emoji are SIL Open Font License 1.1 software served to the
-browser by Google; the optional Noto Serif families use the same upstream terms. The package and the
+browser by Google; optional Source Serif 4 and Noto Serif CJK use the same upstream terms. Source Serif 4's
+[upstream notice](https://github.com/google/fonts/blob/main/ofl/sourceserif4/OFL.txt) remains separate.
+The package and the
 registry item distribute no font software, so they deliver no OFL copy and `dist/assets/` holds only the
 MIT notices for code copied or patched. The upstream notices are
 [Google Fonts `ofl/noto*`](https://github.com/google/fonts/tree/main/ofl), for example
@@ -89,10 +93,10 @@ The shadcn MIT notice remains separate and intact.
 Two evidence-only paths can hold font software outside the package and registry item. The authorized local
 preview caches the woff2 files its test server downloads under `.artifacts/local-noto-preview/`, and a
 retained browser failure trace stores the font responses it recorded as `.woff2` entries inside its
-trace archive. CI keeps those traces as recorded and uploads the four original Noto OFL texts
+trace archive. CI keeps those traces as recorded and uploads the five original font OFL texts
 from `test/font-notices/` as `.artifacts/font-notices/` beside them. That directory belongs to no
 package or registry item, which still deliver only the four MIT notices; a manual local-preview export
-must carry the same four notices with its evidence. The default `pack` and `source` gates request fonts
+must carry the same five notices with its evidence. The default `pack` and `source` gates request fonts
 from Google's origins rather than a local cache.
 
 The browser specimen checks real rendered font usage through Chromium's

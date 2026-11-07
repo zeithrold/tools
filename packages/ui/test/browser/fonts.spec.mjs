@@ -1,3 +1,6 @@
+import { readFile } from 'node:fs/promises'
+import { createRequire } from 'node:module'
+import path from 'node:path'
 import process from 'node:process'
 import { expect } from '@playwright/test'
 import { captureState } from '@ztd-me/frontend-checks/playwright'
@@ -133,5 +136,65 @@ test('Noto Color Emoji renders complete sequences without platform emoji fallbac
   await info.attach('mixed-text-fonts', { body: JSON.stringify({ mixed, evidence }), contentType: 'application/json' })
   await assertAccessible(page, info)
   await captureState(page, info, 'noto-emoji-sequences')
+  expect(errors).toEqual([])
+})
+
+test('optional Serif uses Source Serif 4 with regional CJK glyphs and real italic', async ({ page, context }, info) => {
+  const errors = watchErrors(page)
+  const consumer = process.env.ZTD_UI_CONSUMER
+  const stylesheet = process.env.ZTD_UI_VERIFICATION_MODE === 'source'
+    ? path.resolve(consumer, 'components/ui/ztd-me/styles/fonts-serif.css')
+    : createRequire(path.resolve(consumer, 'package.json')).resolve('@ztd-me/ui/fonts-serif.css')
+  const stylesheetText = await readFile(stylesheet, 'utf8')
+  const response = await page.goto('/fonts')
+  const styleNonce = response?.headers()['content-security-policy']?.match(/'nonce-([^']+)'/u)?.[1]
+  expect(styleNonce).toBeDefined()
+  await page.evaluate(async ({ css, nonce }) => {
+    const style = Object.assign(document.createElement('style'), { nonce, textContent: css })
+    const loaded = new Promise((resolve, reject) => {
+      style.addEventListener('load', resolve, { once: true })
+      style.addEventListener('error', () => {
+        reject(new Error('Optional Serif stylesheet failed to load'))
+      }, { once: true })
+    })
+    document.head.append(style)
+    for (const id of [
+      'font-en',
+      'font-zh',
+      'font-ja',
+      'font-ko',
+      'font-bold',
+    ]) {
+      document.getElementById(id).classList.add('ztd-font-serif')
+    }
+    document.querySelector('.font-specimens').insertAdjacentHTML(
+      'beforeend',
+      '<p id="font-serif-italic" class="ztd-font-serif" lang="en"><em>English reading in italic</em></p>',
+    )
+    await loaded
+  }, { css: stylesheetText, nonce: styleNonce })
+  await page.evaluate(() => document.fonts.ready)
+  const session = await context.newCDPSession(page)
+  await session.send('DOM.enable')
+  await session.send('CSS.enable')
+  for (const [selector, family] of [
+    ['#font-en', 'Source Serif 4'],
+    ['#font-zh', 'Noto Serif SC'],
+    ['#font-ja', 'Noto Serif JP'],
+    ['#font-ko', 'Noto Serif KR'],
+    ['#font-bold strong', 'Source Serif 4'],
+    ['#font-serif-italic em', 'Source Serif 4'],
+  ]) {
+    const fonts = await renderedFonts(session, selector)
+    await info.attach(selector, { body: JSON.stringify(fonts), contentType: 'application/json' })
+    expect(fonts.every(font => font.isCustomFont)).toBe(true)
+    expect(fonts.some(font => font.familyName.startsWith(family) && font.glyphCount > 0)).toBe(true)
+  }
+  const italicFonts = await renderedFonts(session, '#font-serif-italic em')
+  expect(italicFonts.some(font => /Italic/u.test(font.postScriptName))).toBe(true)
+  await expect(page.locator('#font-bold strong')).toHaveCSS('font-weight', '600')
+  await expect(page.locator('#font-serif-italic em')).toHaveCSS('font-synthesis', 'none')
+  await assertAccessible(page, info)
+  await captureState(page, info, 'source-serif-cjk')
   expect(errors).toEqual([])
 })
